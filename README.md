@@ -14,4 +14,4 @@ Par défaut le nom de la base est `ecn`. Dans chaque page qui se connecte à la 
 ### Mise à jour des données
 Dans le répertoire `php` il y a un batch PHP `base-2023-batch.php` qui met à jour automatiquement les données de la base depuis le site CELINE du CNG. Il faut au préalable vérifier que le format des pages HTML du site CELINE soit toujours le même que celui des années passées. Cette mise à jour se fait une fois par an, après la période de choix des néo-internes en général en septembre.
 ### Google Analytics
-Il faut changer dans chaque page l'identifiant Google analytics `ID GOOGLE` si vous voulez conservez les statistiques des pages. Sinon il faut enlever le code correspondant qui se trouve en début de chaque page.
+Il faut changer dans chaque page l'identifiant Google analytics `ID GOOGLE` si vous voulez conserver les statistiques des pages. Sinon il faut enlever le code correspondant qui se trouve en début de chaque page.
