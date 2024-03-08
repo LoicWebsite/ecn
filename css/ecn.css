@@ -1,0 +1,161 @@
+p {text-align:justify;}
+
+p, h1, h2, h3, li, .h2, .h3, .h4, .h5, form, em {color:#808080;}
+
+h2 {text-align:center}
+
+li {padding-top:5px;}
+
+ul {padding-left:10px;text-align:justify;}
+
+.olHref {padding-bottom:8px}
+
+.carousel-control-prev-icon, .carousel-control-next-icon {
+	height: 40px;
+	width: 40px;
+	outline: black;
+	background-color: rgba(0, 0, 0, 0.3);
+	background-size: 100%, 100%;
+	border-radius: 50%;
+}
+
+.carousel-indicators {
+	bottom: -50px;
+}
+
+.carousel-indicators li {
+	background-color: rgba(0, 0, 0, 0.3);
+}
+
+.carousel-indicators .active {
+	background-color: blue;
+}
+
+.carousel-caption {
+	color: dimgray;
+	font-style: italic;
+	background-color: white;
+	bottom: -20px;
+}
+
+table {
+	width:100%;
+	margin:0;
+	padding:0;
+	border-color:#666666;
+	border-style:solid;
+	border-width:1px;
+	border-collapse:collapse;
+    border-bottom-style:hidden;
+    border-right-style:hidden;
+}
+
+.milieu {
+    border-top-style:hidden;
+    border-bottom-style:hidden;
+    background-color:transparent;
+}
+
+.acronyme {
+    border-right-style:hidden;
+    color: darkgray;
+}
+
+.premiereColonne {
+    border-left-style:hidden;
+    border-bottom-style:hidden;
+}
+
+.derniereColonne {
+    border-right-style:solid;
+}
+
+.bas {
+    border-bottom-style:solid;
+}
+
+.sousTitre {
+	text-align:center;
+	border-style:solid;
+    background-color: darkgray;
+    color: white;
+	font-family:'Arial', 'Arial', sans-serif;
+	font-size:100%;
+	border-color:#666666;
+	border-width:1px;
+	padding-top:4px;
+	padding-bottom:4px;
+}
+
+.type {
+	text-align:center;
+	border-style:solid;
+    background-color: gainsboro;
+    color: dimgray;
+	font-family:'Arial', 'Arial', sans-serif;
+	font-size:90%;
+	font-weight: normal;
+	border-color:#666666;
+	border-width:1px;
+	padding-top:4px;
+	padding-bottom:4px;
+}
+
+td {
+	text-align:left;
+	padding-left:4px;
+	border-top-style:dotted;
+	border-bottom-style:dotted;
+	border-left-style:solid;
+	border-right-style:solid;
+	padding-top:4px;
+	padding-bottom:4px;
+}
+
+th {
+	text-align:center;
+	border-style:solid;
+    background-color: DarkSlateBlue;
+    color: #fff;
+	font-family:'Arial', 'Arial', sans-serif;
+	font-size:120%;
+	border-color:#666666;
+	border-width:1px;
+	padding-top:8px;
+	padding-bottom:8px;
+}
+
+td {
+	font-family:'Arial', 'Arial', sans-serif;
+	font-size:90%;
+	color:darkslategray;
+	background-color:transparent;
+	border-color:#666666;
+	border-width:1px;
+}
+
+.derniereLigne {
+ 	border-width:20px;
+	border-color:blue;
+    border-top-style:solid;
+    border-left-style:hidden;
+    border-right-style:hidden;
+    border-bottom-style:hidden;
+    background-color:black;
+}
+
+.ancre {
+	padding-top: 60px;
+	margin-top: -60px;
+}
+
+.breadcrumb {
+  background: none; 
+}
+
+@media all and (min-width: 768px) {
+	body {
+		margin-left: 10%;
+		margin-right: 10%;
+	}
+}
