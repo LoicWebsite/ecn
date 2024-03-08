@@ -7,6 +7,8 @@ Les autres pages sont générées en PHP.
 Les pages utilisent le framework Bootstrap.
 ### Base de données
 La base de données est une base mySQL. Dans le repertoire `mySQL` il y a un fichier pour la création de la base vide : `ecn - tables.sql`, et autant de fichier de données que de tables. Il suffit de faire des imports de ces fichiers dans mySQL.
+
+Par défaut le nom de la base est `ecn`. Dans chaque page qui se connecte à la base de données, il faut remplacer `USER` et `PASSE` par l'utilisateur et son mot de passe de votre base de données.
 ### Mise à jour des données
 Dans le répertoire `php` il y a un batch PHP `base-2023-batch.php` qui met à jour automatiquement les données de la base depuis le site CELINE du CNG. Il faut au préalable vérifier que le format des pages HTML du site CELINE soit toujours le même que celui des années passées. Cette mise à jour se fait une fois par an, après la période de choix des néo-internes en général en septembre.
 ### Google Analytics
