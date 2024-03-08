@@ -28,9 +28,9 @@
 	$nbCHUSpecialite = 0;
 	$nbSpecialite = 0;
 
-	// conexion à la base ecn (user = ecn)
+	// conexion à la base ecn 
 	try {
-		$db = new PDO("mysql:host=localhost;dbname=ecn;charset=utf8", "ecn", "ecn");
+		$db = new PDO("mysql:host=localhost;dbname=ecn;charset=utf8", "USER", "PASSE" );
 	}
 	catch(PDOException $erreur)	{
 		die('Erreur : ' . $erreur->getMessage());

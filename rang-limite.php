@@ -13,12 +13,12 @@
 	?>
 
 	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-4NC0K56D5R"></script>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=ID GOOGLE"></script>
 	<script>
 	  window.dataLayer = window.dataLayer || [];
 	  function gtag(){dataLayer.push(arguments);}
 	  gtag('js', new Date());
-	  gtag('config', 'G-4NC0K56D5R');
+	  gtag('config', 'ID GOOGLE');
 	</script>
     
     <title>Rangs limites CELINE actualisés</title>
