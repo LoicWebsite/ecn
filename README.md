@@ -1,5 +1,7 @@
 # Choix d'une spécialité d'internat en médecine
 Ce site Web permet d'explorer les 44 spécialités d'internat de médecine. Il permet en particulier de voir le rang du dernier admis ainsi que le nombre de postes par spécialité et CHU.
+
+Mon site Web est public : [https://loic.website/ECN/choix-specialite-chu-celine-ecn.php]
 ### Home page
 La page d'accueil est une page HTML statique : `choix-specialite-chu-celine-ecn.php`
 ### Pages dynamiques
