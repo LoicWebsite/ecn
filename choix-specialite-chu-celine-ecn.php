@@ -12,13 +12,13 @@
 	?>
 
 	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=ID GOOGLE"></script>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-4NC0K56D5R"></script>
 	<script>
 	  window.dataLayer = window.dataLayer || [];
 	  function gtag(){dataLayer.push(arguments);}
 	  gtag('js', new Date());
 
-	  gtag('config', 'ID GOOGLE');
+	  gtag('config', 'G-4NC0K56D5R');
 	</script>
     
     <title>Simulateur Excel pour choisir sa spécialité et son CHU à l'ECN</title>
@@ -96,8 +96,7 @@
 	<div id="actualite" class="container ancre">
 		<br/>
 		<p class="text-center">
-			<mark style="color:#808080;"><strong>Actualités</strong> : le <strong>simulateur</strong> affiche désormais le <strong>dernier admis en 2023 par CHU et par spécialité</strong>
-				<br>pour toutes les versions : <a href="questionnaire-choix-specialite.php" title="aide au choix de spécialités et CHU en ligne">En ligne</a>, Excel et OpenOffice.
+			<mark style="color:#808080;"><strong>Actualités</strong> : les <strong>simulateurs Excel et OpenOffice</strong> incluent désormais <br>le <strong>nombre de postes d'internes et de CESP</strong> par spécialité et par CHU pour l'année <strong>2024-2025</strong>
 			</mark>
 		</p>
 	</div>
@@ -132,6 +131,41 @@
 		<p class="text-center h5"><a href="questionnaire-choix-specialite.php" title="aide au choix de spécialités et CHU en ligne"><i class="fas fa-mobile-alt"></i> &nbsp; &nbsp; Simulateur en ligne</a></p>
 		<p>Une version simplifiée est disponible <strong>en ligne</strong> (pour ceux qui n'ont ni Excel ni OpenOffice). Elle permet d'explorer rapidement les différentes spécialités et de connaître pour chacune d'entre elles le rang du dernier admis pour chaque CHU ainsi que le nombre de postes. Ce simulateur en ligne est particulièrement adapté aux <strong>smartphones</strong>.</p>
 		<br/>
+	</div>
+
+  	<div id="paiement" class="container">
+		<p><strong>Le simulateur est gratuit</strong>, ne comporte pas de publicité et ne collecte aucune donnée. Ce n’est pas une démarche commerciale. Je mets en ligne ce simulateur simplement pour aider les étudiants à réfléchir sur leur choix de spécialités. Toutefois pour m’aider à faire face aux frais du Web (hébergement, nom de domaine, certificat) j’apprécierais une petite participation pour ceux qui le peuvent. Elle n'est pas obligatoire. <strong>Un don de 1€ ou 2€ serait apprécié</strong>. Merci pour votre contribution.</p>
+		<div class="text-center">
+
+		<!-- BOUTON DONATE PAYPAL dans le site Paypal business : pb l'adresse est obligatoire, donc je la prérempli avec du bidon -->
+			<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+				<input type="hidden" name="cmd" value="_s-xclick" />
+				<input type="hidden" name="hosted_button_id" value="97NCJCMCWNBVW" />
+				<input type="hidden" name="item_name" value="Participation au financement du simulateur de choix de spécialité à l'ECN">
+				<input type="hidden" name="item_number" value="Participation au simulateur ECN">
+				<input type="hidden" name="amount" value="2.00">
+				<input type="hidden" name="currency_code" value="EUR">
+				<input type="hidden" name="no_shipping" value="1">
+				<input type="hidden" name="no_note" value="1">
+				<input type="hidden" name="image_url" value="https://loic.website/ECN/image/stethoscope.png">
+				<input type="hidden" name="return" value="https://loic.website/ECN/success.html">
+				<input type="hidden" name="cancel_return" value="https://loic.website/ECN/">
+		<!-- 
+				<input type="hidden" name="first_name" value="Prénom">		
+				<input type="hidden" name="last_name" value="Nom">
+		 -->
+				<input type="hidden" name="address1" value="numéro et rue">		
+				<input type="hidden" name="address2" value=" ">
+				<input type="hidden" name="city" value="Ville">
+				<input type="hidden" name="zip" value="22000">
+				<input type="hidden" name="country" value="FR">			
+				<input type="hidden" name="night_phone_a" value="33">
+				<input type="hidden" name="night_phone_b" value="6 00 00 00 00">
+				<input type="hidden" name="charset" value="utf-8">
+				<input type="image" src="https://www.paypalobjects.com/fr_FR/FR/i/btn/btn_donateCC_LG.gif" name="submit" title="Faites un don avec PayPal - paiement sécurisé et simple." alt="Bouton Faites un don avec PayPal" />
+				<img alt="" src="https://www.paypal.com/fr_FR/i/scr/pixel.gif" width="1" height="1" />
+			</form>
+		</div>
 	</div>
 
 	<div id="apercu" class="container ancre">
