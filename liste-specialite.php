@@ -31,12 +31,12 @@
 	?>
 
 	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=ID GOOGLE"></script>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-4NC0K56D5R"></script>
 	<script>
 	  window.dataLayer = window.dataLayer || [];
 	  function gtag(){dataLayer.push(arguments);}
 	  gtag('js', new Date());
-	  gtag('config', 'ID GOOGLE');
+	  gtag('config', 'G-4NC0K56D5R');
 	</script>
 
     <title>Liste des spécialités correspondantes aux critères saisis</title>
@@ -121,9 +121,9 @@
 		echo "</div>";
 		echo "</div>\n";
 
-		// conexion à la base ecn 
+		// conexion à la base ecn (user = ecn)
 		try {
-			$db = new PDO("mysql:host=localhost;dbname=ecn;charset=utf8", "USER", "PASSE" );
+			$db = new PDO("mysql:host=localhost;dbname=ecn;charset=utf8", "ecn", "ecn");
 		}
 		catch(PDOException $erreur)	{
 			die('Erreur connexion base : ' . $erreur->getMessage());
@@ -173,7 +173,7 @@
 		}
 
 		if ($cesp == "on") {
-			$where = $where . " AND Rang.CESP2023 <> '0' AND Rang.CESP2023 <> ''";
+			$where = $where . " AND Rang.CESP2024 <> '0' AND Rang.CESP2024 <> ''";
 		}
 
 		if (($lieu <> "") and ($lieu <> "lieuIndifferent")) {
@@ -203,7 +203,7 @@
 		// requête pour compter les nombres de postes
 		$nbPoste = 0;
 		$nbCESP = 0;
-		$sql = "SELECT Rang.CodeSpecialite, SUM(Rang.Poste2023) AS totalPoste, SUM(Rang.CESP2023) AS totalCESP  FROM Specialite
+		$sql = "SELECT Rang.CodeSpecialite, SUM(Rang.Poste2024) AS totalPoste, SUM(Rang.CESP2024) AS totalCESP  FROM Specialite
 				inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $whereSpecialite . " GROUP BY Rang.CodeSpecialite;";
 		if ($debug) echo "SQL = " . $sql ."<br/>";
 
@@ -229,8 +229,8 @@
 						max(Rang.Dernier2019) as Dernier2019,
 						max(Rang.Dernier2018) as Dernier2018,
 						max(Rang.Dernier2017) as Dernier2017,
-						sum(Rang.Poste2023) as Poste2023,
-						sum(Rang.CESP2023) as CESP2023
+						sum(Rang.Poste2024) as Poste2024,
+						sum(Rang.CESP2024) as CESP2024
 				FROM `Specialite` inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $whereSpecialite . " GROUP BY Rang.CodeSpecialite;";
 		if ($debug) echo "SQL = " . $sql ."<br/>";
 
@@ -254,7 +254,7 @@
 			echo "<caption>Cliquer &nbsp;<i class='fa fa-mouse-pointer' aria-hidden='true'></i>&nbsp; sur une spécialité pour voir les CHU pour cette spécialité.</caption>";
 			echo "<thead class='text-center'>";
 			echo "<tr><th colspan=2 style='width:50%'>" . $result->rowCount() ." spécialités d'internat<br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Cliquer sur une spécialité pour voir les CHU pour cette spécialité.'></i></th>";
-			echo "<th style='width:20%;'> ".$montant->format($nbPoste)." postes 2023 <br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le nombre de postes 2023 est issu de l&apos;arrêté publié par le Journal Officiel du 4 août 2023. Ce nombre de postes exclut les CESP (pour mémoire : 252 en 2023 dont 213 en Médecine Générale).'></i></th>";
+			echo "<th style='width:20%;'> ".$montant->format($nbPoste)." postes 2024 <br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le nombre de postes 2024 est issu de l&apos;arrêté publié par le Journal Officiel du 9 juillet 2024. Ce nombre de postes exclut les CESP (pour mémoire : 285 en 2024 dont 258 en Médecine Générale).'></i></th>";
 			$libelleReference = "2023";
 // A ACTIVER PENDANT LA PHASE DE CHOIX DE POSTE
 //  			if ($reference == "2023") {
@@ -264,7 +264,7 @@
 				$libelleReference = $reference;
 				echo "<th style='width:20%'> Rang dernier " . $libelleReference . "<br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le rang du dernier admis en " . $reference . " est issu du fichier &apos;Rangs limites " . $reference . "&apos; du site CNG Santé.'></i></th>";
 //			}
-			echo "<th style='width:10%;'> ".$montant->format($nbCESP)." CESP 2023 <br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le nombre de postes 2023 réservés aux CESP est issu de l&apos;arrêté publié par le Journal Officiel du 4 août 2023.<br/>Une cellule vide signifie qu&apos;il n&apos;y a pas de poste CESP pour cette spécialité.'></i></th>";
+			echo "<th style='width:10%;'> ".$montant->format($nbCESP)." CESP 2024 <br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le nombre de postes 2024 réservés aux CESP est issu de l&apos;arrêté publié par le Journal Officiel du 9 juillet 2024.<br/>Une cellule vide signifie qu&apos;il n&apos;y a pas de poste CESP pour cette spécialité.'></i></th>";
 			echo "</tr></thead>";
 			echo "<tbody>";
 			// récupération des données à afficher
@@ -277,7 +277,7 @@
 					$libelleSpecialite = utf8_encode(getLibelleSpecialite($Specialite));
 				}
 				echo "<td class='acronyme'>".$Specialite . "</td><td>" . $libelleSpecialite . "</td>";
-				echo "<td class='text-center'>".$montant->format($Poste2023)."</td>";
+				echo "<td class='text-center'>".$montant->format($Poste2024)."</td>";
 				$dernier = "0";
 				if ($reference == 2023) {
 					$dernier = $montant->format($Dernier2023);
@@ -295,8 +295,8 @@
 					$dernier = $montant->format($Dernier2017);
 				}
 				echo "<td class='text-center'>" . $dernier . "</td>";
-				if ($CESP2023 <> 0) {
-					$nbCesp = $montant->format($CESP2023);
+				if ($CESP2024 <> 0) {
+					$nbCesp = $montant->format($CESP2024);
 				} else {
 					$nbCesp = '';
 				}

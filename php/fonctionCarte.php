@@ -64,10 +64,10 @@
 		}
 		$annee = $GLOBALS['reference'];
 		if (($rangOk) and ($cespOk) and ($libellePoste > 0)) {
-			echo "<a data-html='true' " . $urlCeline . " title='" . $libelleCHU . "<br/>" . $libelleSpecialite . "<br/>" . " <strong>accessible</strong><hr>dernier <small>en " . $annee . "</small> : " . $libelleDernier . "<br/>poste <small>en 2023</small> : " . $libellePoste . "<br/>CESP <small>en 2023</small> : " . $libelleCesp . "'>";
+			echo "<a data-html='true' " . $urlCeline . " title='" . $libelleCHU . "<br/>" . $libelleSpecialite . "<br/>" . " <strong>accessible</strong><hr>dernier <small>en " . $annee . "</small> : " . $libelleDernier . "<br/>poste <small>en 2024</small> : " . $libellePoste . "<br/>CESP <small>en 2024</small> : " . $libelleCesp . "'>";
 			echo "<circle cx='" . $cx . "' cy='" . $cy . "' r='5' stroke='gray' stroke-width='1' fill='white' />";
 		} else {
-			echo "<a data-html='true' " . $urlCeline . " title='" . $libelleCHU . "<br/>" . $libelleSpecialite . "<br/>" . " <strong>non accessible</strong><hr>dernier <small>en " . $annee . "</small> : " . $libelleDernier . "<br/>poste <small>en 2023</small> : " . $libellePoste . "<br/>CESP <small>en 2023</small> : " . $libelleCesp . "'>";
+			echo "<a data-html='true' " . $urlCeline . " title='" . $libelleCHU . "<br/>" . $libelleSpecialite . "<br/>" . " <strong>non accessible</strong><hr>dernier <small>en " . $annee . "</small> : " . $libelleDernier . "<br/>poste <small>en 2024</small> : " . $libellePoste . "<br/>CESP <small>en 2024</small> : " . $libelleCesp . "'>";
 			echo "<circle cx='" . $cx . "' cy='" . $cy . "' r='5' stroke='gray' stroke-width='1' fill='white' />";
 		}
 

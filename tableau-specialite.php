@@ -12,12 +12,12 @@
 	?>
 
 	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=ID GOOGLE"></script>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-4NC0K56D5R"></script>
 	<script>
 	  window.dataLayer = window.dataLayer || [];
 	  function gtag(){dataLayer.push(arguments);}
 	  gtag('js', new Date());
-	  gtag('config', 'ID GOOGLE');
+	  gtag('config', 'G-4NC0K56D5R');
 	</script>
 
     <title>tableau des spécialités correspondantes aux critères saisis</title>
@@ -155,9 +155,9 @@
 		$tableUrl = array(array());
 		$libelleCESP = 0;
 
-		// conexion à la base ecn 
+		// conexion à la base ecn (user = ecn)
 		try {
-			$db = new PDO("mysql:host=localhost;dbname=ecn;charset=utf8", "USER", "PASSE" );
+			$db = new PDO("mysql:host=localhost;dbname=ecn;charset=utf8", "ecn", "ecn");
 		}
 		catch(PDOException $erreur)	{
 			die('Erreur connexion base : ' . $erreur->getMessage());
@@ -207,7 +207,7 @@
 		}
 
 		if ($cesp == "on") {
-			$where = $where . " AND Rang.CESP2023 <> '0' AND Rang.CESP2023 <> ''";
+			$where = $where . " AND Rang.CESP2024 <> '0' AND Rang.CESP2024 <> ''";
 		}
 
 		if (($rang <> "") and ($rang > 0) and ($rang <> "rangIndifferent")) {
@@ -255,8 +255,8 @@
 // 				FROM Specialite"
 // 				. $where;
 		$sql = "SELECT	Rang.CodeSpecialite as CodeSpecialite,
-						sum(Rang.Poste2023) as Poste2023,
-						sum(Rang.CESP2023) as CESP2023
+						sum(Rang.Poste2024) as Poste2024,
+						sum(Rang.CESP2024) as CESP2024
 				FROM `Specialite` inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $where . " GROUP BY Rang.CodeSpecialite;";
 
 		if ($debug) echo "SQL = " . $sql ."<br/>";
@@ -268,8 +268,8 @@
 			while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 				extract($row);
 				$listeSpecialite[] = $CodeSpecialite;
-				$listePoste[] = $Poste2023;
-				$listeCESP[] = $CESP2023;
+				$listePoste[] = $Poste2024;
+				$listeCESP[] = $CESP2024;
 			}
 		}
 		catch(PDOException $erreur)	{
@@ -302,7 +302,7 @@
 			} else {
 				$libelleCESP = $listeCESP[$i];
 			}
-			$tooltip = " data-toggle='tooltip' data-html='true' title='" . $libelleSpecialite . "<hr>poste <small>en 2023</small> : " . $listePoste[$i] . "<br/>CESP <small>en 2023</small> : " . $libelleCESP . "' ";
+			$tooltip = " data-toggle='tooltip' data-html='true' title='" . $libelleSpecialite . "<hr>poste <small>en 2024</small> : " . $listePoste[$i] . "<br/>CESP <small>en 2024</small> : " . $libelleCESP . "' ";
 			$href = "onclick='zoom(&apos;" . $specialite . "&apos;)' ";
 			echo "<th " . $tooltip . $href . " >&nbsp;" . $specialite . "&nbsp;</th>";
 			$i += 1;
@@ -324,11 +324,13 @@
 						Rang.Dernier2019,
 						Rang.Dernier2018,
 						Rang.Dernier2017,
+						Rang.Poste2024,
 						Rang.Poste2023,
 						Rang.Poste2022,
 						Rang.Poste2021,
 						Rang.Poste2020,
 						Rang.URLCeline,
+						Rang.CESP2024,
 						Rang.CESP2023,
 						Rang.CESP2022,
 						Rang.CESP2021,
@@ -361,8 +363,8 @@
 					} elseif ($reference == "2017") {
 						$tableDernier[$j][$i] = $Dernier2017;
 					}
-					$tablePoste[$j][$i] = $Poste2023;
-					$tableCESP[$j][$i] = $CESP2023;
+					$tablePoste[$j][$i] = $Poste2024;
+					$tableCESP[$j][$i] = $CESP2024;
 					$tableUrl[$j][$i] = $URLCeline;
 					$j += 1;
 				}
@@ -431,10 +433,10 @@
 				
 				// cellule rang
 				} else {
-					$tooltip = " data-toggle='tooltip' data-html='true' data-trigger='hover focus' title='".$CHU[0]."<br/>".$libelleSpecialite."<hr/>Dernier <small>en ".$reference."</small> : ".$dernier."<br/>poste <small>en 2023</small> : ".$tablePoste[$j][$i]."<br/>CESP <small>en 2023</small> : ".$libelleCESP."' ";
+					$tooltip = " data-toggle='tooltip' data-html='true' data-trigger='hover focus' title='".$CHU[0]."<br/>".$libelleSpecialite."<hr/>Dernier <small>en ".$reference."</small> : ".$dernier."<br/>poste <small>en 2024</small> : ".$tablePoste[$j][$i]."<br/>CESP <small>en 2024</small> : ".$libelleCESP."' ";
 					$zoom = "";
 // A ACTIVER PENDANT LA PHASE DE CHOIX DE POSTE
-					$zoom =  " ondblclick='celine(&apos;".$tableUrl[$j][$i]."&apos;)' ";
+//					$zoom =  " ondblclick='celine(&apos;".$tableUrl[$j][$i]."&apos;)' ";
 
 					if (($cespOk) and ($rangOk)) {
 						echo "<td style='background-color:pink;' " . $tooltip . $zoom . ">" . $montant->format($dernier) . "</td>";					
@@ -459,9 +461,9 @@
  		echo "Cliquer &nbsp;<i class='fa fa-mouse-pointer' aria-hidden='true'></i>&nbsp; sur une <strong>spécialité</strong> dans l&apos;entête du tableau pour voir le détail des CHU pour cette spécialité.";
 
 // A ACTIVER PENDANT LA PHASE DE CHOIX DE POSTE
- 		if ($reference == "2023") {
- 			echo "<br/>Double cliquer <i class='far fa-hand-pointer'></i> sur un <strong>rang</strong> pour afficher le détail <strong>CELINE</strong>.</p>";
- 		}
+//  		if ($reference == "2023") {
+//  			echo "<br/>Double cliquer <i class='far fa-hand-pointer'></i> sur un <strong>rang</strong> pour afficher le détail <strong>CELINE</strong>.</p>";
+//  		}
 		echo "</p>";
 	?>
 	

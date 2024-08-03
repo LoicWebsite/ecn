@@ -12,12 +12,12 @@
 	?>
 
 	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=ID GOOGLE"></script>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-4NC0K56D5R"></script>
 	<script>
 	  window.dataLayer = window.dataLayer || [];
 	  function gtag(){dataLayer.push(arguments);}
 	  gtag('js', new Date());
-	  gtag('config', 'ID GOOGLE');
+	  gtag('config', 'G-4NC0K56D5R');
 	</script>
     
     <title>Saisie des critères de sélection des spécialités</title>
@@ -109,7 +109,10 @@
 						</div>
 					</div>
 					<div class="col-md-1">
+<!-- 
 						<i class="fas fa-info-circle" data-toggle="tooltip" data-html="true" title="L'année de référence sert à afficher le rang du dernier de cette année là.<br/>Elle sert également à filtrer les spécialités et CHU accessibles lorsque le &apos;Rang ECN&apos; est saisi. <br/>Pour 2023 c'est le rang limite de la simulation CELINE qui sera affiché (il est mis à jour toutes les heures sur ce site)."></i>
+ -->
+						<i class="fas fa-info-circle" data-toggle="tooltip" data-html="true" title="L'année de référence sert à afficher le rang du dernier de cette année là.<br/>Elle sert également à filtrer les spécialités et CHU accessibles lorsque le &apos;Rang ECN&apos; est saisi."></i>
 					</div>
 				</div>
 
@@ -150,7 +153,7 @@
 						</div>
 					</div>
 					<div class="col-md-1">
-						<i class="fas fa-info-circle" data-toggle="tooltip" data-html="true" title="En sélectionnant ce critère, les spécialités affichées seront uniquement celles ayant des postes CESP (Contrat d&apos;Engagement de Service Public) existants en 2023 ."></i>
+						<i class="fas fa-info-circle" data-toggle="tooltip" data-html="true" title="En sélectionnant ce critère, les spécialités affichées seront uniquement celles ayant des postes CESP (Contrat d&apos;Engagement de Service Public) existants en 2024 ."></i>
 					</div>
 				</div>
 

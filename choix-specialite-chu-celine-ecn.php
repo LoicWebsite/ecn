@@ -96,7 +96,7 @@
 	<div id="actualite" class="container ancre">
 		<br/>
 		<p class="text-center">
-			<mark style="color:#808080;"><strong>Actualités</strong> : les <strong>simulateurs Excel et OpenOffice</strong> incluent désormais <br>le <strong>nombre de postes d'internes et de CESP</strong> par spécialité et par CHU pour l'année <strong>2024-2025</strong>
+			<mark style="color:#808080;"><strong>Actualités</strong> : toutes les versions du simulateur (<strong><a href="questionnaire-choix-specialite.php">En ligne</a></strong>, <strong>Excel</strong> et <strong>OpenOffice</strong>) incluent désormais <br>le <strong>nombre de postes d'internes et de CESP</strong> par spécialité et par CHU pour l'année <strong>2024-2025</strong>
 			</mark>
 		</p>
 	</div>
@@ -539,7 +539,7 @@
 			<p>Je suis le père d'un étudiant qui était en 6ème année de médecine (avant son internat). A force de parler avec lui de ses choix de spécialités et de CHU, j'ai écrit ce simulateur pour l'aider dans sa réflexion. Le but de ce simulateur est bien d'anticiper et de <strong>se projeter dans une spécialité et un CHU</strong> sans nécessairement connaître son rang à l'ECN, et sans attendre les simulations Céline. Et sans se censurer. Il faut à la fois rêver (voeux de rêve) et en même temps être réaliste (voeux réalistes et voeux de secours). Je souhaite que ce simulateur soit <strong>utile à d'autres étudiants en médecine</strong>. C'est pourquoi je le partage.</p>
 			<p>Les données du simulateur sont issues de CNG Céline pour les rangs des derniers admis, du guide de l'ISNI pour le détail des spécialités, du journal officiel pour le nombre de postes d'internes et de l'UNASA et de la CARMF pour les revenus des spécialités en libéral.</p> 
 			<p>Ce simulateur ne décrit pas les spécialités ni les CHU. Vous pouvez vous référer au guide ISNI pour cela. Ce guide est consultable en cliquant sur le lien ci-dessous :</p>
-			<p><a href="http://www.futur-interne.com/wp-content/uploads/2023/06/ISNI-GUIDE-2023-INTERIEUR-15X21-V3.pdf" target="_blank" download="Futur-Interne-Guide-2023.pdf"><i class="fas fa-file-download"></i> Voir le guide des villes et des spécialités ISNI</a>
+			<p><a href="https://isni.fr/wp-content/uploads/2023/07/ISNI-GUIDE-2024-web.pdf" target="_blank" download="Futur-Interne-Guide-2024.pdf"><i class="fas fa-file-download"></i> Voir le guide des villes et des spécialités ISNI</a>
 		</div>
 	</div>
 

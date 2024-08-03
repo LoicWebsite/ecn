@@ -12,12 +12,12 @@
 	?>
 
 	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=ID GOOGLE"></script>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-4NC0K56D5R"></script>
 	<script>
 	  window.dataLayer = window.dataLayer || [];
 	  function gtag(){dataLayer.push(arguments);}
 	  gtag('js', new Date());
-	  gtag('config', 'ID GOOGLE');
+	  gtag('config', 'G-4NC0K56D5R');
 	</script>
 
     <title>Carte des CHU</title>
@@ -125,7 +125,7 @@
 			$where = $where . " AND Dernier" . $reference . " >='" . $rang . "'";
 		}
 		if ($cesp == "on") {
-			$where = $where . " AND CESP.CESP2023 > '0'";
+			$where = $where . " AND CESP.CESP2024 > '0'";
 		}
 		$where = $where . ";";
 
@@ -141,11 +141,13 @@
 					Rang.Dernier2019,
 					Rang.Dernier2018,
 					Rang.Dernier2017,
+					Rang.Poste2024,
 					Rang.Poste2023,
 					Rang.Poste2022,
 					Rang.Poste2021,
 					Rang.Poste2020,
 					Rang.URLCeline,
+					Rang.CESP2024,
 					Rang.CESP2023,
 					Rang.CESP2022,
 					Rang.CESP2021,
@@ -165,8 +167,8 @@
 			while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 				extract($row);
 				$listeCHU[] = $CHU;
-				$listePoste[] = $Poste2023;
-				$listeCesp[] = $CESP2023;
+				$listePoste[] = $Poste2024;
+				$listeCesp[] = $CESP2024;
 				if ($reference == "2023") {
 					$listeDernier[] = $Dernier2023;
 				} elseif ($reference == "2022") {
@@ -188,7 +190,7 @@
 	
 				// comptage des chu accessibles selon le critère cesp et rang s'il y a au moins 1 poste
 				if ($cesp == "on") {
-					if (($CESP2023 != null) and ($CESP2023 > 0 )) {
+					if (($CESP2024 != null) and ($CESP2024 > 0 )) {
 						$cespOk = true;
 					} else {
 						$cespOk = false;
@@ -207,7 +209,7 @@
 					$rangOk = true;
 				}
 
-				if (($rangOk) and ($cespOk) and ($Poste2023 > 0)) {
+				if (($rangOk) and ($cespOk) and ($Poste2024 > 0)) {
 					$nbCHU += 1;
 				}
 
@@ -262,11 +264,13 @@
  		<br/>
  		<p class="text-center">Cliquer &nbsp;<i class='fa fa-mouse-pointer' aria-hidden='true'></i>&nbsp; sur un CHU pour voir le détail.<br/>
 <!-- A REACTIVER quand Celine actif -->
+<!-- 
 		<?php
 			if ($reference == "2023") {
  				echo "Double cliquer &nbsp;<i class='far fa-hand-pointer' aria-hidden='true'></i>&nbsp; sur un CHU pour voir le détail des rangs dans Celine (uniquement pour 2023).";
  			}	
 		?>
+ -->
 		</p>
 	</div>
 	
@@ -311,16 +315,16 @@
 
 		// pour voir le détail Celine d'un CHU
 // A REACTIVER quand CELINE actif
-		$( "g a" ).dblclick(function() {
-			$('g a').tooltip('hide');
-			<?php
-				if ($reference == "2023") {
-					echo "if ($(this).data('url') != '') {";
-					echo "window.open($(this).data('url'),'Détail Céline');";
-					echo "}";
- 				}
-			?>
-		});
+// 		$( "g a" ).dblclick(function() {
+// 			$('g a').tooltip('hide');
+// 			<?php
+// 				if ($reference == "2023") {
+// 					echo "if ($(this).data('url') != '') {";
+// 					echo "window.open($(this).data('url'),'Détail Céline');";
+// 					echo "}";
+//  				}
+// 			?>
+// 		});
 
 		// pour retourner au détail format liste
 		function detail() {

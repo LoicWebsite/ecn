@@ -12,12 +12,12 @@
 	?>
 
 	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=ID GOOGLE"></script>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-57099678-5"></script>
 	<script>
 	  window.dataLayer = window.dataLayer || [];
 	  function gtag(){dataLayer.push(arguments);}
 	  gtag('js', new Date());
-	  gtag('config', 'ID GOOGLE');
+	  gtag('config', 'UA-57099678-5');
 	</script>
     
 	<title>Description de la spécialité sélectionnée</title>
@@ -98,9 +98,9 @@
 		echo "</div>";
 		echo "</div>\n";
 
-		// conexion à la base ecn 
+		// conexion à la base ecn (user = ecn)
 		try {
-			$db = new PDO("mysql:host=localhost;dbname=ecn;charset=utf8", "USER", "PASSE" );
+			$db = new PDO("mysql:host=localhost;dbname=ecn;charset=utf8", "ecn", "ecn");
 		}
 		catch(PDOException $erreur)	{
 			die('Erreur connexion base : ' . $erreur->getMessage());
@@ -135,7 +135,7 @@
 // 		}
 		
 		// préparation de la clause where pour sélectionner les spécialités en fonction des critères
-		$where = " WHERE Type <> '' AND Rang.Poste2023 > 0 ";
+		$where = " WHERE Type <> '' AND Rang.Poste2024 > 0 ";
 
 		if (($type <> "") and ($type <> "typeIndifferent")) {
 			if ($type == "medico-chirurgical") {
@@ -150,7 +150,7 @@
 		}
 
 		if ($cesp == "on") {
-			$where = $where . " AND Rang.CESP2023 <> '0' AND Rang.CESP2023 <> ''";
+			$where = $where . " AND Rang.CESP2024 <> '0' AND Rang.CESP2024 <> ''";
 		}
 
 		if (($lieu <> "") and ($lieu <> "lieuIndifferent")) {
@@ -178,7 +178,7 @@
 		// requête pour compter le nombres de postes et de CESP
 		$nbPoste = 0;
 		$nbCESP = 0;
-		$sql = "SELECT Rang.CHU, SUM(Rang.Poste2023) AS totalPoste, SUM(Rang.CESP2023) AS totalCESP  FROM Specialite inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $whereSpecialite . " AND Rang.CHU='" . $chu . "';";
+		$sql = "SELECT Rang.CHU, SUM(Rang.Poste2024) AS totalPoste, SUM(Rang.CESP2024) AS totalCESP  FROM Specialite inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $whereSpecialite . " AND Rang.CHU='" . $chu . "';";
 		if ($debug) echo "SQL POSTE = " . $sql ."<br/>";
 		try {
 			$result = $db->query($sql);
@@ -204,8 +204,8 @@
 						Rang.Dernier2018 as Dernier2018,
 						Rang.Dernier2017 as Dernier2017,
 						Rang.URLCeline,
-						Rang.Poste2023 as Poste2023,
-						Rang.CESP2023 as CESP2023
+						Rang.Poste2024 as Poste2024,
+						Rang.CESP2024 as CESP2024
 				FROM `Specialite` inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $whereSpecialite . " AND Rang.CHU='" . $chu . "';";
 		if ($debug) echo "SQL = " . $sql ."<br/>";
 
@@ -226,14 +226,14 @@
 			// liste
 			echo "<table class='table-hover' style='width:100%;'>";
 // A ACTIVER PENDANT LA PHASE DE CHOIX DE POSTE	
-			if ($reference == "2023") {
-				echo "<caption>Double cliquer <i class='far fa-hand-pointer'></i> sur une <strong>spécialité</strong> pour afficher le détail <strong>CELINE</strong>.</caption>";
-			}
+// 			if ($reference == "2023") {
+// 				echo "<caption>Double cliquer <i class='far fa-hand-pointer'></i> sur une <strong>spécialité</strong> pour afficher le détail <strong>CELINE</strong>.</caption>";
+// 			}
 			echo "<thead class='text-center'>";
 // A ACTIVER PENDANT LA PHASE DE CHOIX DE POSTE	
-			echo "<tr><th colspan=2 style='width:50%'>" . $result->rowCount() ." Spécialités à " . $chu . "<br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Cliquer sur une spécialité pour voir le détail dans CELINE.'></i></th>";
-//			echo "<tr><th colspan=2 style='width:50%'>" . $result->rowCount() ." Spécialités à " . $chu . "</th>";
-			echo "<th style='width:20%;'> ".$montant->format($nbPoste)." postes 2023 <br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le nombre de postes 2023 est issu de l&apos;arrêté publié par le Journal Officiel du 4 août 2023. Ce nombre de postes exclut les CESP (pour mémoire : 252 en 2023 dont 213 en Médecine Générale).'></i></th>";
+//			echo "<tr><th colspan=2 style='width:50%'>" . $result->rowCount() ." Spécialités à " . $chu . "<br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Cliquer sur une spécialité pour voir le détail dans CELINE.'></i></th>";
+			echo "<tr><th colspan=2 style='width:50%'>" . $result->rowCount() ." Spécialités à " . $chu . "</th>";
+			echo "<th style='width:20%;'> ".$montant->format($nbPoste)." postes 2024 <br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le nombre de postes 2024 est issu de l&apos;arrêté publié par le Journal Officiel du 9 juillet 2024. Ce nombre de postes exclut les CESP (pour mémoire : 285 en 2024 dont 258 en Médecine Générale).'></i></th>";
 			$libelleReference = "2020";
 // A ACTIVER PENDANT LA PHASE DE CHOIX DE POSTE
 // 			if ($reference == "2023") {
@@ -243,7 +243,7 @@
 				$libelleReference = $reference;
 				echo "<th style='width:20%'> Rang dernier " . $libelleReference . "<br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le rang du dernier admis en " . $reference . " est issu du fichier &apos;Rangs limites " . $reference . "&apos; du site CNG Santé.'></i></th>";
 //			}
-			echo "<th style='width:10%;'> ".$montant->format($nbCESP)." CESP 2023 <br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le nombre de postes 2023 réservés aux CESP est issu de l&apos;arrêté publié par le Journal Officiel du 4 août 2023.<br/>Une cellule vide signifie qu&apos;il n&apos;y a pas de poste CESP pour cette spécialité.'></i></th>";
+			echo "<th style='width:10%;'> ".$montant->format($nbCESP)." CESP 2024 <br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le nombre de postes 2024 réservés aux CESP est issu de l&apos;arrêté publié par le Journal Officiel du 9 juillet 2024.<br/>Une cellule vide signifie qu&apos;il n&apos;y a pas de poste CESP pour cette spécialité.'></i></th>";
 			echo "</tr></thead>";
 			echo "<tbody>";
 
@@ -251,13 +251,13 @@
 			while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 				extract($row);
 // A ACTIVER PENDANT LA PHASE DE CHOIX DE POSTE
-				echo "<tr ondblclick='celine(&apos;".$URLCeline."&apos;)'>";
+//				echo "<tr ondblclick='celine(&apos;".$URLCeline."&apos;)'>";
 // A DESACTIVER PENDANT LA PHASE DE CHOIX DE POSTE
 //				echo "<tr>";
 
 				echo "<td class='acronyme'>" . $CodeSpecialite . "</td>";
 				echo "<td>" . getLibelleSpecialite($CodeSpecialite) . "</td>";
-				$poste = $montant->format($Poste2023);
+				$poste = $montant->format($Poste2024);
 				echo "<td class='text-center'>" . $poste . "</td>";
 				$dernier = "0";
 				if ($reference == 2023) {
@@ -276,8 +276,8 @@
 					$dernier = $montant->format($Dernier2017);
 				}
 				echo "<td class='text-center'>" . $dernier . "</td>";
-				if ($CESP2023 <> 0) {
-					$nbCesp = $montant->format($CESP2023);
+				if ($CESP2024 <> 0) {
+					$nbCesp = $montant->format($CESP2024);
 				} else {
 					$nbCesp = '';
 				}
@@ -344,15 +344,15 @@
 		
 		// pour voir le détail Celine d'une cellule si l'année de référence est 2023
 // A ACTIVER PENDANT LA PHASE DE CHOIX DE POSTE
-		function celine(urlCeline) {
-			<?php
-				if ($reference == "2023") {
-					echo "if (urlCeline != '') {";
-					echo "	window.open(urlCeline,'Détail Céline');";
-					echo "}";
-				}
-			?>
-		}		
+//		function celine(urlCeline) {
+// 			<?php
+// 				if ($reference == "2023") {
+// 					echo "if (urlCeline != '') {";
+// 					echo "	window.open(urlCeline,'Détail Céline');";
+// 					echo "}";
+// 				}
+// 			?>
+//		}		
 
 	</script>
 
