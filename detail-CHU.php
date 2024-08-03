@@ -12,12 +12,12 @@
 	?>
 
 	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-57099678-5"></script>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=ID GOOGLE"></script>
 	<script>
 	  window.dataLayer = window.dataLayer || [];
 	  function gtag(){dataLayer.push(arguments);}
 	  gtag('js', new Date());
-	  gtag('config', 'UA-57099678-5');
+	  gtag('config', 'ID GOOGLE');
 	</script>
     
 	<title>Description de la spécialité sélectionnée</title>
@@ -100,7 +100,7 @@
 
 		// conexion à la base ecn (user = ecn)
 		try {
-			$db = new PDO("mysql:host=localhost;dbname=ecn;charset=utf8", "ecn", "ecn");
+			$db = new PDO("mysql:host=localhost;dbname=ecn;charset=utf8", "USER", "PASSE");
 		}
 		catch(PDOException $erreur)	{
 			die('Erreur connexion base : ' . $erreur->getMessage());
