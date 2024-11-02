@@ -12,13 +12,13 @@
 	?>
 
 	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-4NC0K56D5R"></script>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=ID-GOOGLE"></script>
 	<script>
 	  window.dataLayer = window.dataLayer || [];
 	  function gtag(){dataLayer.push(arguments);}
 	  gtag('js', new Date());
 
-	  gtag('config', 'G-4NC0K56D5R');
+	  gtag('config', 'ID-GOOGLE');
 	</script>
     
     <title>Simulateur Excel pour choisir sa spécialité et son CHU à l'ECN</title>
@@ -96,7 +96,7 @@
 	<div id="actualite" class="container ancre">
 		<br/>
 		<p class="text-center">
-			<mark style="color:#808080;"><strong>Actualités</strong> : toutes les versions du simulateur (<strong><a href="questionnaire-choix-specialite.php">En ligne</a></strong>, <strong>Excel</strong> et <strong>OpenOffice</strong>) incluent désormais <br>le <strong>nombre de postes d'internes et de CESP</strong> par spécialité et par CHU pour l'année <strong>2024-2025</strong>
+			<mark style="color:#808080;"><strong>Actualités</strong> : le <a href="questionnaire-choix-specialite.php" title="aide au choix de spécialités et CHU en ligne">simulateur en ligne</a> affiche désormais le rang du dernier admis issu du <strong>1er tour de l'appariement</strong> du 13 septembre 2024.
 			</mark>
 		</p>
 	</div>
@@ -131,41 +131,6 @@
 		<p class="text-center h5"><a href="questionnaire-choix-specialite.php" title="aide au choix de spécialités et CHU en ligne"><i class="fas fa-mobile-alt"></i> &nbsp; &nbsp; Simulateur en ligne</a></p>
 		<p>Une version simplifiée est disponible <strong>en ligne</strong> (pour ceux qui n'ont ni Excel ni OpenOffice). Elle permet d'explorer rapidement les différentes spécialités et de connaître pour chacune d'entre elles le rang du dernier admis pour chaque CHU ainsi que le nombre de postes. Ce simulateur en ligne est particulièrement adapté aux <strong>smartphones</strong>.</p>
 		<br/>
-	</div>
-
-  	<div id="paiement" class="container">
-		<p><strong>Le simulateur est gratuit</strong>, ne comporte pas de publicité et ne collecte aucune donnée. Ce n’est pas une démarche commerciale. Je mets en ligne ce simulateur simplement pour aider les étudiants à réfléchir sur leur choix de spécialités. Toutefois pour m’aider à faire face aux frais du Web (hébergement, nom de domaine, certificat) j’apprécierais une petite participation pour ceux qui le peuvent. Elle n'est pas obligatoire. <strong>Un don de 1€ ou 2€ serait apprécié</strong>. Merci pour votre contribution.</p>
-		<div class="text-center">
-
-		<!-- BOUTON DONATE PAYPAL dans le site Paypal business : pb l'adresse est obligatoire, donc je la prérempli avec du bidon -->
-			<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-				<input type="hidden" name="cmd" value="_s-xclick" />
-				<input type="hidden" name="hosted_button_id" value="97NCJCMCWNBVW" />
-				<input type="hidden" name="item_name" value="Participation au financement du simulateur de choix de spécialité à l'ECN">
-				<input type="hidden" name="item_number" value="Participation au simulateur ECN">
-				<input type="hidden" name="amount" value="2.00">
-				<input type="hidden" name="currency_code" value="EUR">
-				<input type="hidden" name="no_shipping" value="1">
-				<input type="hidden" name="no_note" value="1">
-				<input type="hidden" name="image_url" value="https://loic.website/ECN/image/stethoscope.png">
-				<input type="hidden" name="return" value="https://loic.website/ECN/success.html">
-				<input type="hidden" name="cancel_return" value="https://loic.website/ECN/">
-		<!-- 
-				<input type="hidden" name="first_name" value="Prénom">		
-				<input type="hidden" name="last_name" value="Nom">
-		 -->
-				<input type="hidden" name="address1" value="numéro et rue">		
-				<input type="hidden" name="address2" value=" ">
-				<input type="hidden" name="city" value="Ville">
-				<input type="hidden" name="zip" value="22000">
-				<input type="hidden" name="country" value="FR">			
-				<input type="hidden" name="night_phone_a" value="33">
-				<input type="hidden" name="night_phone_b" value="6 00 00 00 00">
-				<input type="hidden" name="charset" value="utf-8">
-				<input type="image" src="https://www.paypalobjects.com/fr_FR/FR/i/btn/btn_donateCC_LG.gif" name="submit" title="Faites un don avec PayPal - paiement sécurisé et simple." alt="Bouton Faites un don avec PayPal" />
-				<img alt="" src="https://www.paypal.com/fr_FR/i/scr/pixel.gif" width="1" height="1" />
-			</form>
-		</div>
 	</div>
 
 	<div id="apercu" class="container ancre">
@@ -244,9 +209,9 @@
 					<ul style="margin-left:2.5%;">
 						<li><strong>Comment choisir sa spécialité</strong> ?</li>
 						<li><strong>Comment choisir son CHU</strong> ?</li>
-						<li>Faut-il attendre son classement pour <strong>établir ses voeux CNG - Céline</strong> ?</li>
+						<li>Faut-il attendre son classement pour <strong>établir ses voeux CNG</strong> ?</li>
 						<li>Comment être sûr d'avoir considéré toutes les <strong>spécialités médicales et chirurgicales</strong> ?</li>
-						<li>Faut-il réfléchir à ses voeux <strong>avant l'ECN</strong> ? Avant ou après son <strong>classement</strong> ?</li>
+						<li>Faut-il réfléchir à ses voeux <strong>avant les EDN/ECOS</strong> ? Avant ou après son <strong>classement</strong> ?</li>
 					</ul>
 				</div>
 				<div class="col-md-5 offset-md-1"> 
@@ -255,7 +220,7 @@
 						<li>Quel <strong>CHU</strong> finalement choisir ?</li>
 						<li>A quelle <strong>spécialité puis-je prétendre</strong> ?</li>
 						<li>A quel <strong>CHU puis-je prétendre</strong> ?</li>
-						<li>Comment <strong>prioriser mes voeux</strong> pour <strong> CNG - Céline</strong> ?</li>
+						<li>Comment <strong>prioriser mes voeux</strong> pour <strong> CNG</strong> ?</li>
 						<li>Puis-je <strong>rêver</strong> ou seulement être <strong>réaliste</strong> dans mes voeux ?
 					</ul>
 				</div>
@@ -263,7 +228,7 @@
 			<br/>
 			<p style="margin-bottom:0;">Ce simulateur peut vous aider à réfléchir et à y répondre. Son fonctionnement est simple :</p>
 			<ol>
-				<li>vous indiquez le <strong>rang</strong> que vous pensez (ou voulez) obtenir à l’<strong>ECNi</strong>,</li>
+				<li>vous indiquez le <strong>rang</strong> que vous pensez (ou voulez) obtenir aux <strong>EDN/ECOS</strong>,</li>
 				<li>et le simulateur affiche les <strong>CHUs et les spécialités accessibles</strong>.</li>
 			</ol>
 		</div>
@@ -279,13 +244,13 @@
 			
 			<p style="margin-bottom:0;">Comment l'utiliser :</p>
 			<ol>
-				<li>Vous indiquez le <strong>rang</strong> que vous pensez (ou voulez) obtenir à l’<strong>ECNi</strong> dans l'onglet <span class="badge badge-info">2 - Rang candidat</span>.</li>
+				<li>Vous indiquez le <strong>rang</strong> que vous pensez (ou voulez) obtenir aux<strong>EDN/ECOS</strong> dans l'onglet <span class="badge badge-info">2 - Rang candidat</span>.</li>
 				<li>Le simulateur affiche les <strong>CHUs et les spécialités accessibles</strong> dans les onglets <span class="badge badge-info">Spécialité</span>, <span class="badge badge-info">Rang 2023</span> à <span class="badge badge-info">Rang 2017</span>, <span class="badge badge-info">Poste 2023</span> à <span class="badge badge-info">Poste 2020</span>, <span class="badge badge-info">CESP 2023</span> à <span class="badge badge-info">CESP 2020</span>. A vous de naviguer, d'analyser et de réfléchir.</li>
 			</ol>
 			<p><mark style="background-color:Khaki; color:#808080;">Note : seules les cellules avec fond jaune sont saisissables.</mark></p>
 			<br/>
 						
-			<p style="margin-bottom:0;">Pour cibler vos spécialités, et notamment être sûr que vous les avez toutes passées en revue (sans a priori), vous pouvez vous aider de l’onglet <span class="badge badge-info">Spécialité</span> qui liste les <strong>44 spécialités d'internat</strong> accessibles après l’ECN. Ce tableau permet de sélectionner et de trier les spécialités en fonction :</P>
+			<p style="margin-bottom:0;">Pour cibler vos spécialités, et notamment être sûr que vous les avez toutes passées en revue (sans a priori), vous pouvez vous aider de l’onglet <span class="badge badge-info">Spécialité</span> qui liste les <strong>44 spécialités d'internat</strong> accessibles après les EDN/ECOS. Ce tableau permet de sélectionner et de trier les spécialités en fonction :</P>
 			<ul style="margin-left:2.5%;">
 				<li>du type de spécialité : <strong>médicale</strong>, <strong>chirurgicale</strong> ou mixte</li>
 				<li>le lieu d’exercice : en <strong>hôpital</strong>, en <strong>libéral</strong> (en ville) ou mixte</li>
@@ -293,7 +258,7 @@
 				<li>un <strong>niveau de rémunération</strong> pour les spécialités s’exerçantes en libéral</li>
 				<li>et pour les spécialités médicales : <strong>spécialité d'organes</strong> ou <strong>spécialité transversale</strong>.</li>
 			</ul>
-			<p>La <a href="#specialite">liste des spécialités</a> à l'ECN utilisée par le simulateur est donnée en fin de page avec leurs acronymes.</p> 
+			<p>La <a href="#specialite">liste des spécialités</a> utilisées par ce simulateur est donnée en fin de page avec leurs acronymes.</p> 
 			<br/>
 			
 			<p style="margin-bottom:0;">Quand vous avez une petite idée de vos choix possibles, vous pouvez affiner votre simulation tout simplement :</p>
@@ -308,7 +273,7 @@
 
 	<div id="specialite" class="container ancre">
 		<br/><br/>
-		<h2 style="text-align:left" class="h4">Classification des spécialités à l'ECN pour le simulateur</h2>
+		<h2 style="text-align:left" class="h4">Classification des spécialités pour ce simulateur</h2>
 		<br/>		
 		<table id="table1" class="table-hover" style="width:100%;">
 		<caption style='caption-side:top;'>Cliquer <i class='far fa-mouse-pointer' aria-hidden='true'></i> sur une spécialité pour voir les CHU pour cette spécialité.</caption>
@@ -536,10 +501,12 @@
 		<h2 style="text-align:left" class="h4">A propos</h2>
 		<br/>
 		<div>
-			<p>Je suis le père d'un étudiant qui était en 6ème année de médecine (avant son internat). A force de parler avec lui de ses choix de spécialités et de CHU, j'ai écrit ce simulateur pour l'aider dans sa réflexion. Le but de ce simulateur est bien d'anticiper et de <strong>se projeter dans une spécialité et un CHU</strong> sans nécessairement connaître son rang à l'ECN, et sans attendre les simulations Céline. Et sans se censurer. Il faut à la fois rêver (voeux de rêve) et en même temps être réaliste (voeux réalistes et voeux de secours). Je souhaite que ce simulateur soit <strong>utile à d'autres étudiants en médecine</strong>. C'est pourquoi je le partage.</p>
-			<p>Les données du simulateur sont issues de CNG Céline pour les rangs des derniers admis, du guide de l'ISNI pour le détail des spécialités, du journal officiel pour le nombre de postes d'internes et de l'UNASA et de la CARMF pour les revenus des spécialités en libéral.</p> 
-			<p>Ce simulateur ne décrit pas les spécialités ni les CHU. Vous pouvez vous référer au guide ISNI pour cela. Ce guide est consultable en cliquant sur le lien ci-dessous :</p>
-			<p><a href="https://isni.fr/wp-content/uploads/2023/07/ISNI-GUIDE-2024-web.pdf" target="_blank" download="Futur-Interne-Guide-2024.pdf"><i class="fas fa-file-download"></i> Voir le guide des villes et des spécialités ISNI</a>
+			<p>Je suis le père d'un étudiant qui était en 6ème année de médecine (avant son internat). A force de parler avec lui de ses choix de spécialités et de CHU, j'ai écrit ce simulateur pour l'aider dans sa réflexion. Le but de ce simulateur est bien d'anticiper et de <strong>se projeter dans une spécialité et un CHU</strong> sans nécessairement connaître son rang aux EDN/ECOS, et sans attendre les simulations d'appariement. Et sans se censurer. Il faut à la fois rêver (voeux de rêve) et en même temps être réaliste (voeux réalistes et voeux de secours). Je souhaite que ce simulateur soit <strong>utile à d'autres étudiants en médecine</strong>. C'est pourquoi je le partage.</p>
+			<p>Les données du simulateur sont issues du CNG Santé pour les rangs des derniers admis (les rangs limites), du guide de l'ISNI pour le détail des spécialités, du journal officiel pour le nombre de postes d'internes et de l'UNASA et de la CARMF pour les revenus des spécialités en libéral.</p> 
+			<p>Ce simulateur ne décrit pas les spécialités ni les CHU. Vous pouvez vous référer au guide ISNI pour cela. Ce guide est consultable en cliquant sur le lien :  
+			   <a href="https://isni.fr/wp-content/uploads/2023/07/ISNI-GUIDE-2024-web.pdf" target="_blank" download="Futur-Interne-Guide-2024.pdf"><i class="fas fa-file-download"></i> Voir le guide des villes et des spécialités ISNI</a>
+			<p>Un grand merci à Léo qui m'a transmis les rangs limites 2024. Je vous conseille d'aller sur son site pour trouver plein de ressources sur les EDN/ECOS : <a href="https://picat.fr/blog.html" target="_blank">Blog Léo Picat<a> ainsi que sur son site de statistiques des simulations de 2024 : <a href="https://picat.shinyapps.io/matchingexplorer/" target="_blank">Matching Explorer</a></p>
+			<p><strong>Disclaimer</strong> : et malgré tout le soin apporté au développement de ce site, il peut y avoir des bugs résiduels. Les seules données officielles sont celles du CNG Santé.</p>  
 		</div>
 	</div>
 

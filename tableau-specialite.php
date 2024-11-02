@@ -12,12 +12,12 @@
 	?>
 
 	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-4NC0K56D5R"></script>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=ID-GOOGLE"></script>
 	<script>
 	  window.dataLayer = window.dataLayer || [];
 	  function gtag(){dataLayer.push(arguments);}
 	  gtag('js', new Date());
-	  gtag('config', 'G-4NC0K56D5R');
+	  gtag('config', 'ID-GOOGLE');
 	</script>
 
     <title>tableau des spécialités correspondantes aux critères saisis</title>
@@ -166,31 +166,6 @@
 		// passage au mode exception pour les erreurs
 		$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-//  A ACTIVER PENDANT LA PHASE DE CHOIX DE POSTE
-		// requête pour afficher la date de mise à jour des données 2023
-		$date = 0;
-		$heure = 0;
-// 		if ($reference == "2023") {
-// 			$sql = "
-// 				SELECT
-// 						DateMiseAJour,
-// 						HeureMiseAJour
-// 					FROM MiseAJour
-// 					WHERE Id = 0;";
-// 			if ($debug) echo "SQL = " . $sql ."<br/>";
-// 			try {
-// 				$result = $db->query($sql);
-// 				while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-// 					extract($row);
-// 					$date = $DateMiseAJour;
-// 					$heure = $HeureMiseAJour;
-// 				}
-// 			}
-// 			catch(PDOException $erreur)	{
-// 				echo "Erreur SELECT MiseAjour : " . $erreur->getMessage();
-// 			}
-//  	}
-
 		// préparation de la clause where pour sélectionner les spécialités en fonction des critères
 		$where = " WHERE Type <> ''";
 
@@ -206,8 +181,18 @@
 			}
 		}
 
+		$libelleCesp = "CESP2024";					// les postes et cesp sont absents en base pour les années avant 2020 (on prend ceux de 2024 par défaut)
+		if ($reference == "2023") {
+			$libelleCesp = "CESP2023";
+		} elseif ($reference == "2022") {
+			$libelleCesp = "CESP2022";
+		} elseif ($reference == "2021") {
+			$libelleCesp = "CESP2021";
+		} elseif ($reference == "2020") {
+			$libelleCesp = "CESP2020";
+		}
 		if ($cesp == "on") {
-			$where = $where . " AND Rang.CESP2024 <> '0' AND Rang.CESP2024 <> ''";
+			$where = $where . " AND Rang." . $libelleCesp . " <> '0' AND Rang." . $libelleCesp . " <> ''";
 		}
 
 		if (($rang <> "") and ($rang > 0) and ($rang <> "rangIndifferent")) {
@@ -231,32 +216,26 @@
 		}
 
 		// préparation de la requête pour afficher les spécialités
-// 		$sql = "
-// 			SELECT
-// 					CodeSpecialite,
-// 					Specialite,
-// 					Poste2021,
-// 					Poste2020,
-// 					CESP2021,
-// 					CESP2020,
-// 					Dernier2020,
-// 					CHUDernier2020,
-// 					Dernier2019,
-// 					CHUDernier2019,
-// 					Dernier2018,
-// 					CHUDernier2018,
-// 					Dernier2017,
-// 					CHUDernier2017,
-// 					Benefice,
-// 					Type,
-// 					Nature,
-// 					Lieu,
-// 					DureeInternat
-// 				FROM Specialite"
-// 				. $where;
+
+		$libellePoste = "Poste2024";
+		$libelleCesp = "CESP2024";			// avant 2020 le nombre de postes et de CESP n'est pas en base (on prend 2024 par défaut)
+		if ($reference == 2023) {
+			$libellePoste = "Poste2023";
+			$libelleCesp = "CESP2023";
+		} elseif ($reference == 2022) {
+			$libellePoste = "Poste2022";
+			$libelleCesp = "CESP2022";
+		} elseif ($reference == 2021) {
+			$libellePoste = "Poste2021";
+			$libelleCesp = "CESP2021";
+		} elseif ($reference == 2020) {
+			$libellePoste = "Poste2020";
+			$libelleCesp = "CESP2020";
+		}
+		
 		$sql = "SELECT	Rang.CodeSpecialite as CodeSpecialite,
-						sum(Rang.Poste2024) as Poste2024,
-						sum(Rang.CESP2024) as CESP2024
+						sum(Rang." . $libellePoste . ") as Poste,
+						sum(Rang." . $libelleCesp . ") as CESP
 				FROM `Specialite` inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $where . " GROUP BY Rang.CodeSpecialite;";
 
 		if ($debug) echo "SQL = " . $sql ."<br/>";
@@ -268,8 +247,8 @@
 			while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 				extract($row);
 				$listeSpecialite[] = $CodeSpecialite;
-				$listePoste[] = $Poste2024;
-				$listeCESP[] = $CESP2024;
+				$listePoste[] = $Poste;
+				$listeCESP[] = $CESP;
 			}
 		}
 		catch(PDOException $erreur)	{
@@ -288,12 +267,11 @@
  		// tableau
 		echo "<table class='table-hover table-bordered' style='width:100%;'>";
 		echo "<thead><tr>";
-// A ACTIVER PENDANT LA PHASE DE CHOIX DE POSTE
-//  		if ($reference == "2023") {
-//  			echo "<th>Rang dernier " . $reference . "<br/><small>" . $date . " à " . $heure . "</small></th>";
-//  		} else {
+		if ($reference == 2024) {
+			echo "<th>Rang dernier 2024<br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Cliquer sur une <strong>spécialité</strong> dans l&apos;entête du tableau pour voir le détail des CHU pour cette spécialité.<br>Pour 2024 il s&apos;agit du rang limite du 1er tour d&apos;appariement du 13 septembre 2024.'></i></th>";
+		} else {
 			echo "<th>Rang dernier " . $reference . "<br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Cliquer sur une <strong>spécialité</strong> dans l&apos;entête du tableau pour voir le détail des CHU pour cette spécialité.'></i></th>";
-//		}
+		}
 		$i = 0;
 		foreach ($listeSpecialite as $specialite) {
 			$libelleSpecialite = getLibelleSpecialite($specialite);
@@ -302,7 +280,12 @@
 			} else {
 				$libelleCESP = $listeCESP[$i];
 			}
-			$tooltip = " data-toggle='tooltip' data-html='true' title='" . $libelleSpecialite . "<hr>poste <small>en 2024</small> : " . $listePoste[$i] . "<br/>CESP <small>en 2024</small> : " . $libelleCESP . "' ";
+			if ($reference < 2020) {
+				$libelle = "2024";
+			} else {	
+				$libelle = $reference;
+			}
+			$tooltip = " data-toggle='tooltip' data-html='true' title='" . $libelleSpecialite . "<hr>poste <small>en " . $libelle . "</small> : " . $listePoste[$i] . "<br/>CESP <small>en " . $libelle . "</small> : " . $libelleCESP . "' ";
 			$href = "onclick='zoom(&apos;" . $specialite . "&apos;)' ";
 			echo "<th " . $tooltip . $href . " >&nbsp;" . $specialite . "&nbsp;</th>";
 			$i += 1;
@@ -317,6 +300,7 @@
 			$sql = "SELECT
 						Rang.CodeSpecialite,
 						Rang.CHU,
+						Rang.Dernier2024,
 						Rang.Dernier2023,
 						Rang.Dernier2022,
 						Rang.Dernier2021,
@@ -348,23 +332,39 @@
 					$tableDernier[$j][0] = $CHU; 
 					$tablePoste[$j][0] = $CHU;
 					$tableCESP[$j][0] = $CHU; 
-					if ($reference == "2023") {
+					if ($reference == "2024") {
+						$tableDernier[$j][$i] = $Dernier2024;
+						$tablePoste[$j][$i] = $Poste2024;
+						$tableCESP[$j][$i] = $CESP2024;
+					} elseif ($reference == "2023") {
 						$tableDernier[$j][$i] = $Dernier2023;
+						$tablePoste[$j][$i] = $Poste2023;
+						$tableCESP[$j][$i] = $CESP2023;
 					} elseif ($reference == "2022") {
 						$tableDernier[$j][$i] = $Dernier2022;
+						$tablePoste[$j][$i] = $Poste2022;
+						$tableCESP[$j][$i] = $CESP2022;
 					} elseif ($reference == "2021") {
 						$tableDernier[$j][$i] = $Dernier2021;
+						$tablePoste[$j][$i] = $Poste2021;
+						$tableCESP[$j][$i] = $CESP2021;
 					} elseif ($reference == "2020") {
 						$tableDernier[$j][$i] = $Dernier2020;
+						$tablePoste[$j][$i] = $Poste2020;
+						$tableCESP[$j][$i] = $CESP2020;
 					} elseif ($reference == "2019") {
 						$tableDernier[$j][$i] = $Dernier2019;
+						$tablePoste[$j][$i] = $Poste2024;
+						$tableCESP[$j][$i] = $CESP2024;
 					} elseif ($reference == "2018") {
 						$tableDernier[$j][$i] = $Dernier2018;
+						$tablePoste[$j][$i] = $Poste2024;
+						$tableCESP[$j][$i] = $CESP2024;
 					} elseif ($reference == "2017") {
 						$tableDernier[$j][$i] = $Dernier2017;
+						$tablePoste[$j][$i] = $Poste2024;
+						$tableCESP[$j][$i] = $CESP2024;
 					}
-					$tablePoste[$j][$i] = $Poste2024;
-					$tableCESP[$j][$i] = $CESP2024;
 					$tableUrl[$j][$i] = $URLCeline;
 					$j += 1;
 				}
@@ -433,7 +433,12 @@
 				
 				// cellule rang
 				} else {
-					$tooltip = " data-toggle='tooltip' data-html='true' data-trigger='hover focus' title='".$CHU[0]."<br/>".$libelleSpecialite."<hr/>Dernier <small>en ".$reference."</small> : ".$dernier."<br/>poste <small>en 2024</small> : ".$tablePoste[$j][$i]."<br/>CESP <small>en 2024</small> : ".$libelleCESP."' ";
+					if ($reference < 2020) {
+						$libelle = "2024";
+					} else {	
+						$libelle = $reference;
+					}
+					$tooltip = " data-toggle='tooltip' data-html='true' data-trigger='hover focus' title='".$CHU[0]."<br/>".$libelleSpecialite."<hr/>Dernier <small>en ".$reference."</small> : ".$dernier."<br/>poste <small>en " . $libelle . "</small> : ".$tablePoste[$j][$i]."<br/>CESP <small>en " . $libelle . "</small> : ".$libelleCESP."' ";
 					$zoom = "";
 // A ACTIVER PENDANT LA PHASE DE CHOIX DE POSTE
 //					$zoom =  " ondblclick='celine(&apos;".$tableUrl[$j][$i]."&apos;)' ";

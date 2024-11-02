@@ -13,7 +13,7 @@
  		}
 
 		// le nombre de poste CESP est-il compatible avec le critère Cesp saisi ?
-		if ($GLOBALS['cesp'] == "on") {
+		if ($GLOBALS['cesp'] == "on") and ($i >=0)) {
 			if (($GLOBALS['listeCesp'][$i] != null) and ($GLOBALS['listeCesp'][$i] > 0 )) {
 				$cespOk = true;
 			} else {
@@ -24,7 +24,7 @@
 		}
 
 		// le rang est-il compatible avec celui saisi en critère ?
-		if (($GLOBALS['rang'] != "rangIndifferent") and ($GLOBALS['rang'] != null) and ($GLOBALS['rang'] != 0)) {
+		if (($GLOBALS['rang'] != "rangIndifferent") and ($GLOBALS['rang'] != null) and ($GLOBALS['rang'] != 0) and ($i >=0)) {
 			if ($GLOBALS['listeDernier'][$i] >= $GLOBALS['rang']) {
 				$rangOk = true;
 			} else {

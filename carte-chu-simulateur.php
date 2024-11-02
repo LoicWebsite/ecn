@@ -13,12 +13,12 @@
 	?>
 
 	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-4NC0K56D5R"></script>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=ID-GOOGLE"></script>
 	<script>
 	  window.dataLayer = window.dataLayer || [];
 	  function gtag(){dataLayer.push(arguments);}
 	  gtag('js', new Date());
-	  gtag('config', 'G-4NC0K56D5R');
+	  gtag('config', 'ID-GOOGLE');
 	</script>
 
     <title>Carte des CHU</title>
@@ -114,12 +114,6 @@
 
 		// construction clause where		
 		$where = " WHERE Rang.CodeSpecialite = '" . $CodeSpecialite ."'";
-// 		if (($rang > "") and ($rang <> 0)) {
-// 			$where = $where . " AND Dernier" . $reference . " >='" . $rang . "'";
-// 		}
-// 		if ($cesp == "on") {
-// 			$where = $where . " AND CESP.CESP2024 > '0'";
-// 		}
 		$where = $where . ";";
 
 		// préparation de la requête pour la table Rang
@@ -127,6 +121,7 @@
 			SELECT
 					Rang.CodeSpecialite,
 					Rang.CHU,
+					Rang.Dernier2024,
 					Rang.Dernier2023,
 					Rang.Dernier2022,
 					Rang.Dernier2021,
@@ -162,7 +157,9 @@
 				$listeCHU[] = $CHU;
 				$listePoste[] = $Poste2024;
 				$listeCesp[] = $CESP2024;
-				if ($reference == "2023") {
+				if ($reference == "2024") {
+					$listeDernier[] = $Dernier2024;
+				} elseif ($reference == "2023") {
 					$listeDernier[] = $Dernier2023;
 				} elseif ($reference == "2022") {
 					$listeDernier[] = $Dernier2022;

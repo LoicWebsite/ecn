@@ -17,7 +17,7 @@
 	// conexion à mySQL serveur et la base ECN et passage au mode exception pour les erreurs
 	if ($debug) {echo  "Connexion mySQL serveur \n";}
 	try {
-		$db = new PDO("mysql:host=localhost;dbname=ecn", "ecn", "ecn");
+		$db = new PDO("mysql:host=localhost;dbname=ecn", "USER", "PASSE");
 	}
 	catch(PDOException $erreur)	{
 		die('Erreur : ' . $erreur->getMessage());

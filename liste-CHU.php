@@ -20,12 +20,12 @@
 	?>
 
 	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-4NC0K56D5R"></script>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=ID-GOOGLE"></script>
 	<script>
 	  window.dataLayer = window.dataLayer || [];
 	  function gtag(){dataLayer.push(arguments);}
 	  gtag('js', new Date());
-	  gtag('config', 'G-4NC0K56D5R');
+	  gtag('config', 'ID-GOOGLE');
 	</script>
 
     <title>Liste des CHU correspondants aux critères saisis</title>
@@ -117,31 +117,6 @@
 		// passage au mode exception pour les erreurs
 		$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-// A ACTIVER PENDANT LA PHASE DE CHOIX DE POSTE
-		// requête pour afficher la date de mise à jour des données 2023
-		$date = 0;
-		$heure = 0;
-// 		if ($reference == "2023") {
-// 			$sql = "
-// 				SELECT
-// 						DateMiseAJour,
-// 						HeureMiseAJour
-// 					FROM MiseAJour
-// 					WHERE Id = 0;";
-// 			if ($debug) echo "SQL = " . $sql ."<br/>";
-// 			try {
-// 				$result = $db->query($sql);
-// 				while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-// 					extract($row);
-// 					$date = $DateMiseAJour;
-// 					$heure = $HeureMiseAJour;
-// 				}
-// 			}
-// 			catch(PDOException $erreur)	{
-// 				echo "Erreur SELECT MiseAjour : " . $erreur->getMessage();
-// 			}
-// 		}
-		
 		// préparation de la clause where pour sélectionner les spécialités en fonction des critères
 		$where = " WHERE Type <> ''";
 
@@ -157,8 +132,18 @@
 			}
 		}
 
+		$libelleCesp = "CESP2024";					// les postes et cesp sont absents en base pour les années avant 2020 (on prend ceux de 2024 par défaut)
+		if ($reference == "2023") {
+			$libelleCesp = "CESP2023";
+		} elseif ($reference == "2022") {
+			$libelleCesp = "CESP2022";
+		} elseif ($reference == "2021") {
+			$libelleCesp = "CESP2021";
+		} elseif ($reference == "2020") {
+			$libelleCesp = "CESP2020";
+		}
 		if ($cesp == "on") {
-			$where = $where . " AND Rang.CESP2024 <> '0' AND Rang.CESP2024 <> ''";
+			$where = $where . " AND Rang." . $libelleCesp . " <> '0' AND Rang." . $libelleCesp . " <> ''";
 		}
 
 		if (($lieu <> "") and ($lieu <> "lieuIndifferent")) {
@@ -186,7 +171,17 @@
 		// requête pour compter le nombres de postes et de CESP
 		$nbPoste = 0;
 		$nbCESP = 0;
-		$sql = "SELECT Rang.CHU, SUM(Rang.Poste2024) AS totalPoste, SUM(Rang.CESP2024) AS totalCESP FROM Specialite inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $whereSpecialite . " GROUP BY Rang.CHU;";
+		$libellePoste = "Poste2024";					// les postes et cesp sont absents en base pour les années avant 2020 (on prend ceux de 2024 par défaut)
+		if ($reference == "2023") {
+			$libellePoste = "Poste2023";
+		} elseif ($reference == "2022") {
+			$libellePoste = "Poste2022";
+		} elseif ($reference == "2021") {
+			$libellePoste = "Poste2021";
+		} elseif ($reference == "2020") {
+			$libellePoste = "Poste2020";
+		}
+		$sql = "SELECT Rang.CHU, SUM(Rang." . $libellePoste . ") AS totalPoste, SUM(Rang." . $libelleCesp . ") AS totalCESP FROM Specialite inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $whereSpecialite . " GROUP BY Rang.CHU;";
 		if ($debug) echo "SQL POSTE = " . $sql ."<br/>";
 		try {
 			$result = $db->query($sql);
@@ -202,7 +197,8 @@
 
 		// préparation de la requête pour recherche les CHU correspondant aux spécialités
 		$montant = new NumberFormatter("fr-FR", NumberFormatter::DECIMAL);
-		$sql = "SELECT Rang.CHU, max(Rang.Dernier2023) as Dernier2023,
+		$sql = "SELECT Rang.CHU, max(Rang.Dernier2024) as Dernier2024,
+								 max(Rang.Dernier2023) as Dernier2023,
 								 max(Rang.Dernier2022) as Dernier2022,
 								 max(Rang.Dernier2021) as Dernier2021,
 								 max(Rang.Dernier2020) as Dernier2020,
@@ -210,7 +206,15 @@
 								 max(Rang.Dernier2018) as Dernier2018,
 								 max(Rang.Dernier2017) as Dernier2017,
 								 sum(Rang.Poste2024) as Poste2024,
-								 sum(Rang.CESP2024) as CESP2024
+								 sum(Rang.CESP2024) as CESP2024,
+								 sum(Rang.Poste2023) as Poste2023,
+								 sum(Rang.CESP2023) as CESP2023,
+								 sum(Rang.Poste2022) as Poste2022,
+								 sum(Rang.CESP2022) as CESP2022,
+								 sum(Rang.Poste2021) as Poste2021,
+								 sum(Rang.CESP2021) as CESP2021,
+								 sum(Rang.Poste2020) as Poste2020,
+								 sum(Rang.CESP2020) as CESP2020
 				FROM `Specialite` inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $whereSpecialite . " GROUP BY Rang.CHU;";
 		if ($debug) echo "SQL = " . $sql ."<br/>";
 
@@ -233,17 +237,18 @@
 			echo "<caption>Cliquer &nbsp;<i class='fa fa-mouse-pointer' aria-hidden='true'></i>&nbsp; sur un CHU pour voir ses spécialités.</caption>";
 			echo "<thead class='text-center'>";
 			echo "<tr><th style='width:50%'>" . $result->rowCount() ." CHU<br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Cliquer sur un CHU pour voir les spécialités pour ce CHU.'></i></th>";
-			echo "<th style='width:20%;'> ".$montant->format($nbPoste)." postes 2024 <br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le nombre de postes 2024 est issu de l&apos;arrêté publié par le Journal Officiel du 9 juillet 2024. Ce nombre de postes exclut les CESP (pour mémoire : 285 en 2024 dont 258 en Médecine Générale).'></i></th>";
-			$libelleReference = "2023";
-// A ACTIVER PENDANT LA PHASE DE CHOIX DE POSTE
-// 			if ($reference == "2023") {
-// 				$libelleReference = $reference . "<br/><small>" . $date . " à " . $heure . "</small>";
-// 				echo "<th style='width:20%'> Rang dernier " . $libelleReference . "<br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le rang du dernier admis en " . $reference . " est issu de la simulation CELINE et est actualisé une fois par heure. <br/>Un rang à zéro signifie qu&apos;il n&apos;y avait pas de poste cette année là dans ce CHU pour cette spécialité, ou pas encore de voeux exprimé.'></i></th>";
-//			} else {
+			if ($reference < 2020) {
+				$libelleReference = "2024";
+			} else {	
 				$libelleReference = $reference;
-				echo "<th style='width:20%'> Rang dernier " . $libelleReference . "<br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le rang du dernier admis en " . $reference . " est issu du fichier &apos;Rangs limites " . $reference . "&apos; du site CNG Santé.'></i></th>";
-//			}
-			echo "<th style='width:10%;'> ".$montant->format($nbCESP)." CESP 2024 <br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le nombre de postes 2024 réservés aux CESP est issu de l&apos;arrêté publié par le Journal Officiel du 9 juillet 2024.<br/>Une cellule vide signifie qu&apos;il n&apos;y a pas de poste CESP pour cette spécialité.'></i></th>";
+			}
+			echo "<th style='width:20%;'> ".$montant->format($nbPoste)." postes " . $libelleReference . "<br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le nombre de postes est issu de l&apos;arrêté publié par le Journal Officiel. Ce nombre de postes exclut les CESP.'></i></th>";
+			if ($reference == 2024)	{
+				echo "<th style='width:20%'> Rang dernier " . $reference . "<br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le rang du dernier admis en 2024 est le rang limite issu du 1er tour de l&apos;appariement du 13 septembre 2024.'></i></th>";
+			} else {
+				echo "<th style='width:20%'> Rang dernier " . $reference . "<br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le rang du dernier admis en " . $reference . " est le rang limite issu du site CNG Santé.'></i></th>";
+			}
+			echo "<th style='width:10%;'> ".$montant->format($nbCESP)." CESP " . $libelleReference . " <br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le nombre de postes réservés aux CESP est issu de l&apos;arrêté publié par le Journal Officiel.<br/>Une cellule vide signifie qu&apos;il n&apos;y a pas de poste CESP pour cette spécialité.'></i></th>";
 			echo "</tr></thead>";
 			echo "<tbody>";
 
@@ -252,27 +257,47 @@
 				extract($row);
 				echo "<tr onclick='zoom(&apos;".$CHU."&apos;)'>";
 				echo "<td class='text-center'>" . $CHU . "</td>";
-				$poste = $montant->format($Poste2024);
-				echo "<td class='text-center'>" . $poste . "</td>";
 				$dernier = "0";
-				if ($reference == 2023) {
+				$poste = "0";
+				$libelleCesp = "0";
+				if ($reference == 2024) {
+					$dernier = $montant->format($Dernier2024);
+					$poste = $Poste2024;
+					$libelleCesp = $CESP2024;
+				} elseif ($reference == 2023) {
 					$dernier = $montant->format($Dernier2023);
+					$poste = $Poste2023;
+					$libelleCesp = $CESP2023;
 				} elseif ($reference == 2022) {
 					$dernier = $montant->format($Dernier2022);
+					$poste = $Poste2022;
+					$libelleCesp = $CESP2022;
 				} elseif ($reference == 2021) {
 					$dernier = $montant->format($Dernier2021);
+					$poste = $Poste2021;
+					$libelleCesp = $CESP2021;
 				} elseif ($reference == 2020) {
 					$dernier = $montant->format($Dernier2020);
+					$poste = $Poste2020;
+					$libelleCesp = $CESP2020;
 				} elseif ($reference == 2019) {
 					$dernier = $montant->format($Dernier2019);
+					$poste = $Poste2024;
+					$libelleCesp = $CESP2024;
 				} elseif ($reference == 2018) {
 					$dernier = $montant->format($Dernier2018);
+					$poste = $Poste2024;
+					$libelleCesp = $CESP2024;
 				} elseif ($reference == 2017) {
 					$dernier = $montant->format($Dernier2017);
+					$poste = $Poste2024;
+					$libelleCesp = $CESP2024;
 				}
+				$poste = $montant->format($poste);
+				echo "<td class='text-center'>" . $poste . "</td>";
 				echo "<td class='text-center'>" . $dernier . "</td>";
-				if ($CESP2024 <> 0) {
-					$nbCesp = $montant->format($CESP2024);
+				if ($libelleCesp <> 0) {
+					$nbCesp = $montant->format($libelleCesp);
 				} else {
 					$nbCesp = '';
 				}

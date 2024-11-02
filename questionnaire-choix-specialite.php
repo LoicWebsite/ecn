@@ -12,12 +12,12 @@
 	?>
 
 	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-4NC0K56D5R"></script>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=ID-GOOGLE"></script>
 	<script>
 	  window.dataLayer = window.dataLayer || [];
 	  function gtag(){dataLayer.push(arguments);}
 	  gtag('js', new Date());
-	  gtag('config', 'G-4NC0K56D5R');
+	  gtag('config', 'ID-GOOGLE');
 	</script>
     
     <title>Saisie des critères de sélection des spécialités</title>
@@ -80,7 +80,11 @@
 					</div>
 					<div class="col">
 						<div class="custom-control custom-radio custom-control-inline">
-							<input type="radio" id="an2023" name="reference" class="custom-control-input" value="2023" checked>
+							<input type="radio" id="an2024" name="reference" class="custom-control-input" value="2024" checked>
+							<label class="custom-control-label" for="an2024">2024</label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input type="radio" id="an2023" name="reference" class="custom-control-input" value="2023">
 							<label class="custom-control-label" for="an2023">2023</label>
 						</div>
 						<div class="custom-control custom-radio custom-control-inline">
@@ -109,10 +113,7 @@
 						</div>
 					</div>
 					<div class="col-md-1">
-<!-- 
-						<i class="fas fa-info-circle" data-toggle="tooltip" data-html="true" title="L'année de référence sert à afficher le rang du dernier de cette année là.<br/>Elle sert également à filtrer les spécialités et CHU accessibles lorsque le &apos;Rang ECN&apos; est saisi. <br/>Pour 2023 c'est le rang limite de la simulation CELINE qui sera affiché (il est mis à jour toutes les heures sur ce site)."></i>
- -->
-						<i class="fas fa-info-circle" data-toggle="tooltip" data-html="true" title="L'année de référence sert à afficher le rang du dernier de cette année là.<br/>Elle sert également à filtrer les spécialités et CHU accessibles lorsque le &apos;Rang ECN&apos; est saisi."></i>
+						<i class="fas fa-info-circle" data-toggle="tooltip" data-html="true" title="L'année de référence sert à afficher le rang du dernier de cette année là (c'est le rang limite publié par le CNG Santé).<br/>L'année sert également à filtrer les spécialités et CHU accessibles lorsque le &apos;Rang ECN&apos; est saisi."></i>
 					</div>
 				</div>
 
@@ -153,7 +154,7 @@
 						</div>
 					</div>
 					<div class="col-md-1">
-						<i class="fas fa-info-circle" data-toggle="tooltip" data-html="true" title="En sélectionnant ce critère, les spécialités affichées seront uniquement celles ayant des postes CESP (Contrat d&apos;Engagement de Service Public) existants en 2024 ."></i>
+						<i class="fas fa-info-circle" data-toggle="tooltip" data-html="true" title="En sélectionnant ce critère, les spécialités affichées seront uniquement celles ayant des postes CESP (Contrat d&apos;Engagement de Service Public) existants pour l'année de référence sélectionnée (pour les années à partir de 2020)."></i>
 					</div>
 				</div>
 
@@ -253,7 +254,7 @@
 	<!-- A ACTIVER PENDANT LA PHASE DE CHOIX DE POSTE -->
 				<div class="text-center">
 					<em>Saisissez le rang ECN visé ou obtenu pour mieux voir les <strong>rangs limites</strong> accessibles</em>
-					&nbsp;&nbsp;<i class="fas fa-info-circle" data-toggle="tooltip" data-html="true" title="Les rangs limites 2023 sont issus des simulations et affectations CELINE et sont actualisées toutes les 5 minutes."></i>
+					&nbsp;&nbsp;<i class="fas fa-info-circle" data-toggle="tooltip" data-html="true" title="Les rangs limites 2023 sont issus des simulations et affectations CELINE."></i>
 					<br/><button name="rangLimite" type="submit" class="btn btn-primary mt-1 mb-5" value="rangLimite">Voir la simulation 2023</button>
 				</div>
 	<!-- FIN CODE A ACTIVER --> 

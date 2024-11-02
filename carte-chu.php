@@ -12,12 +12,12 @@
 	?>
 
 	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-4NC0K56D5R"></script>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=ID-GOOGLE"></script>
 	<script>
 	  window.dataLayer = window.dataLayer || [];
 	  function gtag(){dataLayer.push(arguments);}
 	  gtag('js', new Date());
-	  gtag('config', 'G-4NC0K56D5R');
+	  gtag('config', 'ID-GOOGLE');
 	</script>
 
     <title>Carte des CHU</title>
@@ -121,11 +121,21 @@
 
 		// construction clause where		
 		$where = " WHERE Rang.CodeSpecialite = '" . $CodeSpecialite ."'";
-		if (($rang > "") and ($rang <> 0)) {
+		if (($rang > "") and ($rang != 0) and ($rang != "rangIndifferent")) {
 			$where = $where . " AND Dernier" . $reference . " >='" . $rang . "'";
 		}
+		$libelleCesp = "CESP2024";
+		if ($reference == "2023") {
+			$libelleCesp = "CESP2023";
+		} elseif ($reference == "2022") {
+			$libelleCesp = "CESP2022";
+		} elseif ($reference == "2021") {
+			$libelleCesp = "CESP2021";
+		} elseif ($reference == "2020") {
+			$libelleCesp = "CESP2020";
+		}
 		if ($cesp == "on") {
-			$where = $where . " AND CESP.CESP2024 > '0'";
+			$where = $where . " AND Rang." . $libelleCesp . " > '0'";
 		}
 		$where = $where . ";";
 
@@ -134,6 +144,7 @@
 			SELECT
 					Rang.CodeSpecialite,
 					Rang.CHU,
+					Rang.Dernier2024,
 					Rang.Dernier2023,
 					Rang.Dernier2022,
 					Rang.Dernier2021,
@@ -169,14 +180,34 @@
 				$listeCHU[] = $CHU;
 				$listePoste[] = $Poste2024;
 				$listeCesp[] = $CESP2024;
-				if ($reference == "2023") {
+				$poste = $Poste2024;
+				$libelleCesp = $CESP2024;
+				if ($reference == "2024") {
+					$listeDernier[] = $Dernier2024;
+				} elseif ($reference == "2023") {
 					$listeDernier[] = $Dernier2023;
+					$listePoste[] = $Poste2023;
+					$listeCesp[] = $CESP2023;
+					$poste = $Poste2023;
+					$libelleCesp = $CESP2023;
 				} elseif ($reference == "2022") {
 					$listeDernier[] = $Dernier2022;
+					$listePoste[] = $Poste2022;
+					$listeCesp[] = $CESP2022;
+					$poste = $Poste2022;
+					$libelleCesp = $CESP2022;
 				} elseif ($reference == "2021") {
 					$listeDernier[] = $Dernier2021;
+					$listePoste[] = $Poste2021;
+					$listeCesp[] = $CESP2021;
+					$poste = $Poste2021;
+					$libelleCesp = $CESP2021;
 				} elseif ($reference == "2020") {
 					$listeDernier[] = $Dernier2020;
+					$listePoste[] = $Poste2020;
+					$listeCesp[] = $CESP2020;
+					$poste = $Poste2020;
+					$libelleCesp = $CESP2020;
 				} elseif ($reference == "2019") {
 					$listeDernier[] = $Dernier2019;
 				} elseif ($reference == "2018") {
@@ -190,7 +221,7 @@
 	
 				// comptage des chu accessibles selon le critère cesp et rang s'il y a au moins 1 poste
 				if ($cesp == "on") {
-					if (($CESP2024 != null) and ($CESP2024 > 0 )) {
+					if (($libelleCesp != null) and ($libelleCesp > 0 )) {
 						$cespOk = true;
 					} else {
 						$cespOk = false;
@@ -209,7 +240,7 @@
 					$rangOk = true;
 				}
 
-				if (($rangOk) and ($cespOk) and ($Poste2024 > 0)) {
+				if (($rangOk) and ($cespOk) and ($poste > 0)) {
 					$nbCHU += 1;
 				}
 
