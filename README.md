@@ -13,6 +13,6 @@ La base de données est une base mySQL. Dans le repertoire `mySQL` il y a un fic
 Par défaut le nom de la base est `ecn`. Dans chaque page qui se connecte à la base de données, il faut remplacer `USER` et `PASSE` par l'utilisateur et son mot de passe de votre base de données.
 ### Mise à jour des données
 Les données sont à jour dans le répertoire mySQL. Ce sont des données au format SQL (insert). Le schéma de la base est également dans ce répertoire (create table).
-Je mets à jour les données une fois par an dans ce répertoire à chaque résultat du concours EDN/ECOS, plus précisément à la fin de l'appariement début octobre (voir la plateforme du CNG Santé ppour plsu de détail).
+Je mets à jour les données une fois par an dans ce répertoire à chaque résultat du concours EDN/ECOS, plus précisément à la fin de l'appariement début octobre (voir la plateforme du CNG Santé ppour plus de détail).
 ### Google Analytics
 Il faut changer dans chaque page l'identifiant Google analytics `ID GOOGLE` si vous voulez conserver les statistiques des pages. Sinon il faut enlever le code correspondant qui se trouve en début de chaque page.
