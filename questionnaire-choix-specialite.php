@@ -12,12 +12,12 @@
 	?>
 
 	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=ID-GOOGLE"></script>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=GOOGLE-ID"></script>
 	<script>
 	  window.dataLayer = window.dataLayer || [];
 	  function gtag(){dataLayer.push(arguments);}
 	  gtag('js', new Date());
-	  gtag('config', 'ID-GOOGLE');
+	  gtag('config', 'G-4NC0K56D5R');
 	</script>
     
     <title>Saisie des critères de sélection des spécialités</title>
@@ -252,11 +252,13 @@
 					</div>
 				</div>
 	<!-- A ACTIVER PENDANT LA PHASE DE CHOIX DE POSTE -->
+<!-- 
 				<div class="text-center">
 					<em>Saisissez le rang ECN visé ou obtenu pour mieux voir les <strong>rangs limites</strong> accessibles</em>
 					&nbsp;&nbsp;<i class="fas fa-info-circle" data-toggle="tooltip" data-html="true" title="Les rangs limites 2023 sont issus des simulations et affectations CELINE."></i>
 					<br/><button name="rangLimite" type="submit" class="btn btn-primary mt-1 mb-5" value="rangLimite">Voir la simulation 2023</button>
 				</div>
+ -->
 	<!-- FIN CODE A ACTIVER --> 
 				<div class="text-center">
 					<em>Effacer tous les critères pour recommencer une nouvelle recherche</em>
