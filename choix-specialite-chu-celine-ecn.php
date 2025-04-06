@@ -18,7 +18,7 @@
 	  function gtag(){dataLayer.push(arguments);}
 	  gtag('js', new Date());
 
-	  gtag('config', 'ID-GOOGLE');
+	  gtag('config', 'G-4NC0K56D5R');
 	</script>
     
     <title>Simulateur Excel pour choisir sa spécialité et son CHU à l'ECN</title>
@@ -46,10 +46,6 @@
   </head>
   <body id="hautdepage" data-spy="scroll" data-target="#navigation" data-offset="0">
 	
-	<!-- plugin Facebook -->
-	<div id="fb-root"></div>
-	<script async defer crossorigin="anonymous" src="https://connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v11.0&appId=1153267458138244&autoLogAppEvents=1" nonce="8MXlWEXo"></script>
-
 	<nav id="navigation" class="navbar fixed-top navbar-expand-lg navbar-dark bg-secondary">
 	  <a class="navbar-brand" href="#"><img src="image/stethoscopeBlanc.svg" width="30" height="30" alt="logo stéthoscope blanc pour choix de spécialités d'internat'" loading="lazy"> &nbsp;Simulateur spécialités</a>
 	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menu" aria-controls="menu" aria-expanded="false" aria-label="Toggle navigation">
@@ -96,7 +92,7 @@
 	<div id="actualite" class="container ancre">
 		<br/>
 		<p class="text-center">
-			<mark style="color:#808080;"><strong>Actualités</strong> : le <a href="questionnaire-choix-specialite.php" title="aide au choix de spécialités et CHU en ligne">simulateur en ligne</a> affiche désormais le rang du dernier admis issu du <strong>1er tour de l'appariement</strong> du 13 septembre 2024.
+			<mark style="color:#808080;"><strong>Actualités</strong> : toutes les versions du questionnaire (<a href="questionnaire-choix-specialite.php" title="aide au choix de spécialités et CHU en ligne">simulateur en ligne</a>, Excel et Open Office) intègrent désormais le rang du dernier admis par CHU et par Spécialité de l'EDN ECOS 2024.
 			</mark>
 		</p>
 	</div>
@@ -131,6 +127,10 @@
 		<p class="text-center h5"><a href="questionnaire-choix-specialite.php" title="aide au choix de spécialités et CHU en ligne"><i class="fas fa-mobile-alt"></i> &nbsp; &nbsp; Simulateur en ligne</a></p>
 		<p>Une version simplifiée est disponible <strong>en ligne</strong> (pour ceux qui n'ont ni Excel ni OpenOffice). Elle permet d'explorer rapidement les différentes spécialités et de connaître pour chacune d'entre elles le rang du dernier admis pour chaque CHU ainsi que le nombre de postes. Ce simulateur en ligne est particulièrement adapté aux <strong>smartphones</strong>.</p>
 		<br/>
+	</div>
+
+  	<div id="paiement" class="container">
+		<p><strong>Le simulateur est gratuit</strong>, ne comporte pas de publicité et ne collecte aucune donnée. Ce n’est pas une démarche commerciale. Je mets en ligne ce simulateur simplement pour aider les étudiants à réfléchir sur leur choix de spécialités.</p>
 	</div>
 
 	<div id="apercu" class="container ancre">
@@ -518,14 +518,6 @@
 			<p>
 				N'hésitez pas à me contacter par mail ou Facebook pour me faire part de vos remarques, suggestions, demandes d'évolution ou bug rencontré. Je m'efforcerai de traiter votre demande dans la mesure de mon temps disponible. Je vous remercie par avance.<br/>
 			</p>
-			<p>
-				<a href="mailto:contact@loic.website?subject=Demande&nbsp;d&apos;information"><i class="fa fa-envelope">&nbsp;&nbsp;</i>Contactez-moi par email</a>
-			</p>
-			<div class="fb-page" data-href="https://www.facebook.com/SpecialitesECN/" data-tabs="timeline" data-width="" data-height="70" data-small-header="true" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true">
-				<blockquote cite="https://www.facebook.com/SpecialitesECN/" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/SpecialitesECN/">
-					Choix de spécialités d&#039;internat</a>
-				</blockquote>
-			</div>
 		</div>
 	</div>
 
