@@ -113,7 +113,7 @@
 						</div>
 					</div>
 					<div class="col-md-1">
-						<i class="fas fa-info-circle" data-toggle="tooltip" data-html="true" title="L'année de référence sert à afficher le rang du dernier de cette année là (c'est le rang limite publié par le CNG Santé).<br/>L'année sert également à filtrer les spécialités et CHU accessibles lorsque le &apos;Rang ECN&apos; est saisi."></i>
+						<i class="fas fa-info-circle" data-toggle="tooltip" data-html="true" title="L'année de référence sert à afficher le rang du dernier de cette année là (c'est le rang limite publié par le CNG Santé). Elle correspond à l'année de publication au Journal Officiel.<br/>L'année sert également à filtrer les spécialités et CHU accessibles lorsque le &apos;Rang ECN&apos; est saisi."></i>
 					</div>
 				</div>
 
