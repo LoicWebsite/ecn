@@ -14,16 +14,12 @@
 	}
 	if ($debug) {echo "********** début de script *********\n";}
 
-	// conexion à mySQL serveur et la base ECN et passage au mode exception pour les erreurs
-	if ($debug) {echo  "Connexion mySQL serveur \n";}
-	try {
-		$db = new PDO("mysql:host=localhost;dbname=ecn", "USER", "PASSE");
-	}
-	catch(PDOException $erreur)	{
-		die('Erreur : ' . $erreur->getMessage());
-	}
-	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	// fonctions communes
+	include "php/fonctionECN.php";
 		
+	// ouverture de la base de données
+	$db = openDatabase();
+
 	// préparation de la requête pour afficher les spécialités
 	$sql = "SELECT CodeSpecialite, CHU, CESP FROM CESP";
 

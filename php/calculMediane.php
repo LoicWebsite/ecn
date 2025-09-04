@@ -1,7 +1,9 @@
 <?php
-// Connexion à la base de données MySQL
-$pdo = new PDO("mysql:host=localhost;dbname=ecn", "USER", "PASSWORD");
-
+// fonctions communes
+include "php/fonctionECN.php";
+	
+// ouverture de la base de données
+$db = openDatabase();
 
 // ***** SPECIALITE ****
 //

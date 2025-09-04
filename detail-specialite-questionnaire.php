@@ -9,16 +9,10 @@
 	<?php
 		// favicons générés par https://realfavicongenerator.net
 		include "php/favicon.php";
+	
+        // Google Analytics
+		include "php/GoogleAnalytics.php";
 	?>
-
-	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=ID-GOOGLE"></script>
-	<script>
-	  window.dataLayer = window.dataLayer || [];
-	  function gtag(){dataLayer.push(arguments);}
-	  gtag('js', new Date());
-	  gtag('config', 'ID-GOOGLE');
-	</script>
     
 	<title>Description de la spécialité sélectionnée</title>
 
@@ -46,7 +40,7 @@
 
 	<?php
 		include "php/menu-questionnaire.php";
-		include "php/controleParametre.php";
+		require_once "php/controleParametre.php";
 	?>
 	
 	<!-- chemin de navigation -->
@@ -54,7 +48,7 @@
 		<div class="row" style='margin-top:80px;'>
 			<div class="col-sm" aria-label="breadcrumb">
 			  <ol class="breadcrumb">
-				<li class="breadcrumb-item"><a href="choix-specialite-chu-celine-ecn.php"><i class="fas fa-home"></i></a></li>
+				<li class="breadcrumb-item"><a href="choix-specialite-chu-celine-ecn.php"><i class="bi bi-house-door-fill"></i></a></li>
 				<li class="breadcrumb-item"><a href="#" onclick="questionnaire()">Critère</a></li>
 				<?php 
 					if ($depuis == "tableau") {
@@ -68,8 +62,8 @@
 			</div>
 			<div class="col-sm">
 				<p style='padding:10px;'>
-					<button class="btn btn-secondary btn-sm" onclick="" title="Affichage des CHU en liste" disabled> en liste &nbsp; <i class="fa fa-list" aria-hidden="true"></i></button>
-					&nbsp;&nbsp;&nbsp;<button class="btn btn-primary btn-sm" onclick="carte()" title="Affichage des CHU sur une carte de France"> en carte &nbsp; <i class="fas fa-map-marked-alt" aria-hidden="true"></i></button>
+					<button class="btn btn-secondary btn-sm" onclick="" title="Affichage des CHU en liste" disabled> en liste &nbsp; <i class="bi bi-list-ul" aria-hidden="true"></i></button>
+					&nbsp;&nbsp;&nbsp;<button class="btn btn-primary btn-sm" onclick="carte()" title="Affichage des CHU sur une carte de France"> en carte &nbsp; <i class="bi bi-geo-alt-fill"></i></button>
 				</p>
 			</div>
 			<div class="col-xl">
@@ -123,7 +117,7 @@
 		// pour aller au détail format carte
 		function carte() {
 			<?php
-				echo "window.location.href='carte-chu.php?code=" . $code . "&rang=" . $rang . "&reference=" . $reference . "&type=" . $type . "&cesp=" . $cesp . "&lieu=" . $lieu . "&internat=" . $internat . "&benefice=" . $benefice . "&depuis=" . $depuis . "';";
+				echo "window.location.href='carte-chu.php?page=poste&code=" . $code . "&rang=" . $rang . "&reference=" . $reference . "&type=" . $type . "&cesp=" . $cesp . "&lieu=" . $lieu . "&internat=" . $internat . "&benefice=" . $benefice . "&depuis=" . $depuis . "';";
 			?>
 		}
 

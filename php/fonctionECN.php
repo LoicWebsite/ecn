@@ -1,5 +1,19 @@
 <?php 
 
+// ouvre la base de données
+function openDatabase() {
+    static $db = null; // Pour éviter de recréer la connexion à chaque appel
+    if ($db === null) {
+        try {
+            $db = new PDO("mysql:host=localhost;dbname=ecn;charset=utf8", "USER", "PASSWORD");
+            $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch(PDOException $erreur) {
+            die('Erreur connexion base : ' . $erreur->getMessage());
+        }
+    }
+    return $db;
+}
+
 // retourne le libellé du rang
 function getLibelleRang ($rang) {
 	$libelle = "indifférent";
@@ -12,7 +26,7 @@ function getLibelleRang ($rang) {
 
 // retourne le libellé de l'année de référence
 function getLibelleReference ($reference) {
-	$libelle = "2022";
+	$libelle = "2024";
 	if (($reference <> "") and ($reference <> 0)) {
 		$libelle = $reference;
 	}
@@ -140,5 +154,16 @@ function getLibelleSpecialite ($codeSpecialite) {
 	}
 	return $libelle;
 }
+
+// Convertit une chaîne en UTF-8 si nécessaire (fonctionnon utilisée)
+// function toUtf8($string) {
+//     if (is_string($string)) {
+//         if (!mb_detect_encoding($string, 'UTF-8', true)) {
+//             return mb_convert_encoding($string, 'UTF-8', 'ISO-8859-1');
+//         }
+//         return $string;
+//     }
+//     return $string; // Retourne tel quel si ce n'est pas une chaîne
+// }
 
 ?>

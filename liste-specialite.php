@@ -15,6 +15,14 @@
 			$location="liste-CHU.php?rang=".$rang."&reference=".$reference."&cesp=".$cesp."&type=".$type."&lieu=".$lieu."&internat=".$internat."&benefice=".$benefice;
 			header("Location: $location");
 			exit;
+		} elseif (isset($_GET['poste'])) {
+			$location="tableau-poste.php?rang=".$rang."&reference=".$reference."&cesp=".$cesp."&type=".$type."&lieu=".$lieu."&internat=".$internat."&benefice=".$benefice;
+			header("Location: $location");
+			exit;
+		} elseif (isset($_GET['CESP'])) {
+			$location="tableau-cesp.php?rang=".$rang."&reference=".$reference."&cesp=".$cesp."&type=".$type."&lieu=".$lieu."&internat=".$internat."&benefice=".$benefice;
+			header("Location: $location");
+			exit;
 		}
 	?>
 
@@ -28,16 +36,10 @@
 	<?php
 		// favicons générés par https://realfavicongenerator.net
 		include "php/favicon.php";
+	
+        // Google Analytics
+		include "php/GoogleAnalytics.php";
 	?>
-
-	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=ID-GOOGLE"></script>
-	<script>
-	  window.dataLayer = window.dataLayer || [];
-	  function gtag(){dataLayer.push(arguments);}
-	  gtag('js', new Date());
-	  gtag('config', 'ID-GOOGLE');
-	</script>
 
     <title>Liste des spécialités correspondantes aux critères saisis</title>
 
@@ -74,15 +76,15 @@
 		<div class="row" style='margin-top:80px;'>
 			<div class="col-sm" aria-label="breadcrumb">
 			  <ol class="breadcrumb">
-				<li class="breadcrumb-item"><a href="choix-specialite-chu-celine-ecn.php"><i class="fas fa-home"></i></a></li>
+				<li class="breadcrumb-item"><a href="choix-specialite-chu-celine-ecn.php"><i class="bi bi-house-door-fill"></i></a></li>
 				<li class="breadcrumb-item"><a href="#" onclick="questionnaire()">Critère</a></li>
 				<li class="breadcrumb-item active" aria-current="page">Spécialité</li>
 			  </ol>
 			</div>
 			<div class="col-sm">
 				<p style='padding:10px;'>
-					<button class="btn btn-secondary btn-sm" onclick="" title="Affichage des spécialités en liste" disabled> en liste &nbsp; <i class="fa fa-list" aria-hidden="true"></i></button>
-					&nbsp;&nbsp;&nbsp;<button class="btn btn-primary btn-sm" onclick="tableau()" title="Affichage des spécialités en tableau"> en tableau &nbsp; <i class="fa fa-table" aria-hidden="true"></i></button>
+					<button class="btn btn-secondary btn-sm" onclick="" title="Affichage des spécialités en liste" disabled> en liste &nbsp; <i class="bi bi-list-ul"></i></button>
+					&nbsp;&nbsp;&nbsp;<button class="btn btn-primary btn-sm" onclick="tableau()" title="Affichage des spécialités en tableau"> en tableau &nbsp; <i class="bi bi-table"></i></button>
 				</p>
 			</div>
 			<div class="col-xl">
@@ -92,14 +94,17 @@
 
 	<div id="reponse" class="container">
     	<h1 class="h5" style="text-align:left; margin-top:20px;">
-    		<a class="h5" data-toggle="collapse" aria-expanded="false" aria-controls="critere" href="#critere"><i id="symbole" class="fa fa-plus-circle" aria-hidden="true"></i>&nbsp; Vos critères de choix...</a>
+    		<a class="h5" data-toggle="collapse" aria-expanded="false" aria-controls="critere" href="#critere"><i id="symbole" class="bi bi-plus-circle-fill"></i>&nbsp; Vos critères de choix...</a>
 		</h1>
 		
 	<?php
 
 		// fonctions communes
-		include "php/fonctionECN.php";
-	
+		require_once "php/fonctionECN.php";
+
+		// connexion à la base de données
+		$db = openDatabase();
+		
 		// affichage des critères
 		echo "<div id='critere' class='collapse'>";
 		echo "<div class='row'>";
@@ -120,18 +125,7 @@
 		echo "</div>";
 		echo "</div>";
 		echo "</div>\n";
-
-		// conexion à la base ecn (user = ecn)
-		try {
-			$db = new PDO("mysql:host=localhost;dbname=ecn;charset=utf8", "USER", "PASSE");
-		}
-		catch(PDOException $erreur)	{
-			die('Erreur connexion base : ' . $erreur->getMessage());
-		}
-
-		// passage au mode exception pour les erreurs
-		$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
+	
 		// préparation de la clause where pour sélectionner les spécialités en fonction des critères
 		$where = " WHERE Type <> ''";
 
@@ -261,32 +255,31 @@
 
 			// liste
 			echo "<table class='table-hover' style='width:100%;'>";
-			echo "<caption>Cliquer &nbsp;<i class='fa fa-mouse-pointer' aria-hidden='true'></i>&nbsp; sur une spécialité pour voir les CHU pour cette spécialité.</caption>";
+			echo "<caption>Cliquer &nbsp;<i class='bi bi-cursor-fill'></i>&nbsp; sur une spécialité pour voir les CHU pour cette spécialité.</caption>";
 			echo "<thead class='text-center'>";
-			echo "<tr><th colspan=2 style='width:50%'>" . $result->rowCount() ." spécialités d'internat<br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Cliquer sur une spécialité pour voir les CHU pour cette spécialité.'></i></th>";
+			echo "<tr><th colspan=2 style='width:50%'>" . $result->rowCount() ." spécialités d'internat<br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Cliquer sur une spécialité pour voir les CHU pour cette spécialité.'></i></th>";
 			if ($reference < 2020) {
 				$libelle = "2024";
 			} else {	
 				$libelle = $reference;
 			}
-			echo "<th style='width:20%;'> ".$montant->format($nbPoste)." postes " . $libelle . "<br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le nombre de postes est issu de l&apos;arrêté publié par le Journal Officiel. Ce nombre de postes exclut les CESP.<br/>L&apos;année correspond à l&apos;année de publication au Journal Officiel.'></i></th>";
-			if ($reference == 2024)	{
-				echo "<th style='width:20%'> Rang dernier " . $reference . "<br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le rang du dernier admis en 2024 est le rang limite issu du 1er tour de l&apos;appariement du 13 septembre 2024.'></i></th>";
-			} else {
-				echo "<th style='width:20%'> Rang dernier " . $reference . "<br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le rang du dernier admis en " . $reference . " est le rang limite issu du site CNG Santé.'></i></th>";
-			}
-			echo "<th style='width:10%;'> ".$montant->format($nbCESP)." CESP " . $libelle . " <br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le nombre de postes réservés aux CESP est issu de l&apos;arrêté publié par le Journal Officiel.<br/>Une cellule vide signifie qu&apos;il n&apos;y a pas de poste CESP pour cette spécialité.'></i></th>";
+			echo "<th style='width:20%;'> ".$montant->format($nbPoste)." postes " . $libelle . "<br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Le nombre de postes est issu de l&apos;arrêté publié par le Journal Officiel. Ce nombre de postes exclut les CESP.<br/>L&apos;année correspond à l&apos;année de publication au Journal Officiel.'></i></th>";
+			echo "<th style='width:20%'> Rang dernier " . $reference . "<br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='A partir de 2024, il s&apos;agit du rang limite par groupe de spécialités.<br>Auparavant c&apos;était le rang limite national par spécialité.'></i></th>";
+			echo "<th style='width:10%;'> ".$montant->format($nbCESP)." CESP " . $libelle . " <br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Le nombre de postes réservés aux CESP est issu de l&apos;arrêté publié par le Journal Officiel.<br/>Une cellule vide signifie qu&apos;il n&apos;y a pas de poste CESP pour cette spécialité.'></i></th>";
 			echo "</tr></thead>";
 			echo "<tbody>";
 			// récupération des données à afficher
 			while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 				extract($row);
 				echo "<tr onclick='zoom(&apos;".$Specialite."&apos;)'>";
-				if (mb_detect_encoding($Specialite,'UTF-8', true)) {			// en local les caractères accentués passent, mais pas sur le serveur Gandi
-					$libelleSpecialite =  getLibelleSpecialite($Specialite);
-				} else {
-					$libelleSpecialite = utf8_encode(getLibelleSpecialite($Specialite));
+				$libelleSpecialite = getLibelleSpecialite($Specialite);
+
+				// en local les caractères accentués passent, mais pas sur le serveur Gandi
+				// Vérifie si l'encodage est UTF-8, sinon convertis depuis ISO-8859-1 (Latin-1)
+				if (!mb_detect_encoding($libelleSpecialite, 'UTF-8', true)) {
+					$libelleSpecialite = mb_convert_encoding($libelleSpecialite, 'UTF-8', 'ISO-8859-1');
 				}
+
 				echo "<td class='acronyme'>".$Specialite . "</td><td>" . $libelleSpecialite . "</td>";
 				$dernier = "0";
 				$poste = "0";

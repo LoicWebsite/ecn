@@ -9,18 +9,11 @@
 	<?php
 		// favicons générés par https://realfavicongenerator.net
 		include "php/favicon.php";
+	
+        // Google Analytics
+		include "php/GoogleAnalytics.php";
 	?>
 
-	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=ID-GOOGLE"></script>
-	<script>
-	  window.dataLayer = window.dataLayer || [];
-	  function gtag(){dataLayer.push(arguments);}
-	  gtag('js', new Date());
-
-	  gtag('config', 'G-4NC0K56D5R');
-	</script>
-    
     <title>Simulateur Excel pour choisir sa spécialité et son CHU à l'ECN</title>
 
 	<meta property="og:title" content="Comment choisir sa spécialité d'internat post ECN ?" />
@@ -46,41 +39,14 @@
   </head>
   <body id="hautdepage" data-spy="scroll" data-target="#navigation" data-offset="0">
 	
-	<nav id="navigation" class="navbar fixed-top navbar-expand-lg navbar-dark bg-secondary">
-	  <a class="navbar-brand" href="#"><img src="image/stethoscopeBlanc.svg" width="30" height="30" alt="logo stéthoscope blanc pour choix de spécialités d'internat'" loading="lazy"> &nbsp;Simulateur spécialités</a>
-	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menu" aria-controls="menu" aria-expanded="false" aria-label="Toggle navigation">
-		<span class="navbar-toggler-icon"></span>
-	  </button>
+	<!-- plugin Facebook -->
+	<div id="fb-root"></div>
+	<script async defer crossorigin="anonymous" src="https://connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v11.0&appId=1153267458138244&autoLogAppEvents=1" nonce="8MXlWEXo"></script>
 
-	  <div id="menu" class="collapse navbar-collapse" data-toggle="collapse" data-target=".show">
-		<ul class="navbar-nav mr-auto">
-		  <li class="nav-item">
-			<a class="nav-link" href="#telecharger">Télécharger</a>
-		  </li>
-		  <li class="nav-item">
-			<a class="nav-link" href="#apercu">Aperçu</a>
-		  </li>
-		   <li class="nav-item">
-			<a class="nav-link" href="#qui">Pour qui</a>
-		  </li>
-		  <li class="nav-item">
-			<a class="nav-link" href="#fonctionnement">Fonctionnement</a>
-		  </li>
-		  <li class="nav-item">
-			<a class="nav-link" href="#specialite">Spécialités</a>
-		  </li>
-		  <li class="nav-item">
-			<a class="nav-link" href="questionnaire-choix-specialite.php">En ligne</a>
-		  </li>
-		  <li class="nav-item">
-			<a class="nav-link" href="#propos">A propos</a>
-		  </li>
-		  <li class="nav-item">
-			<a class="nav-link" href="#contact">Contact</a>
-		  </li>
-		</ul>
-	  </div>
-	</nav>
+	<!-- menu d'accueil -->
+	<?php
+		include "php/menu-questionnaire.php";
+	?>
 
   	<header id="simulateur" class="container">
 		<p style="text-align:center; padding-top:88px;">
@@ -92,7 +58,10 @@
 	<div id="actualite" class="container ancre">
 		<br/>
 		<p class="text-center">
-			<mark style="color:#808080;"><strong>Actualités</strong> : toutes les versions du questionnaire (<a href="questionnaire-choix-specialite.php" title="aide au choix de spécialités et CHU en ligne">simulateur en ligne</a>, Excel et Open Office) intègrent désormais le rang du dernier admis par CHU et par Spécialité de l'EDN ECOS 2024.
+			<mark style="color:#808080;"><strong>Actualités</strong> : de nouvelles données sont en ligne pour comprendre la démographie médicale : 
+				<br><a href="demographie-medecin.php" title="Démographie médicale">pyramide des âges des médecins par spécialité</a>.
+				<br><a href="carte-densite-medecin.php" title="Densité médicale">densité médicale par département</a>.
+				<br><a href="carte-effectif-medecin.php" title="Effectifs médicaux">nombre de médecins par département</a>.
 			</mark>
 		</p>
 	</div>
@@ -101,7 +70,7 @@
 		<br/>
     	<h2 class="h4" style="text-align:left">Télécharger le simulateur de choix</h2>
 		<br/>
-		<p class="text-center h5"><a href="php/download.php?file=Simulation.xlsx" title="télécharger le simulateur de choix de spécialités Excel"><i class="fas fa-file-download"></i> &nbsp; &nbsp; Télécharger la version Excel</a></p>
+		<p class="text-center h5"><a href="php/download.php?file=Simulation.xlsx" title="télécharger le simulateur de choix de spécialités Excel"><i class="bi bi-file-earmark-arrow-down"></i> &nbsp; &nbsp; Télécharger la version Excel</a></p>
 		<p class="text-center"><i>Le mot de passe pour ouvrir le simulateur Excel est "ecn"</i>.<br/>
 		<?php
 			$nomFichier = "compteurXLS.txt";
@@ -112,7 +81,7 @@
 		?>
 		</p>
 		<br/>
-		<p class="text-center h5"><a href="php/download.php?file=Simulation.ods" title="télécharger le simulateur de choix de spécialités Open Office"><i class="fas fa-file-download"></i> &nbsp; &nbsp; Télécharger la version Open Office</a></p>
+		<p class="text-center h5"><a href="php/download.php?file=Simulation.ods" title="télécharger le simulateur de choix de spécialités Open Office"><i class="bi bi-file-earmark-arrow-down"></i> &nbsp; &nbsp; Télécharger la version Open Office</a></p>
 		<p>Pour ceux qui n'ont pas Excel, une version Open Office est également disponible. Elle offre exactement les mêmes fonctionnalités.</p>
 		<p class="text-center"><i>Le mot de passe pour ouvrir le simulateur Open Office est également "ecn"</i>.<br/>
 		<?php
@@ -124,13 +93,44 @@
 		?>
 		</p>
 		<br/>
-		<p class="text-center h5"><a href="questionnaire-choix-specialite.php" title="aide au choix de spécialités et CHU en ligne"><i class="fas fa-mobile-alt"></i> &nbsp; &nbsp; Simulateur en ligne</a></p>
+		<p class="text-center h5"><a href="questionnaire-choix-specialite.php" title="aide au choix de spécialités et CHU en ligne"><i class="bi bi-phone"></i> &nbsp; &nbsp; Simulateur en ligne</a></p>
 		<p>Une version simplifiée est disponible <strong>en ligne</strong> (pour ceux qui n'ont ni Excel ni OpenOffice). Elle permet d'explorer rapidement les différentes spécialités et de connaître pour chacune d'entre elles le rang du dernier admis pour chaque CHU ainsi que le nombre de postes. Ce simulateur en ligne est particulièrement adapté aux <strong>smartphones</strong>.</p>
 		<br/>
 	</div>
 
   	<div id="paiement" class="container">
-		<p><strong>Le simulateur est gratuit</strong>, ne comporte pas de publicité et ne collecte aucune donnée. Ce n’est pas une démarche commerciale. Je mets en ligne ce simulateur simplement pour aider les étudiants à réfléchir sur leur choix de spécialités.</p>
+		<p><strong>Le simulateur est gratuit</strong>, ne comporte pas de publicité et ne collecte aucune donnée. Ce n’est pas une démarche commerciale. Je mets en ligne ce simulateur simplement pour aider les étudiants à réfléchir sur leur choix de spécialités. Toutefois pour m’aider à faire face aux frais du Web (hébergement, nom de domaine, certificat) j’apprécierais une petite participation pour ceux qui le peuvent. Elle n'est pas obligatoire. <strong>Un don de 1€ ou 2€ serait apprécié</strong>. Merci pour votre contribution.</p>
+		<div class="text-center">
+
+		<!-- BOUTON DONATE PAYPAL dans le site Paypal business : pb l'adresse est obligatoire, donc je la prérempli avec du bidon -->
+			<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+				<input type="hidden" name="cmd" value="_s-xclick" />
+				<input type="hidden" name="hosted_button_id" value="97NCJCMCWNBVW" />
+				<input type="hidden" name="item_name" value="Participation au financement du simulateur de choix de spécialité à l'ECN">
+				<input type="hidden" name="item_number" value="Participation au simulateur ECN">
+				<input type="hidden" name="amount" value="2.00">
+				<input type="hidden" name="currency_code" value="EUR">
+				<input type="hidden" name="no_shipping" value="1">
+				<input type="hidden" name="no_note" value="1">
+				<input type="hidden" name="image_url" value="https://loic.website/ECN/image/stethoscope.png">
+				<input type="hidden" name="return" value="https://loic.website/ECN/success.html">
+				<input type="hidden" name="cancel_return" value="https://loic.website/ECN/">
+		<!-- 
+				<input type="hidden" name="first_name" value="Prénom">		
+				<input type="hidden" name="last_name" value="Nom">
+		 -->
+				<input type="hidden" name="address1" value="numéro et rue">		
+				<input type="hidden" name="address2" value=" ">
+				<input type="hidden" name="city" value="Ville">
+				<input type="hidden" name="zip" value="22000">
+				<input type="hidden" name="country" value="FR">			
+				<input type="hidden" name="night_phone_a" value="33">
+				<input type="hidden" name="night_phone_b" value="6 00 00 00 00">
+				<input type="hidden" name="charset" value="utf-8">
+				<input type="image" src="https://www.paypalobjects.com/fr_FR/FR/i/btn/btn_donateCC_LG.gif" name="submit" title="Faites un don avec PayPal - paiement sécurisé et simple." alt="Bouton Faites un don avec PayPal" />
+				<img alt="" src="https://www.paypal.com/fr_FR/i/scr/pixel.gif" width="1" height="1" />
+			</form>
+		</div>
 	</div>
 
 	<div id="apercu" class="container ancre">
@@ -239,13 +239,13 @@
 		<h2 style="text-align:left" class="h4">Comment fonctionne ce simulateur ?</h2>
 		<br/>
 		<div>
-			<p>Le simulateur (Excel et Open Office) contient le rang du dernier admis pour toutes les spécialités et tous les CHU sur les années 2023 à 2017 (les données sont issues de CNG - Céline).</p>
+			<p>Le simulateur (Excel et Open Office) contient le rang du dernier admis pour toutes les spécialités et tous les CHU sur les années 2024 à 2017 (les données sont issues de CNG - Céline).</p>
 			<p>A partir de votre rang espéré, le simulateur met en évidence toutes les spécialités et CHU accessibles.</p>
 			
 			<p style="margin-bottom:0;">Comment l'utiliser :</p>
 			<ol>
 				<li>Vous indiquez le <strong>rang</strong> que vous pensez (ou voulez) obtenir aux<strong>EDN/ECOS</strong> dans l'onglet <span class="badge badge-info">2 - Rang candidat</span>.</li>
-				<li>Le simulateur affiche les <strong>CHUs et les spécialités accessibles</strong> dans les onglets <span class="badge badge-info">Spécialité</span>, <span class="badge badge-info">Rang 2023</span> à <span class="badge badge-info">Rang 2017</span>, <span class="badge badge-info">Poste 2023</span> à <span class="badge badge-info">Poste 2020</span>, <span class="badge badge-info">CESP 2023</span> à <span class="badge badge-info">CESP 2020</span>. A vous de naviguer, d'analyser et de réfléchir.</li>
+				<li>Le simulateur affiche les <strong>CHUs et les spécialités accessibles</strong> dans les onglets <span class="badge badge-info">Spécialité</span>, <span class="badge badge-info">Rang 2024</span> à <span class="badge badge-info">Rang 2017</span>, <span class="badge badge-info">Poste 2024</span> à <span class="badge badge-info">Poste 2020</span>, <span class="badge badge-info">CESP 2024</span> à <span class="badge badge-info">CESP 2020</span>. A vous de naviguer, d'analyser et de réfléchir.</li>
 			</ol>
 			<p><mark style="background-color:Khaki; color:#808080;">Note : seules les cellules avec fond jaune sont saisissables.</mark></p>
 			<br/>
@@ -276,7 +276,7 @@
 		<h2 style="text-align:left" class="h4">Classification des spécialités pour ce simulateur</h2>
 		<br/>		
 		<table id="table1" class="table-hover" style="width:100%;">
-		<caption style='caption-side:top;'>Cliquer <i class='far fa-mouse-pointer' aria-hidden='true'></i> sur une spécialité pour voir les CHU pour cette spécialité.</caption>
+		<caption style='caption-side:top;'>Cliquer <i class='bi bi-cursor-fill' aria-hidden='true'></i> sur une spécialité pour voir les CHU pour cette spécialité.</caption>
 			<thead class="text-center">
 				<tr>
 					<th colspan=2  style="width:47.5%">Spécialités Chirurgicales</th>
@@ -504,7 +504,7 @@
 			<p>Je suis le père d'un étudiant qui était en 6ème année de médecine (avant son internat). A force de parler avec lui de ses choix de spécialités et de CHU, j'ai écrit ce simulateur pour l'aider dans sa réflexion. Le but de ce simulateur est bien d'anticiper et de <strong>se projeter dans une spécialité et un CHU</strong> sans nécessairement connaître son rang aux EDN/ECOS, et sans attendre les simulations d'appariement. Et sans se censurer. Il faut à la fois rêver (voeux de rêve) et en même temps être réaliste (voeux réalistes et voeux de secours). Je souhaite que ce simulateur soit <strong>utile à d'autres étudiants en médecine</strong>. C'est pourquoi je le partage.</p>
 			<p>Les données du simulateur sont issues du CNG Santé pour les rangs des derniers admis (les rangs limites), du guide de l'ISNI pour le détail des spécialités, du journal officiel pour le nombre de postes d'internes et de l'UNASA et de la CARMF pour les revenus des spécialités en libéral.</p> 
 			<p>Ce simulateur ne décrit pas les spécialités ni les CHU. Vous pouvez vous référer au guide ISNI pour cela. Ce guide est consultable en cliquant sur le lien :  
-			   <a href="https://isni.fr/wp-content/uploads/2023/07/ISNI-GUIDE-2024-web.pdf" target="_blank" download="Futur-Interne-Guide-2024.pdf"><i class="fas fa-file-download"></i> Voir le guide des villes et des spécialités ISNI</a>
+			   <a href="https://isni.fr/wp-content/uploads/2023/07/ISNI-GUIDE-2024-web.pdf" target="_blank" download="Futur-Interne-Guide-2024.pdf"><i class="bi bi-file-earmark-arrow-down"></i> Voir le guide des villes et des spécialités ISNI</a>
 			<p>Un grand merci à Léo qui m'a transmis les rangs limites 2024. Je vous conseille d'aller sur son site pour trouver plein de ressources sur les EDN/ECOS : <a href="https://picat.fr/blog.html" target="_blank">Blog Léo Picat<a> ainsi que sur son site de statistiques des simulations de 2024 : <a href="https://picat.shinyapps.io/matchingexplorer/" target="_blank">Matching Explorer</a></p>
 			<p><strong>Disclaimer</strong> : et malgré tout le soin apporté au développement de ce site, il peut y avoir des bugs résiduels. Les seules données officielles sont celles du CNG Santé.</p>  
 		</div>
@@ -518,6 +518,14 @@
 			<p>
 				N'hésitez pas à me contacter par mail ou Facebook pour me faire part de vos remarques, suggestions, demandes d'évolution ou bug rencontré. Je m'efforcerai de traiter votre demande dans la mesure de mon temps disponible. Je vous remercie par avance.<br/>
 			</p>
+			<p>
+				<a href="mailto:contact@loic.website?subject=Demande&nbsp;d&apos;information"><i class="bi bi-envelope-fill">&nbsp;&nbsp;</i>Contactez-moi par email</a>
+			</p>
+			<div class="fb-page" data-href="https://www.facebook.com/SpecialitesECN/" data-tabs="timeline" data-width="" data-height="70" data-small-header="true" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true">
+				<blockquote cite="https://www.facebook.com/SpecialitesECN/" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/SpecialitesECN/">
+					Choix de spécialités d&#039;internat</a>
+				</blockquote>
+			</div>
 		</div>
 	</div>
 

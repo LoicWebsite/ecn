@@ -17,16 +17,10 @@
 	<?php
 		// favicons générés par https://realfavicongenerator.net
 		include "php/favicon.php";
+	
+        // Google Analytics
+		include "php/GoogleAnalytics.php";
 	?>
-
-	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=ID-GOOGLE"></script>
-	<script>
-	  window.dataLayer = window.dataLayer || [];
-	  function gtag(){dataLayer.push(arguments);}
-	  gtag('js', new Date());
-	  gtag('config', 'ID-GOOGLE');
-	</script>
 
     <title>Liste des CHU correspondants aux critères saisis</title>
 
@@ -63,7 +57,7 @@
 		<div class="row" style='margin-top:80px;'>
 			<div class="col-sm" aria-label="breadcrumb">
 			  <ol class="breadcrumb">
-				<li class="breadcrumb-item"><a href="choix-specialite-chu-celine-ecn.php"><i class="fas fa-home"></i></a></li>
+				<li class="breadcrumb-item"><a href="choix-specialite-chu-celine-ecn.php"><i class="bi bi-house-door-fill"></i></a></li>
 				<li class="breadcrumb-item"><a href="#" onclick="questionnaire()">Critère</a></li>
 				<li class="breadcrumb-item active" aria-current="page">CHU</li>
 			  </ol>
@@ -77,13 +71,16 @@
 
 	<div id="reponse" class="container">
     	<h1 class="h5" style="text-align:left; margin-top:20px;">
-    		<a class="h5" data-toggle="collapse" aria-expanded="false" aria-controls="critere" href="#critere"><i id="symbole" class="fa fa-plus-circle" aria-hidden="true"></i>&nbsp; Vos critères de choix...</a>
+    		<a class="h5" data-toggle="collapse" aria-expanded="false" aria-controls="critere" href="#critere"><i id="symbole" class="bi bi-plus-circle-fill" aria-hidden="true"></i>&nbsp; Vos critères de choix...</a>
 		</h1>
 		
 	<?php
 
 		// fonctions communes
-		include "php/fonctionECN.php";
+		require_once "php/fonctionECN.php";
+			
+		// ouverture de la base de données
+		$db = openDatabase();
 		
 		// affichage des critères
 		echo "<div id='critere' class='collapse'>";
@@ -105,17 +102,6 @@
 		echo "</div>";
 		echo "</div>";
 		echo "</div>\n";
-
-		// conexion à la base ecn (user = ecn)
-		try {
-			$db = new PDO("mysql:host=localhost;dbname=ecn;charset=utf8", "USER", "PASSE");
-		}
-		catch(PDOException $erreur)	{
-			die('Erreur connexion base : ' . $erreur->getMessage());
-		}
-
-		// passage au mode exception pour les erreurs
-		$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 		// préparation de la clause where pour sélectionner les spécialités en fonction des critères
 		$where = " WHERE Type <> ''";
@@ -234,21 +220,17 @@
 
 			// liste
 			echo "<table class='table-hover' style='width:100%;'>";
-			echo "<caption>Cliquer &nbsp;<i class='fa fa-mouse-pointer' aria-hidden='true'></i>&nbsp; sur un CHU pour voir ses spécialités.</caption>";
+			echo "<caption>Cliquer &nbsp;<i class='bi bi-cursor-fill'></i>&nbsp; sur un CHU pour voir ses spécialités.</caption>";
 			echo "<thead class='text-center'>";
-			echo "<tr><th style='width:50%'>" . $result->rowCount() ." CHU<br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Cliquer sur un CHU pour voir les spécialités pour ce CHU.'></i></th>";
+			echo "<tr><th style='width:50%'>" . $result->rowCount() ." CHU<br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Cliquer sur un CHU pour voir les spécialités pour ce CHU.'></i></th>";
 			if ($reference < 2020) {
 				$libelleReference = "2024";
 			} else {	
 				$libelleReference = $reference;
 			}
-			echo "<th style='width:20%;'> ".$montant->format($nbPoste)." postes " . $libelleReference . "<br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le nombre de postes est issu de l&apos;arrêté publié par le Journal Officiel. Ce nombre de postes exclut les CESP.'></i></th>";
-			if ($reference == 2024)	{
-				echo "<th style='width:20%'> Rang dernier " . $reference . "<br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le rang du dernier admis en 2024 est le rang limite issu du 1er tour de l&apos;appariement du 13 septembre 2024.'></i></th>";
-			} else {
-				echo "<th style='width:20%'> Rang dernier " . $reference . "<br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le rang du dernier admis en " . $reference . " est le rang limite issu du site CNG Santé.'></i></th>";
-			}
-			echo "<th style='width:10%;'> ".$montant->format($nbCESP)." CESP " . $libelleReference . " <br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le nombre de postes réservés aux CESP est issu de l&apos;arrêté publié par le Journal Officiel.<br/>Une cellule vide signifie qu&apos;il n&apos;y a pas de poste CESP pour cette spécialité.'></i></th>";
+			echo "<th style='width:20%;'> ".$montant->format($nbPoste)." postes " . $libelleReference . "<br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Le nombre de postes est issu de l&apos;arrêté publié par le Journal Officiel. Ce nombre de postes exclut les CESP.'></i></th>";
+			echo "<th style='width:20%'> Rang dernier " . $reference . "<br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='A partir de 2024, il s&apos;agit du rang limite par groupe de spécialités.<br>Auparavant c&apos;était le rang limite national par spécialité.'></i></th>";
+			echo "<th style='width:10%;'> ".$montant->format($nbCESP)." CESP " . $libelleReference . " <br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Le nombre de postes réservés aux CESP est issu de l&apos;arrêté publié par le Journal Officiel.<br/>Une cellule vide signifie qu&apos;il n&apos;y a pas de poste CESP pour cette spécialité.'></i></th>";
 			echo "</tr></thead>";
 			echo "<tbody>";
 

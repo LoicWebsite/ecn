@@ -9,16 +9,10 @@
 	<?php
 		// favicons générés par https://realfavicongenerator.net
 		include "php/favicon.php";
+	
+        // Google Analytics
+		include "php/GoogleAnalytics.php";
 	?>
-
-	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=ID-GOOGLE"></script>
-	<script>
-	  window.dataLayer = window.dataLayer || [];
-	  function gtag(){dataLayer.push(arguments);}
-	  gtag('js', new Date());
-	  gtag('config', 'ID-GOOGLE');
-	</script>
 
     <title>tableau des spécialités correspondantes aux critères saisis</title>
 
@@ -77,15 +71,15 @@
 		<div class="row" style='margin-top:80px;'>
 			<div class="col-sm" aria-label="breadcrumb">
 			  <ol class="breadcrumb">
-				<li class="breadcrumb-item"><a href="choix-specialite-chu-celine-ecn.php"><i class="fas fa-home"></i></a></li>
+				<li class="breadcrumb-item"><a href="choix-specialite-chu-celine-ecn.php"><i class="bi bi-house-door-fill"></i></a></li>
 				<li class="breadcrumb-item"><a href="#" onclick="questionnaire()">Critère</a></li>
 				<li class="breadcrumb-item active" aria-current="page">Spécialité</li>
 			  </ol>
 			</div>
 			<div class="col-sm">
 				<p style='padding:10px;'>
-					<button class="btn btn-primary btn-sm" onclick="liste()" title="Affichage des spécialités en liste"> en liste &nbsp; <i class="fa fa-list" aria-hidden="true"></i></button>
-					&nbsp;&nbsp;&nbsp;<button class="btn btn-secondary btn-sm" onclick="" title="Affichage des spécialités en table" disabled> en tableau &nbsp; <i class="fa fa-table" aria-hidden="true"></i></button>
+					<button class="btn btn-primary btn-sm" onclick="liste()" title="Affichage des spécialités en liste"> en liste &nbsp; <i class="bi bi-list-ul" aria-hidden="true"></i></button>
+					&nbsp;&nbsp;&nbsp;<button class="btn btn-secondary btn-sm" onclick="" title="Affichage des spécialités en table" disabled> en tableau &nbsp; <i class="bi bi-table" aria-hidden="true"></i></button>
 				</p>
 			</div>
 			<div class="col-xl">
@@ -95,15 +89,18 @@
 
 	<div id="reponse" class="container">
     	<h1 class="h5" style="text-align:left; margin-top:20px;">
-    		<a class="h5" data-toggle="collapse" aria-expanded="false" aria-controls="critere" href="#critere"><i id="symbole" class="fa fa-plus-circle" aria-hidden="true"></i>&nbsp; Vos critères de choix...</a>
+    		<a class="h5" data-toggle="collapse" aria-expanded="false" aria-controls="critere" href="#critere"><i id="symbole" class="bi bi-plus-circle-fill" aria-hidden="true"></i>&nbsp; Vos critères de choix...</a>
 		</h1>
 		
 	<?php
 
 		// fonctions communes et récupération-contrôle des paramètres
-		include "php/controleParametre.php";
-		include "php/fonctionECN.php";
-		
+		require_once "php/controleParametre.php";
+		require_once "php/fonctionECN.php";
+
+		// ouverture de la base de données
+		$db = openDatabase();
+
 		// affichage des critères
 		echo "<div id='critere' class='collapse'>";
 		echo "<div class='row'>";
@@ -154,17 +151,6 @@
 		$tableDernier = array(array());
 		$tableUrl = array(array());
 		$libelleCESP = 0;
-
-		// conexion à la base ecn (user = ecn)
-		try {
-			$db = new PDO("mysql:host=localhost;dbname=ecn;charset=utf8", "USER", "PASSE");
-		}
-		catch(PDOException $erreur)	{
-			die('Erreur connexion base : ' . $erreur->getMessage());
-		}
-
-		// passage au mode exception pour les erreurs
-		$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 		// préparation de la clause where pour sélectionner les spécialités en fonction des critères
 		$where = " WHERE Type <> ''";
@@ -267,11 +253,7 @@
  		// tableau
 		echo "<table class='table-hover table-bordered' style='width:100%;'>";
 		echo "<thead><tr>";
-		if ($reference == 2024) {
-			echo "<th>Rang dernier 2024<br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Cliquer sur une <strong>spécialité</strong> dans l&apos;entête du tableau pour voir le détail des CHU pour cette spécialité.<br>Pour 2024 il s&apos;agit du rang limite du 1er tour d&apos;appariement du 13 septembre 2024.'></i></th>";
-		} else {
-			echo "<th>Rang dernier " . $reference . "<br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Cliquer sur une <strong>spécialité</strong> dans l&apos;entête du tableau pour voir le détail des CHU pour cette spécialité.'></i></th>";
-		}
+		echo "<th>Rang dernier " . $reference . "<br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Cliquer sur une <strong>spécialité</strong> dans l&apos;entête du tableau pour voir le détail des CHU pour cette spécialité.<br>A partir de 2024 il s&apos;agit du rang limite par groupe de spécialités.<br>Auparavant c&apos;était le rang limite national par spécialité.'></i></th>";
 		$i = 0;
 		foreach ($listeSpecialite as $specialite) {
 			$libelleSpecialite = getLibelleSpecialite($specialite);
@@ -463,11 +445,11 @@
   		if ((($rang != "rangIndifferent") and ($rang != null) and ($rang != 0)) or ($cesp == "on")) {
   			echo "En <span style='background-color:pink;'> &nbsp;rose </span>&nbsp; les Spécialités-CHU accessibles avec vos critères.<br/>";	
   		}
- 		echo "Cliquer &nbsp;<i class='fa fa-mouse-pointer' aria-hidden='true'></i>&nbsp; sur une <strong>spécialité</strong> dans l&apos;entête du tableau pour voir le détail des CHU pour cette spécialité.";
+ 		echo "Cliquer &nbsp;<i class='bi bi-cursor-fill' aria-hidden='true'></i>&nbsp; sur une <strong>spécialité</strong> dans l&apos;entête du tableau pour voir le détail des CHU pour cette spécialité.";
 
 // A ACTIVER PENDANT LA PHASE DE CHOIX DE POSTE
 //  		if ($reference == "2023") {
-//  			echo "<br/>Double cliquer <i class='far fa-hand-pointer'></i> sur un <strong>rang</strong> pour afficher le détail <strong>CELINE</strong>.</p>";
+//  			echo "<br/>Double cliquer <i class='bi bi-hand-index-thumb'></i> sur un <strong>rang</strong> pour afficher le détail <strong>CELINE</strong>.</p>";
 //  		}
 		echo "</p>";
 	?>

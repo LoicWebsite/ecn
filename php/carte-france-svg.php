@@ -1,3 +1,14 @@
+		<?php
+			// récupération du paramètre d'appel pour aiguiller sur le bon traitement :
+			// - soit l'affichage des postes et du rang du dernier admis par CHU
+			// - soit l'affichage de la densité médicale par département
+			if (isset($_GET['page']))  {
+				if (($_GET['page'] == 'poste') or ($_GET['page'] == 'densite') or ($_GET['page'] == 'effectif')) {
+					$page = $_GET['page'];
+				}
+			}
+		?>
+		
 		<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="50 0 680 705" xml:space="preserve">
 			<g class="region region-01" data-nom="Antilles">
 				<path data-nom="Guadeloupe" data-numerodepartement="971" d="M550,650 l-6.7-2.2l-2.4-4.2l-11.1-2.5l-2.7-5.7l-0.7-7.7l-6.2-4.7l-5.9,5.5l-0.8,2.9l1.2,4.5l3.1,1.2l-1,3.4l-2.6,1.2l-2.5,5.1l-1.9-0.2 l-1,1.9l-4.3-0.7l1.8-0.7l-3.5-3.7l-10.4-4.1l-3.4,1.6l-2.4,4.8l-0.5,3.5l3.1,9.7l0.6,12l6.3,9l0.6,2.7c3-1.2,6-2.5,9.1-3.7l5.9-6.9 l-0.4-8.7l-2.8-5.3l0.2-5.5l3.6,0.2l0.9-1.7l1.4,3.1l6.8,2l13.8-4.9L550,650z"></path>
@@ -7,14 +18,14 @@
 				<line x1="610" x2="610" y1="600" y2="700" stroke="lightgray" stroke-dasharray="3" fill="transparent" stroke-width="1"/>
 				<line x1="150" x2="610" y1="700" y2="700" stroke="lightgray" stroke-dasharray="3" fill="transparent" stroke-width="1"/>
 				<?php
-					afficherVilleCHU ("MARTINIQUE/POINTE A PITRE","CHU Martinique-Guadeloupe", "Guadeloupe", "513", "650", "465", "673");
-					afficherVilleCHU ("MARTINIQUE/POINTE A PITRE","CHU Martinique-Guadeloupe", "Martinique", "365", "662", "325", "650");
+					afficherVille ($page,"MARTINIQUE/POINTE A PITRE","CHU Martinique-Guadeloupe", "Guadeloupe", "513", "650", "465", "673");
+					afficherVille ($page,"MARTINIQUE/POINTE A PITRE","CHU Martinique-Guadeloupe", "Martinique", "365", "662", "325", "650");
 				?>
 			</g>
 			<g class="region region-04" data-nom="La Réunion">
 				<path data-nom="La Réunion" data-numerodepartement="974" d="m200,650l-6.7-8.5l1.3-6l4.1-2.4l0.7-7.9 l3.3,0.4l7.6-6.1l5.7-0.8l21,4l5,5.3v4.1l7.3,10.1l6.7,4.5l1,3.6l-3.3,7.9l0.9,9.6l-3.4,3.5l-17.3,2.9l-19.6-6.5l-3.8-3.6l-4.7-1.2 l-0.9-2.5l-3.6-2.3L200,650z"></path>
 				<?php
-					afficherVilleCHU ("LA REUNION","CHU La Réunion", "La Réunion", "215", "625", "175", "650");
+					afficherVille ($page,"LA REUNION","CHU La Réunion", "La Réunion", "215", "625", "175", "650");
 				?>
 			</g>
 			<g class="region region-11" data-nom="Île-de-France">
@@ -27,7 +38,7 @@
 				<path data-nom="Val-de-Marne" data-numerodepartement="94" d="M404.7,160l0.3,2.9l-1.1,4.1l-2.3-2.2l-2.8,0.8l-5.1-2.1l0.4-4.1l5.3-0.1l-1.8-1.9L404.7,160z"></path>
 				<path data-nom="Val-d’Oise" data-numerodepartement="95" d="m374.3,144l-9.5-0.8l4-9.5l1.6,3.2l5.6,1.1 l6.3-1.8l9.2,2.2l2.2-1.6l10.9,6.4l0.2,2l-1.7,2.3l-0.1,0.1c-1.5,1.1-3.1,2.2-4.7,3.3l-2.6-1.1l-3.3,1.3l-3.6,2.6l-5.5-6.1 L374.3,144z"></path>
 				<?php
-					afficherVilleCHU ("AP-HP Paris","AP-HP Paris", "AP-HP", "394", "159", "372", "179");
+					afficherVille ($page,"AP-HP Paris","AP-HP Paris", "AP-HP", "394", "159", "372", "179");
 				?>
 			</g>
 			<g class="region region-24" data-nom="Centre-Val de Loire">
@@ -38,7 +49,7 @@
 				<path data-nom="Loir-et-Cher" data-numerodepartement="41" d="m357.9,256.4l-6,3.2l-4.2-6.7l-2.6,1.3 l-2.4-1.9l1.2-9.1l-3.4-5.1l0.7-2.7l-6-3.4l-2.2,1.8l0.2-5.5l-10.5-0.5l0.6-3.5l3.2-1.1l6.3-10.6l-0.4-5.5l-1.7-2.2l2-2.1v-0.1 l6.3-1.3l12.8,10.8l5.5-3.5l3.3,1.9l2.5,7.1l-1.8,3.2l1.7,5.6l3-1.3l2.4,1.5l1.1,3.8l2.9,0.6l1.9-2.3l15.2,1.6l0.8,2.6l-5,2.4 l5.1,7.6l-5.9,4.1l2.1,5.9l-9.7,2l-0.6,2.8l-2.8-0.1l-5.2-3.5l-6.4,0.9l-1.5,2.6L357.9,256.4z"></path>
 				<path data-nom="Loiret" data-numerodepartement="45" d="m393.3,189.4l3.7,0.6l0.7,3.1l4.2,4.3l-0.6,2.7 l-2.6,1.5l9.2,0.7l11.2-2.7l6.7,7.5l0.4,5.8l-4.6,4.9l1.1,2.9l-1.6,2.4l-5.3,3.3l3,2.8l2.2,6.9l-2.8,0.7l-1.5,2.4l-9,1.7l-3.9-4.8 l-13.5-3.1l-0.8-2.6l-15.2-1.6l-1.9,2.3l-2.9-0.6l-1.1-3.8l-2.4-1.5l-3,1.3l-1.7-5.6l1.8-3.2l-2.5-7.1l-0.2-2.8l6-2.8l8.5-0.6 l4.8-10.8l0.5-1.5l6.9-0.7l1.9-2.9l1.5,2.7L393.3,189.4z"></path>
 				<?php
-					afficherVilleCHU ("TOURS","CHU Tours", "Tours", "325", "243", "333", "249");
+					afficherVille ($page,"TOURS","CHU Tours", "Tours", "325", "243", "333", "249");
 				?>
 			</g>
 			<g class="region region-27" data-nom="Bourgogne-Franche-Comté">
@@ -51,8 +62,8 @@
 				<path data-nom="Yonne" data-numerodepartement="89" d="m425.8,207.1l-6.7-7.5l3.9-5.4l0.2-5.8l15.4-3 l3.6,1.5l4.5,5.5l2.5,8.3l2-2.2l3.6,4.1l5,10.9l12.6-1.6l2.9,1.4l-1.9,3.1l3.1,3.9l-0.3,3.7l-2.8,2.1l1.7,2.3l-6.7,10.4l-1.3,8.1 l1.3,2.7h-0.1l-5.5,0.4l-1.5-2.8l-2.8,0.9l-0.9-3.7l-5.8,0.9l-5.5-3l-3.9-5.6l-4.6,4.3h-6l-7.4-4.8H421v-0.1l-2.2-6.9l-3-2.8 l5.3-3.3l1.6-2.4l-1.1-2.9l4.6-4.9L425.8,207.1z"></path>
 				<path data-nom="Territoire de Belfort" data-numerodepartement="90" d="m580.3,215.9l0.9-0.6l7.6,5l0.5,9l2.8-0.2l2,5 l-0.1,0.1l-2.79,0.39l-1.11-0.39l-3.19,4.34L586.5,239l-1.4-2.4l1.4-2.5l-5.9-2.7h-0.1l-1.4-5.5l-1.1-4.3L580.3,215.9z"></path>
 				<?php
-					afficherVilleCHU ("BESANCON","CHU Besançon", "Besançon", "549", "254", "517", "272");
-					afficherVilleCHU ("DIJON","CHU Dijon", "Dijon", "507", "248", "460", "240");
+					afficherVille ($page,"BESANCON","CHU Besançon", "Besançon", "549", "254", "517", "272");
+					afficherVille ($page,"DIJON","CHU Dijon", "Dijon", "507", "248", "460", "240");
 				?>
 			</g>
 			<g class="region region-28" data-nom="Normandie">
@@ -62,8 +73,8 @@
 				<path data-nom="Orne" data-numerodepartement="61"  d="m266.9,179.9l-3.3-3.7l3.6-4.5l1.8-6.7 l-4.1-4.2l5.4-2.9l0.9-2.7l2.7,1.3l6.4-2.3l4.9,3l2.6-1.7l5.7,1.1l2.9-0.3l7.2-5.4l7-1.7l5.6,1l0.2,3.2l6.3,0.5l7.8,9.5l-1.7,2.3 l3.4,2.1l0.1,3.2l4.8,4.4l-0.2,4.5l0.5,4.6l-7.5,5.1l1.1,7.5l-3.2-0.7l-3.1-3.5l-2.9,1l-7.2-5l-1.6-8.4l-2.8-1.5l-11,5.9l-3-0.1 v-0.1v-2.9l-3.3-1.6l-1.9-6l-2.7-0.2l-0.7,2.7h-9.1l-6.7,3.3l-2.5-1.7L266.9,179.9z"></path>
 				<path data-nom="Seine-Maritime" data-numerodepartement="76" d="m314.41,119.8l-7.61-1.8l-1.2-2l-0.1-2.3 l4.4-9.7l13.8-7.4L326,95l10.3-2.1l4.8-1.8l2.4,0.3L352,87l5.11-4.09l11.79,9.99l3.4,8.4l-3.1,4.7l1.4,8.7l-1.3,8l-13.1-3.3l-4.8,7 l-8.2,2.5l-1.4,2.7l-5.4-2.4l-2.1-2.1l1.9-2.4l-4.9-3l-3.4,0.7l-7.6-5L314.41,119.8z"></path>
 				<?php
-					afficherVilleCHU ("CAEN","CHU Caen", "Caen", "283", "135", "245", "157");
-					afficherVilleCHU ("ROUEN","CHU Rouen", "Rouen", "342", "119", "303", "139");
+					afficherVille ($page,"CAEN","CHU Caen", "Caen", "283", "135", "245", "157");
+					afficherVille ($page,"ROUEN","CHU Rouen", "Rouen", "342", "119", "303", "139");
 				?>
 			</g>
 			<g class="region region-32" data-nom="Hauts-de-France">
@@ -73,8 +84,8 @@
 				<path data-nom="Pas-de-Calais" data-numerodepartement="62" d="m379.8,68.9l7.1,5.8l12-2.5l-2.6,5.7L398,81 l2.5-3.1l8.4,3.5l0.8-2.8l2.8,4.6l2.4-1.7l0.8,3.2l8.6-1.8l3.5-10.6l-1.8-2.4l-3-0.4l0.7-2.7l-3.9-5.2l3.1-1.6l-3.8-5.3l-5.9-1 l1-6.1l-1.3-2.5l-1.7,2.2l-11.6-0.5l-4.1-4.2l0.6-2.8l-5.5-2.6l-6.27-12.14L372.6,28.5l-6.4,5.4l0.9,5.6l-1.7,4.6l0.6,6.7l2,4.2 l-1.7-1.4l-0.3,9.7l2.27,1.58l10.53,1.02L379.8,68.9z"></path>
 				<path data-nom="Somme" data-numerodepartement="80" d="m424.3,82.9l3.3,2.6l-0.4,3.8l-3.9,8.1l2.3,7 l-10.3,1.5l-8.6,6.8l-12.8-6.7l-14.4-2.2l-3.1,1.2l-4.1-3.7l-3.4-8.4l-11.79-9.99L359.5,81l3.4-6.6l1.9-1.1l0.1-0.1l1.4,1.8l3.5,0.3 l-5.6-6l1.2-5.1l2.9,0.7l-0.03-0.02l10.53,1.02l1,3l7.1,5.8l12-2.5l-2.6,5.7L398,81l2.5-3.1l8.4,3.5l0.8-2.8l2.8,4.6l2.4-1.7 l0.8,3.2L424.3,82.9z"></path>
 				<?php
-					afficherVilleCHU ("AMIENS","CHU Amiens", "Amiens", "393", "94", "368", "116");
-					afficherVilleCHU ("LILLE","CHU Lille", "Lille", "423", "49", "410", "73");
+					afficherVille ($page,"AMIENS","CHU Amiens", "Amiens", "393", "94", "368", "116");
+					afficherVille ($page,"LILLE","CHU Lille", "Lille", "423", "49", "410", "73");
 				?>
 			</g>
 			<g class="region region-44" data-nom="Grand Est">
@@ -89,9 +100,9 @@
 				<path data-nom="Haut-Rhin" data-numerodepartement="68" d="m605.9,193l4.64,1.83l-0.04,0.07v5.3l1.6,1.9 l0.2,3.4l-2.2,11.1l0.1,6.7l1.8,1.5l0.6,3.5l-2.2,2l-0.2,2.3l-3.1,0.9l0.5,2.2l-1.5,1.6h-2.7l-3.8,1.4l-3-1.1l0.3-2.5l-2.4-1.1 l-0.4,0.1l-2-5l-2.8,0.2l-0.5-9l-7.6-5l2.8-2.4v-6.2l4.8-7.8l4.1-13.5l1.1-1l3.1,0.2l8.5,5.6L605.9,193z"></path>
 				<path data-nom="Vosges" data-numerodepartement="88" d="m520.4,183.6l2.4-2.3l6.9-3.4l3,0.5l1.9-2.3 l5.8,0.6l-0.1,2.9l4.1,4.8l5.7-0.7l1.1-2.8l5.4-2l2.4,1.8l6-1l5.3-3.8l1.6,2.7l6.1,1.6l10.6-7.6l1.5-0.4l-1.3,10l5.2,2.2l-1.1,1 l-4.1,13.5l-4.8,7.8v6.2l-2.8,2.4l-0.9,0.6l-8.4-6.6l-5.1,2.2l-4.9-3.6l-5.8,1.6l-7-4.3l-8,5.8v-0.1l-1.3-2.5l-2.7,1.1l-0.2-3.1 l-5.5-4.7l1.7-8.6L520.4,183.6z"></path>
 				<?php
-					afficherVilleCHU ("NANCY","CHU Nancy", "Nancy", "550", "160", "515", "182");
-					afficherVilleCHU ("STRASBOURG","CHU Strasbourg", "Strasbourg", "615", "165", "565", "155");
-					afficherVilleCHU ("REIMS","CHU Reims", "Reims", "463", "131", "443", "154");
+					afficherVille ($page,"NANCY","CHU Nancy", "Nancy", "550", "160", "515", "182");
+					afficherVille ($page,"STRASBOURG","CHU Strasbourg", "Strasbourg", "615", "165", "565", "155");
+					afficherVille ($page,"REIMS","CHU Reims", "Reims", "463", "131", "443", "154");
 				?>
 			</g>
 			<g class="region region-52" data-nom="Pays de la Loire">
@@ -101,8 +112,8 @@
 				<path data-nom="Sarthe" data-numerodepartement="72" class="region-52 departement departement-72 departement-sarthe" d="m312.7,235.3l-6.1-2.6l-7.4-0.1l-5.2-3.3 l-3.1,1.3l-2-2l-0.2-3.5l-6.7,0.2l-0.6-2.7l-1.5-5.6l5.5-7.7l-1.4-3.4l5-4.6l-1.2-2.9l4.4-4l-0.3-6.9l4.3-2.7l3,0.1l11-5.9l2.8,1.5 l1.6,8.4l7.2,5l2.9-1l3.1,3.5l3.2,0.7l2.1,3.8l-0.4,1.8v0.1l-2,2.1l1.7,2.2l0.4,5.5l-6.3,10.6l-3.2,1.1l-0.6,3.5l-7.7,4.5l-2.8-0.3 L312.7,235.3z"></path>
 				<path data-nom="Vendée" data-numerodepartement="85" class="region-52 departement departement-85 departement-vendee" d="m269.3,305.1l0.2-7.4l-4.7-17.9l-4.2-4.1l-2.3-5.7l-10.6-3.8l-4.8-3.5l-1.5,2.4l-3.2,0.7 l0.5,3l-2.4,2.1l-2.3-1.7v-3.1l-3.4,0.2l-0.2,9.5l-11.7-5l-5.6-5.6l-0.3,0.1l-0.8,2.6l-3.4,4.3l-1.2,2.3l0.2,2.4l8.7,9.5l2.7,5.6 l1.2,5.3l8,5.4l3.4,0.5l3.9,4.3l2.9-0.1l2,1.2l1.8,2.5l-0.9-2.1l3.9,3.3l0.5-2.7l2.4,0.3l7.1-2.7l-1.4,2.9l6.5-0.3l2.4,1.8l9.1-4.5 L269.3,305.1z"></path>
 				<?php
-					afficherVilleCHU ("NANTES","CHU Nantes", "Nantes", "218", "250", "170", "274");
-					afficherVilleCHU ("ANGERS","CHU Angers", "Angers", "275", "240", "245", "260");
+					afficherVille ($page,"NANTES","CHU Nantes", "Nantes", "218", "250", "170", "274");
+					afficherVille ($page,"ANGERS","CHU Angers", "Angers", "275", "240", "245", "260");
 				?>
 			</g>
 			<g class="region region-53" data-nom="Bretagne">
@@ -111,8 +122,8 @@
 				<path data-nom="Ille-et-Vilaine" data-numerodepartement="35" d="m255.2,207.2l-5.5,2.2l-3.6,8.6l-0.4,2.2 l-6.8-3.6l-9,3.9l-1.6,2.9l-13.2,0.4l-5.2,3.4l-1-5.8l3-0.7l-2.8-1.5l2.4-2.2l1-3.2l-2.4-1.7l1.6-2.6l-1.2-2.5l-5.1-2.8l-0.5-2.8 l3.5-0.9l-3.6-0.1l-1-4.4l4.9-7.1l9-2.5l1.9-13l-0.4-1.7l-0.7-0.2l-2.5-0.3l-1.6-3.99l0.05-0.86l0.05-0.85l0.7-0.1h2.1v0.1l1.7,4.4 l1.3,2l-0.5,2.1l1.4-2.1l-2.3-5.1l0.7-2.5l2.2-1.5l2.3-0.6l2.2,1l-1.5,2.3l2.9,2.4l7.3-0.6l4.7,9.6l2.7,1l7.1-4.8l5.4,2.3l-0.1,12.1 l-1.5,2.4L255.2,207.2z"></path>
 				<path data-nom="Morbihan" data-numerodepartement="56" d="M167.7,242.6l2.9,1.2l-1.1,2.1l-5.1-1.2l-1.3-2.7l0.4-3l2.1,1.4L167.7,242.6z M209.1,219.2l2.4-2.2l1-3.2 l-2.4-1.7l1.6-2.6l-1.2-2.5l-5.1-2.8l-0.5-2.8l3.5-0.9l-3.6-0.1l-1-4.4l-2.9,1.1l-1.5-2.7l-3.5-0.9l-6.2,7.5l-1.8-6l-3,0.9 l-12.9-6.5l-7.9,3l-12.46-3.29l-0.04,0.09l-6.8,3.2l0.5,3.5l3.4,5.5l8.1,1.3l0.1,5.4l-2.5,2.8l-2.8-0.8l2,3.4l0.1,1.5l2.9,4.4 l2.3-0.2l1.5-1.7l-0.8-5.1l0.6,2.4l1.7,1.7l1.9-1.7l-2.5,4.2l2.2,1.4l-2.3-0.6l3.2,1.9l0.1,0.1l1.6,1l1.7-2.5l-1.6,3.1l2.1,2.6 l0.6,3.5l-0.9,2.8l2.1,1.1l-1.2-3l0.5-3.8l2.2,1.6l5.1,0.1l-0.7-5l1.4,2l2.1,1.5l4.8-0.5l2.1,2.4l-1,2.2l-2.1-0.6l-4.8,0.4l3.8,3.3 l12.9-0.9l3.1,1.5l-3.4,0.1l1.42,2.39l13.18-3.89l0.4-6l-1-5.8l3-0.7L209.1,219.2z"></path>
 				<?php
-					afficherVilleCHU ("RENNES","CHU Rennes", "Rennes", "230", "195", "206", "216");
-					afficherVilleCHU("BREST","CHU Brest", "Brest", "120", "172", "103", "192");
+					afficherVille ($page,"RENNES","CHU Rennes", "Rennes", "230", "195", "206", "216");
+					afficherVille($page,"BREST","CHU Brest", "Brest", "120", "172", "103", "192");
 				?>
 			</g>
 			<g class="region region-75" data-nom="Nouvelle-Aquitaine">
@@ -129,9 +140,9 @@
 				<path data-nom="Vienne" data-numerodepartement="86" d="m329.6,320.8v3.5l-4.8-0.6l-1.3,2.5l-3.8,1.4 l-4.1-3.9l-2.2,1.8l1.4,2.4l-2.9,0.8l-9.1-3l0.8-2.8l-4.5-3l3.2-8.5l-6.4-0.2l0.1-2.8l-2.1-2l-0.5-5.8l3.4-5.5l-1.5-3l-2.7,0.9 l4.5-14.1l-2.7-1.2l0.8-3l-3.4-9l6.6-5.9l5.5,3.2l0.3,3.2l2.9-0.3l1.3,6.1l2.8,1.4l10-0.4l-1.4-2.9l5.3,3l0.3,3.1l7.1,10l2.1,3 l-0.8,5.8l4.6,4.4h2.9l2.6,5.4l2.5,1.3l-1.5,2.8l-0.8-0.3l-1.3,2.4l-3.3-0.9l-1.3,3l-5.6,2.7L329.6,320.8z"></path>
 				<path data-nom="Haute-Vienne" data-numerodepartement="87" d="m348.9,364.1l-1.6,2.7l-5.7-2.2l2-2.7l-7.2-5.6 l-9.5,1.1l0.1-4.7l-6.2-3h-0.1l3.4-3.8l2.8-0.6l4-8l2.6-1.1l0.6-3.2l-4.7-3.6l0.2-5.1v-3.5l3-5l5.6-2.7l1.3-3l3.3,0.9l1.3-2.4 l0.8,0.3l2.6,1.1l5.8-1.1l1.7,2.5l1.2,2.6l-3,5.3l6.6,9.8l1.8,5.2l-0.9,3.4l2.9,1.5l0.1,2.8l6.4,0.5l4.7,3l0.6,5.9l-8.7,4l-4.9,4.6 l-5.7,1.3l-4.7,4L348.9,364.1z"></path>
 				<?php
-					afficherVilleCHU ("LIMOGES","CHU Limoges", "Limoges", "347", "342", "310", "364");
-					afficherVilleCHU("BORDEAUX","CHU Bordeaux", "Bordeaux", "262", "386", "232", "406");
-					afficherVilleCHU("POITIERS","CHU Poitiers", "Poitiers", "311", "295", "280", "318");
+					afficherVille ($page,"LIMOGES","CHU Limoges", "Limoges", "347", "342", "310", "364");
+					afficherVille($page,"BORDEAUX","CHU Bordeaux", "Bordeaux", "262", "386", "232", "406");
+					afficherVille($page,"POITIERS","CHU Poitiers", "Poitiers", "311", "295", "280", "318");
 				?>
 			</g>
 			<g class="region region-76" data-nom="Occitanie">
@@ -149,8 +160,8 @@
 				<path data-nom="Tarn" data-numerodepartement="81" d="m419.7,471.9l1.3,2.8c-2.2,1.5-4.5,2.9-6.8,4.4 l-6.1-2.2l0.7,9.7l-0.8,3l-3.4,2l-12-1.4l-2.8,0.5l-1.1,3.3l-6.3-0.9l-1.8-2.3l-1-2.8l-14.3-9.3l0.7-5.4l-2.3-2.1l-0.2-2.8l-2.6-1.2 l-1.4-6.3l0.5-2.8l4.8-3.2l1-2.7L364,450l3-1.1l2.7,1.1l9.2-3.2l6.1-2.8l10.3,5.8l4.8,4.3l4.3,11.5l4.2,5L419.7,471.9z"></path>
 				<path data-nom="Tarn-et-Garonne" data-numerodepartement="82" d="m360,458.1l-0.5,2.8l-11.7,4.3l2.2,2.3 l-5.8,2.5l-1.7-2.3l-9.9,0.9l-2-6.9l-5.1-4.1l3.3-4.6l-5.3-1.7l3.6-4.7l2.8,0.2l-1.3-2.7l4.4-5.5l-2.4-1.4v-2.9l7.5-2l3.1-0.5 l-2.1,2.3l4.5,4l2.7,1l2.4-1.5l0.5,4l8.7-2.5l2.6,2.3l7.5-5.5l6.2-0.8l-0.4,3l3.1,2.7l-2.3,2.4l4.3,3.6l-9.2,3.2l-2.7-1.1l-3,1.1 l1.8,2.2l-1,2.7L360,458.1z"></path>
 				<?php
-					afficherVilleCHU ("TOULOUSE","CHU Toulouse", "Toulouse", "353", "482", "325", "502");
-					afficherVilleCHU("MONTPELLIER","CHU Montpellier", "Montpellier", "464", "478", "388", "465");
+					afficherVille ($page,"TOULOUSE","CHU Toulouse", "Toulouse", "353", "482", "325", "502");
+					afficherVille($page,"MONTPELLIER","CHU Montpellier", "Montpellier", "464", "478", "388", "465");
 				?>
 			</g>
 			<g class="region region-84" data-nom="Auvergne-Rhône-Alpes">
@@ -167,10 +178,10 @@
 				<path data-nom="Savoie" data-numerodepartement="73" d="m603.7,362l-1,10.3l-3.1,1.4l-2.2,0.7l-4.5,3.4 l-1.5,2.4l-2.5-1.4l-5.1,1.3l-2,1.8v0.1l-6.8,1.9l-2,2l-7.7-3.5l-5.2-1.5l-1-5.4l2.3-5.5l-2.7-6.3l-9.4-2.1l-0.3,2.8l-6.2-0.2 l-6.5-10.5l5.7-6.7l2.3-13.6l2.7,6.7l2.7,0.9l1.3,2.5l3,1.7l2.6-1.6l3.2,0.8l4.6,3.6l9.4-13.9l2.4,1.6l-0.6,3l2.3,1.8l6.2,2.3 l2.2-1.5l0.62-0.76l1.88,4.66l2.7,1.1l1.5,1.9l2.8,0.4l-0.7,3l1.3,5.2l5.1,4L603.7,362z"></path>
 				<path data-nom="Haute-Savoie" data-numerodepartement="74" d="m547,340.1l-2.7-6.7l-0.8-9.3h2.9l4.36-4.71 l2.24,0.91l2.3-1l2.3,0.1l3.4-3.5l2.1-1l1-2.3l-2.8-1.3l1.8-5.1l2.4-0.8l2.3,1l3.6-2.9l9.5-1.3l3.2,0.6l-0.5,2.7l4.2,4.1l-2.1,6.4 l-0.6,1.5l4.6,1.7l-0.1,4.8l2-1.4l4.6,6.6l-1.3,5l-2.5,1.7l-4.9,0.9l-0.6,3.7l0.02,0.04l-0.62,0.76l-2.2,1.5l-6.2-2.3l-2.3-1.8 l0.6-3l-2.4-1.6l-9.4,13.9l-4.6-3.6l-3.2-0.8l-2.6,1.6l-3-1.7l-1.3-2.5L547,340.1z"></path>
 				<?php
-					afficherVilleCHU ("CLERMONT-FERRAND","CHU Clermont-Ferrand", "Clermont-Ferrand", "430", "347", "430", "317");
-					afficherVilleCHU("SAINT ETIENNE","CHU Saint-Etienne", "Saint-Etienne", "481", "363", "481", "388");
-					afficherVilleCHU ("HCL Lyon","HCL Lyon", "HCL", "500", "346", "495", "334");
-					afficherVilleCHU("GRENOBLE","CHU Grenoble", "Grenoble", "539", "376", "520", "365");
+					afficherVille ($page,"CLERMONT-FERRAND","CHU Clermont-Ferrand", "Clermont-Ferrand", "430", "347", "430", "317");
+					afficherVille($page,"SAINT ETIENNE","CHU Saint-Etienne", "Saint-Etienne", "481", "363", "481", "388");
+					afficherVille ($page,"HCL Lyon","HCL Lyon", "HCL", "500", "346", "495", "334");
+					afficherVille($page,"GRENOBLE","CHU Grenoble", "Grenoble", "539", "376", "520", "365");
 				?>
 			</g>
 			<g class="region region-93" data-nom="Provence-Alpes-Côte d&#39;Azur">
@@ -181,8 +192,8 @@
 				<path data-nom="Var" data-numerodepartement="83" d="m600.28,481.77l-1.38,2.53l-6.8,1.7l-0.7,2.5 l-5.5,5.7l5,0.7l-2,4.8l-4,0.2l-4.8,2.5l-3.5,1.1l0.1,2.7l-4.9-1.5l-2.7,0.5l-1.6,1.6l-0.4,2.3l-2.2,1.6l1.4-1.8l-2.4-1.7l-2.2,0.7 l-1.6-1.6l-3.1,0.1l0.9,2.2l-2.3-0.4l-1.5,1.7l-3-1.1l0.6-2.3l-6.4-4.1l-0.5-0.1l0.2-2.1l2.5-2l-2.2-6.3l1.1-2.6l2.7-0.5l-5.5-9.1 l2-5.3l3.3-0.8l-1.9-3.8l0.1-0.4l5.3,0.2l2.7-1.8l4,4.8l10.1-8.5l5.9,3.6l1.2-3.5l9.8-0.4l5.5,2.9l1.7,5.6l5.6,2.6l-0.8,2.9 L600.28,481.77z"></path>
 				<path data-nom="Vaucluse" data-numerodepartement="84" d="m541,463.4l6.1,6l-0.1,0.4l-0.1-0.1l-6.6,4.3 l-3.2,0.2l-12-4.8l-3.5,0.7l-4.5-2.3l-5.5-5.7l-10.4-2.9l4.5-5l-6.3-6.4l-0.2-5.5l-2.6-4.4l-0.1-3.7l5.9,0.7l3.5,4.2l8.7-3.9 l2.4,1.4l2.5-2.2l0.5,5.8l9.3,0.9l0.1,2.8l5.2,2.3l2.2,5.4l-1.2,3l3.7,5.2l-1.7,2.5L541,463.4z"></path>
 				<?php
-					afficherVilleCHU ("AP-HM Marseille","AP-HM Marseille", "AP-HM", "534", "492", "511", "483");
-					afficherVilleCHU("NICE","CHU NICE", "Nice", "609", "464", "593", "455");
+					afficherVille ($page,"AP-HM Marseille","AP-HM Marseille", "AP-HM", "534", "492", "511", "483");
+					afficherVille($page,"NICE","CHU NICE", "Nice", "609", "464", "593", "455");
 				?>
 			</g>
 			</svg>

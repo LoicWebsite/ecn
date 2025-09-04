@@ -1,4 +1,22 @@
 <?php
+	function afficherVille ($page, $CHU, $libelleCHU, $libelleVille, $cx, $cy, $xTexte, $yTexte) {
+		if ($page == 'poste') {
+			return afficherVilleCHU ($CHU, $libelleCHU, $libelleVille, $cx, $cy, $xTexte, $yTexte);
+		} else {
+			return afficherDepartement($CHU, $libelleCHU, $libelleVille, $cx, $cy, $xTexte, $yTexte);
+		}
+	}
+	
+	function afficherDepartement ($CHU, $libelleCHU, $libelleVille, $cx, $cy, $xTexte, $yTexte) {
+		
+		// affichage du CHU
+		echo "<a data-html='true' title='" . $libelleCHU . "'>";
+		echo "<circle cx='" . $cx . "' cy='" . $cy . "' r='5' stroke='gray' stroke-width='1' fill='white'>";
+		echo "</a>";
+
+		return;
+	}
+
 	function afficherVilleCHU ($CHU, $libelleCHU, $libelleVille, $cx, $cy, $xTexte, $yTexte) {
 
 		echo "<style> hr { background-color: white; margin: 6px; } </style>";
@@ -13,7 +31,7 @@
  		}
 
 		// le nombre de poste CESP est-il compatible avec le critère Cesp saisi ?
-		if ($GLOBALS['cesp'] == "on") and ($i >=0)) {
+		if (($GLOBALS['cesp'] == "on") and ($i >=0)) {
 			if (($GLOBALS['listeCesp'][$i] != null) and ($GLOBALS['listeCesp'][$i] > 0 )) {
 				$cespOk = true;
 			} else {
@@ -63,11 +81,15 @@
 			$libelleSpecialite = $GLOBALS['specialite'];					// appel de la fonction depuis la page principale du site
 		}
 		$annee = $GLOBALS['reference'];
+		$libelleAnnee = $annee;
+		if ($annee < 2020) {												// il n'y a pas de CESP et de postes dans la base avant 2020 (donc on affiche ceux de 2024)
+			$libelleAnnee = "2024";
+		}
 		if (($rangOk) and ($cespOk) and ($libellePoste > 0)) {
-			echo "<a data-html='true' " . $urlCeline . " title='" . $libelleCHU . "<br/>" . $libelleSpecialite . "<br/>" . " <strong>accessible</strong><hr>dernier <small>en " . $annee . "</small> : " . $libelleDernier . "<br/>poste <small>en 2024</small> : " . $libellePoste . "<br/>CESP <small>en 2024</small> : " . $libelleCesp . "'>";
+			echo "<a data-html='true' " . $urlCeline . " title='" . $libelleCHU . "<br/>" . $libelleSpecialite . "<br/>" . " <strong>accessible</strong><hr>dernier <small>en " . $annee . "</small> : " . $libelleDernier . "<br/>poste <small>en " . $libelleAnnee . "</small> : " . $libellePoste . "<br/>CESP <small>en " . $libelleAnnee . "</small> : " . $libelleCesp . "'>";
 			echo "<circle cx='" . $cx . "' cy='" . $cy . "' r='5' stroke='gray' stroke-width='1' fill='white' />";
 		} else {
-			echo "<a data-html='true' " . $urlCeline . " title='" . $libelleCHU . "<br/>" . $libelleSpecialite . "<br/>" . " <strong>non accessible</strong><hr>dernier <small>en " . $annee . "</small> : " . $libelleDernier . "<br/>poste <small>en 2024</small> : " . $libellePoste . "<br/>CESP <small>en 2024</small> : " . $libelleCesp . "'>";
+			echo "<a data-html='true' " . $urlCeline . " title='" . $libelleCHU . "<br/>" . $libelleSpecialite . "<br/>" . " <strong>non accessible</strong><hr>dernier <small>en " . $annee . "</small> : " . $libelleDernier . "<br/>poste <small>en " . $libelleAnnee . "</small> : " . $libellePoste . "<br/>CESP <small>en " . $libelleAnnee . "</small> : " . $libelleCesp . "'>";
 			echo "<circle cx='" . $cx . "' cy='" . $cy . "' r='5' stroke='gray' stroke-width='1' fill='white' />";
 		}
 

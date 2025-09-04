@@ -9,16 +9,10 @@
 	<?php
 		// favicons générés par https://realfavicongenerator.net
 		include "php/favicon.php";
+	
+		// Google Analytics
+		include "php/GoogleAnalytics.php";
 	?>
-
-	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=GOOGLE-ID"></script>
-	<script>
-	  window.dataLayer = window.dataLayer || [];
-	  function gtag(){dataLayer.push(arguments);}
-	  gtag('js', new Date());
-	  gtag('config', 'G-4NC0K56D5R');
-	</script>
     
     <title>Saisie des critères de sélection des spécialités</title>
     
@@ -36,14 +30,14 @@
 
 	<nav style='margin-top:80px;' aria-label="breadcrumb">
 	  <ol class="breadcrumb">
-		<li class="breadcrumb-item"><a href="choix-specialite-chu-celine-ecn.php"><i class="fas fa-home"></i></a></li>
+		<li class="breadcrumb-item"><a href="choix-specialite-chu-celine-ecn.php"><i class="bi bi-house-door-fill"></i></a></li>
 		<li class="breadcrumb-item active" aria-current="page">Critère</li>
 	  </ol>
 	</nav>
 
 	<?php
 		// récupération-contrôle des paramètres
-		include "php/controleParametre.php";
+		require_once "php/controleParametre.php";
 	?>
 
 	<div id="questionnaire" class="container">
@@ -61,7 +55,7 @@
 					<div class="col-md-1">
 					</div>
 					<div class="col">
-						Rang ECN visé ou obtenu :
+						Rang ECN/EDN visé ou obtenu :
 					</div>
 					<div class="col">
 						<input id="rang" name="rang" type="number" min="0" max="10000" class="form-control" placeholder="indifférent">
@@ -79,6 +73,10 @@
 						Année de référence :
 					</div>
 					<div class="col">
+						<div class="custom-control custom-radio custom-control-inline">
+							<input type="radio" id="an2025" name="reference" class="custom-control-input" value="2025">
+							<label class="custom-control-label" for="an2025">2025</label>
+						</div>
 						<div class="custom-control custom-radio custom-control-inline">
 							<input type="radio" id="an2024" name="reference" class="custom-control-input" value="2024" checked>
 							<label class="custom-control-label" for="an2024">2024</label>
@@ -113,7 +111,8 @@
 						</div>
 					</div>
 					<div class="col-md-1">
-						<i class="fas fa-info-circle" data-toggle="tooltip" data-html="true" title="L'année de référence sert à afficher le rang du dernier de cette année là (c'est le rang limite publié par le CNG Santé). Elle correspond à l'année de publication au Journal Officiel.<br/>L'année sert également à filtrer les spécialités et CHU accessibles lorsque le &apos;Rang ECN&apos; est saisi."></i>
+						<i class="bi bi-info-circle-fill" data-toggle="tooltip" data-html="true" title="L'année de référence sert à afficher le rang du dernier de cette année là (c'est le rang limite publié au Journal Officiel après les affectations définitives). Elle correspond à l'année de publication au Journal Officiel (par exemple 2024 se lit comme l'année 2024-2025).<br/>L'année sert également à filtrer les spécialités et CHU accessibles lorsque le &apos;Rang ECN&apos; est saisi.
+							<br>L'année 2025 (pour l'instant) permet uniquement de visualiser le nombre de postes et de CESP pour l'année 2025-2026."></i>
 					</div>
 				</div>
 
@@ -135,7 +134,7 @@
 						</select>
 					</div>
 					<div class="col-md-1">
-						<i class="fas fa-info-circle" data-toggle="tooltip" data-html="true" title="Le type de spécialité ici est donné pour simplifier la réflexion. Il ne décrit pas complètement les spécialités.<br/>Il existe en effet de nombreuses spécialités médicales avec des gestes ou de la 'petite' chirurgie.<br/>Et inversement, dans les spécialités chirurgicales, la médecine est présente du diagnostic jusqu'au au suivi du patient."></i>
+						<i class="bi bi-info-circle-fill" data-toggle="tooltip" data-html="true" title="Le type de spécialité ici est donné pour simplifier la réflexion. Il ne décrit pas complètement les spécialités.<br/>Il existe en effet de nombreuses spécialités médicales avec des gestes ou de la 'petite' chirurgie.<br/>Et inversement, dans les spécialités chirurgicales, la médecine est présente du diagnostic jusqu'au au suivi du patient."></i>
 					</div>
 				</div>
 
@@ -154,7 +153,7 @@
 						</div>
 					</div>
 					<div class="col-md-1">
-						<i class="fas fa-info-circle" data-toggle="tooltip" data-html="true" title="En sélectionnant ce critère, les spécialités affichées seront uniquement celles ayant des postes CESP (Contrat d&apos;Engagement de Service Public) existants pour l'année de référence sélectionnée (pour les années à partir de 2020)."></i>
+						<i class="bi bi-info-circle-fill" data-toggle="tooltip" data-html="true" title="En sélectionnant ce critère, les spécialités affichées seront uniquement celles ayant des postes CESP (Contrat d&apos;Engagement de Service Public) existants pour l'année de référence sélectionnée (pour les années à partir de 2020)."></i>
 					</div>
 				</div>
 
@@ -175,7 +174,7 @@
 						</select>
 					</div>
 					<div class="col-md-1">
-						<i class="fas fa-info-circle" data-toggle="tooltip" data-html="true" title="Toutes les spécialités peuvent s'exercer en libéral ou à l'hôpital, à quelques rares exceptions.<br/>Ici la distinction est faite entre celles nécessitant un plateau technique (à l'hôpital) et celles pouvant s'exercer dans un cabinet autonome (en ville)."></i>
+						<i class="bi bi-info-circle-fill" data-toggle="tooltip" data-html="true" title="Toutes les spécialités peuvent s'exercer en libéral ou à l'hôpital, à quelques rares exceptions.<br/>Ici la distinction est faite entre celles nécessitant un plateau technique (à l'hôpital) et celles pouvant s'exercer dans un cabinet autonome (en ville)."></i>
 					</div>
 				</div>
 
@@ -233,7 +232,7 @@
 						</select>
 					</div>
 					<div class="col-md-1">
-						<i class="fas fa-info-circle" data-toggle="tooltip" data-html="true" title="Il s'agit du bénéfice net comptable moyen des secteurs 1 et 2 confondus, pour les spécialités pouvant s'exercer en libéral.<br/>Les chiffres datent de 2021 et 2020 (sources UNASA et CARMF)."></i>
+						<i class="bi bi-info-circle-fill" data-toggle="tooltip" data-html="true" title="Il s'agit du bénéfice net comptable moyen des secteurs 1 et 2 confondus, pour les spécialités pouvant s'exercer en libéral.<br/>Les chiffres datent de 2021 et 2020 (sources UNASA et CARMF)."></i>
 					</div>
 				</div>
 
@@ -250,16 +249,13 @@
 						<br/><button name="specialite" type="submit" class="btn btn-primary mt-1 mb-5" value="specialite">Voir les spécialités</button>
 						&nbsp; &nbsp; &nbsp; <button name="CHU" type="submit" class="btn btn-primary mt-1 mb-5" value="CHU">Voir les CHU</button>
 					</div>
+					<div>
+						<em>Vous pouvez également voir le nombre de <strong>postes</strong> ou le nombre de <strong>CESP</strong> en fonction de vos critères</em>
+						<br/><button name="poste" type="submit" class="btn btn-primary mt-1 mb-5" value="poste">Voir les postes</button>
+						&nbsp; &nbsp; &nbsp; <button name="CESP" type="submit" class="btn btn-primary mt-1 mb-5" value="CESP">Voir les CESP</button>
+					</div>
 				</div>
-	<!-- A ACTIVER PENDANT LA PHASE DE CHOIX DE POSTE -->
-<!-- 
-				<div class="text-center">
-					<em>Saisissez le rang ECN visé ou obtenu pour mieux voir les <strong>rangs limites</strong> accessibles</em>
-					&nbsp;&nbsp;<i class="fas fa-info-circle" data-toggle="tooltip" data-html="true" title="Les rangs limites 2023 sont issus des simulations et affectations CELINE."></i>
-					<br/><button name="rangLimite" type="submit" class="btn btn-primary mt-1 mb-5" value="rangLimite">Voir la simulation 2023</button>
-				</div>
- -->
-	<!-- FIN CODE A ACTIVER --> 
+
 				<div class="text-center">
 					<em>Effacer tous les critères pour recommencer une nouvelle recherche</em>
 					<br/><button name="reset" type="reset" class="btn btn-info mt-1 mb-5">Effacer les critères</button>
@@ -297,6 +293,13 @@
 			}
 			if ($benefice <> "") {echo "document.getElementById('".$benefice."').selected = true;";}
 		?>
+		
+		toggleButtons();
+
+		document.querySelectorAll('input[name="reference"]').forEach(radio => {
+		radio.addEventListener('change', toggleButtons);
+		});
+	
 		}
 	</script>
 	
@@ -305,6 +308,49 @@
 		$(function () {
 			$('[data-toggle="tooltip"]').tooltip()
 		})
+	</script>
+
+	<!-- script pour désactiver les boutons spécialité et CHU si année 2025 (temporaireement) -->
+	<script>
+		function toggleButtons() {
+			let selectedYear = document.querySelector('input[name="reference"]:checked').value;
+
+			let btnSpecialite = document.querySelector('button[name="specialite"]');
+			let btnCHU = document.querySelector('button[name="CHU"]');
+
+			if (selectedYear === "2025") {
+			[btnSpecialite, btnCHU].forEach(btn => {
+				btn.disabled = true;
+				btn.classList.add("btn-secondary");
+				btn.classList.remove("btn-primary");
+
+				// On s'assure d'abord de détruire tout ancien tooltip
+				$(btn).tooltip('dispose');
+
+				// Puis on recrée un tooltip actif
+				btn.setAttribute("title", "Indisponible pour l'année 2025");
+				$(btn).tooltip();
+			});
+			} else {
+			[btnSpecialite, btnCHU].forEach(btn => {
+				btn.disabled = false;
+				btn.classList.remove("btn-secondary");
+				btn.classList.add("btn-primary");
+
+				// Détruire totalement le tooltip pour qu'il disparaisse
+				$(btn).tooltip('dispose');
+
+				// Nettoyage des attributs pour éviter résidus
+				btn.removeAttribute("title");
+			});
+			}
+		}
+
+		// quand on clique sur reset → on relance toggleButtons après un court délai
+		document.querySelector('form').addEventListener('reset', function() {
+			// petit timeout pour laisser le navigateur remettre les valeurs par défaut
+			setTimeout(toggleButtons, 0);
+		});
 	</script>
 
   </body>

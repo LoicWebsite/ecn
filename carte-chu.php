@@ -9,16 +9,10 @@
 	<?php
 		// favicons générés par https://realfavicongenerator.net
 		include "php/favicon.php";
+	
+		// Google Analytics
+		include "php/GoogleAnalytics.php";
 	?>
-
-	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=ID-GOOGLE"></script>
-	<script>
-	  window.dataLayer = window.dataLayer || [];
-	  function gtag(){dataLayer.push(arguments);}
-	  gtag('js', new Date());
-	  gtag('config', 'ID-GOOGLE');
-	</script>
 
     <title>Carte des CHU</title>
     
@@ -70,9 +64,12 @@
 	<?php
 		// menu de l'application, contrôle des paramètres et fonctions communes
 		include "php/menu-questionnaire.php";
-		include "php/controleParametre.php";
-		include "php/fonctionECN.php";
+		require_once "php/controleParametre.php";
+		require_once "php/fonctionECN.php";
 		include "php/fonctionCarte.php";
+	
+		// ouverture de la base de données
+		$db = openDatabase();
 	?>
 
 	<!-- chemin de navigation -->
@@ -80,7 +77,7 @@
 		<div class="row" style='margin-top:80px;'>
 			<div class="col-sm" aria-label="breadcrumb">
 			  <ol class="breadcrumb">
-				<li class="breadcrumb-item"><a href="choix-specialite-chu-celine-ecn.php"><i class="fas fa-home"></i></a></li>
+				<li class="breadcrumb-item"><a href="choix-specialite-chu-celine-ecn.php"><i class="bi bi-house-door-fill"></i></a></li>
 				<li class="breadcrumb-item"><a href="#" onclick="questionnaire()">Critère</a></li>
 				<?php 
 					if ($depuis == "tableau") {
@@ -94,8 +91,8 @@
 			</div>
 			<div class="col-sm">
 				<p style='padding:10px;'>
-					<button class="btn btn-primary btn-sm" onclick="detail()" title="Affichage des CHU en liste"> en liste &nbsp; <i class="fa fa-list" aria-hidden="true"></i></button>
-					&nbsp;&nbsp;&nbsp;<button class="btn btn-secondary btn-sm" onclick="" title="Affichage des CHU sur une carte de France" disabled> en carte &nbsp; <i class="fas fa-map-marked-alt" aria-hidden="true"></i></button>
+					<button class="btn btn-primary btn-sm" onclick="detail()" title="Affichage des CHU en liste"> en liste &nbsp; <i class="bi bi-list-ul"></i></button>
+					&nbsp;&nbsp;&nbsp;<button class="btn btn-secondary btn-sm" onclick="" title="Affichage des CHU sur une carte de France" disabled> en carte &nbsp; <i class="bi bi-geo-alt-fill"></i></button>
 				</p>
 			</div>
 			<div class="col-xl">
@@ -293,12 +290,12 @@
 	</div>
  	<div>
  		<br/>
- 		<p class="text-center">Cliquer &nbsp;<i class='fa fa-mouse-pointer' aria-hidden='true'></i>&nbsp; sur un CHU pour voir le détail.<br/>
+ 		<p class="text-center">Cliquer &nbsp;<i class='bi bi-cursor-fill'></i>&nbsp; sur un CHU pour voir le détail.<br/>
 <!-- A REACTIVER quand Celine actif -->
 <!-- 
 		<?php
 			if ($reference == "2023") {
- 				echo "Double cliquer &nbsp;<i class='far fa-hand-pointer' aria-hidden='true'></i>&nbsp; sur un CHU pour voir le détail des rangs dans Celine (uniquement pour 2023).";
+ 				echo "Double cliquer &nbsp;<i class='bi bi-hand-index-thumb'></i>&nbsp; sur un CHU pour voir le détail des rangs dans Celine (uniquement pour 2023).";
  			}	
 		?>
  -->

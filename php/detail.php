@@ -1,10 +1,13 @@
 <?php
 
 	// fonctions communes et récupération-contrôle des paramètres
-	include_once "php/controleParametre.php";
-	include_once "php/fonctionECN.php";
+	require_once "php/controleParametre.php";
+	require_once "php/fonctionECN.php";
+	
+	// ouverture de la base de données
+	$db = openDatabase();
 
-	// détail de la spécialité
+	// résumé de la spécialité
 	include "php/resume-specialite.php";
 
 	// construction du tableau des CHU
@@ -136,13 +139,9 @@
 		} else {	
 			$libelle = $reference;
 		}
-		echo "<th style='width:20%'> ".$montant->format($nbPoste)." postes " . $libelle . " <br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le nombre de postes est issu de l&apos;arrêté publié par le Journal Officiel.<br/>L&apos;année correspond à l&apos;année de publication au Journal Officiel.<br/>Le nombre de postes exclut les CESP.<br/>Les CHU avec zéro poste dans cette spécialité ne sont pas affichés.'></i></th>";
-		if ($reference == 2024) {
-			echo "<th style='width:20%'> Rang dernier 2024 <br/><i class='fas fa-info-circle' data-toggle='tooltip'  data-html='true' title='Le rang du dernier admis en 2024 est la rang limite du 1er tour d&apos;appariement du 13 septembre 2024.<br/>Un rang à zéro signifie qu&apos;il n&apos;y avait pas de poste cette année là dans ce CHU pour cette spécialité.'></i></th>";
-		} else {
-			echo "<th style='width:20%'> Rang dernier " . $reference . " <br/><i class='fas fa-info-circle' data-toggle='tooltip'  data-html='true' title='Le rang du dernier admis en " . $reference . " est la rang limite issu du site CNG Santé.<br/>Un rang à zéro signifie qu&apos;il n&apos;y avait pas de poste cette année là dans ce CHU pour cette spécialité.'></i></th>";
-		}
-		echo "<th style='width:10%;'> ".$montant->format($nbCESP)." CESP " . $libelle . " <br/><i class='fas fa-info-circle' data-toggle='tooltip' data-html='true' title='Le nombre de postes réservés aux CESP est issu de l&apos;arrêté publié par le Journal Officiel.<br/>Une cellule vide signifie qu&apos;il n&apos;y a pas de poste CESP pour cette spécialité dans ce CHU.'></i></th>";
+		echo "<th style='width:20%'> ".$montant->format($nbPoste)." postes " . $libelle . " <br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Le nombre de postes est issu de l&apos;arrêté publié par le Journal Officiel.<br/>L&apos;année correspond à l&apos;année de publication au Journal Officiel.<br/>Le nombre de postes exclut les CESP.<br/>Les CHU avec zéro poste dans cette spécialité ne sont pas affichés.'></i></th>";
+		echo "<th style='width:20%'> Rang dernier " . $reference . " <br/><i class='bi bi-info-circle-fill' data-toggle='tooltip'  data-html='true' title='A partir de 2024, il s&apos;agit du rang limite par groupe de spécialités.<br>Auparavant c&apos;était le rang limite national par spécialité.<br/>Un rang à zéro signifie qu&apos;il n&apos;y avait pas de poste cette année là dans ce CHU pour cette spécialité.'></i></th>";
+		echo "<th style='width:10%;'> ".$montant->format($nbCESP)." CESP " . $libelle . " <br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Le nombre de postes réservés aux CESP est issu de l&apos;arrêté publié par le Journal Officiel.<br/>Une cellule vide signifie qu&apos;il n&apos;y a pas de poste CESP pour cette spécialité dans ce CHU.'></i></th>";
 		echo "</tr></thead>\n";
 		echo "<tbody>";
 

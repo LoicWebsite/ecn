@@ -43,7 +43,7 @@
 		}
 
 		if (isset($_GET['reference']))  {
-			if (($_GET['reference'] == "2024") or ($_GET['reference'] == "2023") or ($_GET['reference'] == "2022") or ($_GET['reference'] == "2021") or ($_GET['reference'] == "2020") or ($_GET['reference'] == "2019") or ($_GET['reference'] == "2018") or ($_GET['reference'] == "2017")) {
+			if (($_GET['reference'] == "2025") or ($_GET['reference'] == "2024") or ($_GET['reference'] == "2023") or ($_GET['reference'] == "2022") or ($_GET['reference'] == "2021") or ($_GET['reference'] == "2020") or ($_GET['reference'] == "2019") or ($_GET['reference'] == "2018") or ($_GET['reference'] == "2017")) {
 				$reference = $_GET['reference'];
 			}
 		}

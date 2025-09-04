@@ -10,16 +10,10 @@
 	<?php
 		// favicons générés par https://realfavicongenerator.net
 		include "php/favicon.php";
-	?>
 	
-	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=ID-GOOGLE"></script>
-	<script>
-	  window.dataLayer = window.dataLayer || [];
-	  function gtag(){dataLayer.push(arguments);}
-	  gtag('js', new Date());
-	  gtag('config', 'ID-GOOGLE');
-	</script>
+        // Google Analytics
+		include "php/GoogleAnalytics.php";
+	?>
     
 	<title>Description de la spécialité sélectionnée</title>
 
@@ -46,7 +40,7 @@
   <body id="hautdepage" data-spy="scroll" data-target="#navigation" data-offset="0">
 
 	<?php
-		include "php/menu-simulateur.php";
+		include "php/menu-questionnaire.php";
 	?>
 
 	<!-- chemin de navigation -->
@@ -54,14 +48,14 @@
 		<div class="row" style='margin-top:80px;'>
 			<div class="col-sm" aria-label="breadcrumb">
 			  <ol class="breadcrumb">
-				<li class="breadcrumb-item"><a href="choix-specialite-chu-celine-ecn.php#specialite"><i class="fas fa-home"></i></a></li>
+				<li class="breadcrumb-item"><a href="choix-specialite-chu-celine-ecn.php#specialite"><i class="bi bi-house-door-fill"></i></a></li>
 				<li class="breadcrumb-item active" aria-current="page">CHU</li>
 			  </ol>
 			</div>
 			<div class="col-sm">
 				<p style='padding:10px;'>
-					<button class="btn btn-secondary btn-sm" onclick="" title="Affichage des CHU en liste" disabled> en liste &nbsp; <i class="fa fa-list" aria-hidden="true"></i></button>
-					&nbsp;&nbsp;&nbsp;<button class="btn btn-primary btn-sm" onclick="carte()" title="Affichage des CHU sur une carte de France"> en carte &nbsp; <i class="fas fa-map-marked-alt" aria-hidden="true"></i></button>
+					<button class="btn btn-secondary btn-sm" onclick="" title="Affichage des CHU en liste" disabled> en liste &nbsp; <i class="bi bi-list-ul"></i></button>
+					&nbsp;&nbsp;&nbsp;<button class="btn btn-primary btn-sm" onclick="carte()" title="Affichage des CHU sur une carte de France"> en carte &nbsp; <i class="bi bi-geo-alt-fill"></i></button>
 				</p>
 			</div>
 			<div class="col-xl">
@@ -94,6 +88,18 @@
 		})
 	</script>
 	
+	<script>
+		// rend le menu Spécialité actif
+		document.addEventListener("DOMContentLoaded", function() {
+			// Sélectionne l'élément par son ID
+			const specialiteElement = document.getElementById("specialites");
+			// Vérifie si l'élément existe avant d'ajouter la classe
+			if (specialiteElement) {
+				specialiteElement.classList.add("active");
+			}
+		});
+	</script>
+
 	<!-- navigation -->
 	<script>
 		// pour retourner à la page principale
@@ -106,7 +112,7 @@
 		// pour aller au détail format carte
 		function carte() {
 			<?php
-				echo "window.location.href='carte-chu-simulateur.php?specialite=" . $specialite . "';";
+				echo "window.location.href='carte-chu-simulateur.php?page=poste&specialite=" . $specialite . "';";
 			?>
 		}
 	</script>
