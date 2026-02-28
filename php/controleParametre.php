@@ -24,17 +24,14 @@ $allowed_depuis = ["liste","tableau"];
 
 // --- PARAMETRES FILTRES / SECURISES ---
 
-// Paramètres “libres” avec filtration
+// Paramètres “libres”
 $specialite = isset($_GET['specialite']) ? trim($_GET['specialite']) : "";
-$specialite = preg_replace("/[^a-zA-Z0-9 \-]/", "", $specialite);
 $specialite = substr($specialite, 0, 256);
 
 $code = isset($_GET['code']) ? trim($_GET['code']) : "inconnu";
-$code = preg_replace("/[^a-zA-Z0-9 \-]/", "", $code);
 $code = substr($code, 0, 256);
 
 $chu = isset($_GET['chu']) ? trim($_GET['chu']) : "";
-$chu = preg_replace("/[^a-zA-Z0-9 \-]/", "", $chu);
 $chu = substr($chu, 0, 256);
 
 // Rang numérique (0 < rang < 10000)
