@@ -58,10 +58,7 @@
 	<div id="actualite" class="container ancre">
 		<br/>
 		<p class="text-center">
-			<mark style="color:#808080;"><strong>Actualités</strong> : de nouvelles données sont en ligne pour comprendre la démographie médicale : 
-				<br><a href="demographie-medecin.php" title="Démographie médicale">pyramide des âges des médecins par spécialité</a>.
-				<br><a href="carte-densite-medecin.php" title="Densité médicale">densité médicale par département</a>.
-				<br><a href="carte-effectif-medecin.php" title="Effectifs médicaux">nombre de médecins par département</a>.
+			<mark style="color:#808080;"><strong>Actualités</strong> : les résultats 2025 sont disponibles sur le <a href="questionnaire-choix-specialite.php">simulateur en ligne</a>  et sur les simulateurs Excel et OpenOffice (avec notamment les rangs limites par spécialités et par CHU). 
 			</mark>
 		</p>
 	</div>
@@ -98,11 +95,12 @@
 		<br/>
 	</div>
 
+<!-- 
   	<div id="paiement" class="container">
 		<p><strong>Le simulateur est gratuit</strong>, ne comporte pas de publicité et ne collecte aucune donnée. Ce n’est pas une démarche commerciale. Je mets en ligne ce simulateur simplement pour aider les étudiants à réfléchir sur leur choix de spécialités. Toutefois pour m’aider à faire face aux frais du Web (hébergement, nom de domaine, certificat) j’apprécierais une petite participation pour ceux qui le peuvent. Elle n'est pas obligatoire. <strong>Un don de 1€ ou 2€ serait apprécié</strong>. Merci pour votre contribution.</p>
 		<div class="text-center">
 
-		<!-- BOUTON DONATE PAYPAL dans le site Paypal business : pb l'adresse est obligatoire, donc je la prérempli avec du bidon -->
+		<!~~ BOUTON DONATE PAYPAL dans le site Paypal business : pb l'adresse est obligatoire, donc je la prérempli avec du bidon ~~>
 			<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
 				<input type="hidden" name="cmd" value="_s-xclick" />
 				<input type="hidden" name="hosted_button_id" value="97NCJCMCWNBVW" />
@@ -115,10 +113,10 @@
 				<input type="hidden" name="image_url" value="https://loic.website/ECN/image/stethoscope.png">
 				<input type="hidden" name="return" value="https://loic.website/ECN/success.html">
 				<input type="hidden" name="cancel_return" value="https://loic.website/ECN/">
-		<!-- 
+		<!~~ 
 				<input type="hidden" name="first_name" value="Prénom">		
 				<input type="hidden" name="last_name" value="Nom">
-		 -->
+		 ~~>
 				<input type="hidden" name="address1" value="numéro et rue">		
 				<input type="hidden" name="address2" value=" ">
 				<input type="hidden" name="city" value="Ville">
@@ -132,6 +130,7 @@
 			</form>
 		</div>
 	</div>
+ -->
 
 	<div id="apercu" class="container ancre">
 		<br/><br/>

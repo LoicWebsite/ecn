@@ -1,87 +1,75 @@
 <?php 
 
-		// initialisation des variables
-		$debug = false;
-		$code= "inconnu";
-		$chu= "";
-		$rang = "rangIndifferent";
-		$reference = 2024;
-		$type = "typeIndifferent";
-		$cesp = "off";
-		$lieu = "lieuIndifferent";
-		$internat = "internatIndifferent";
-		$benefice = "beneficeIndifferent";
-		$depuis="liste";
-		$specialite = "";
+// --- BOOLEENS ---
 
-		// récupération du paramètre pour passer en mode debug (par défaut pas de debug)
-		if (isset($_GET['debug']))  {
-			if ($_GET['debug'] == "true") {
-				$debug=true;
-			}
-		}
+// DEBUG ---
+$debug = false;
+if (isset($_GET['debug'])) {
+    $debug = ($_GET['debug'] === "true") ? true : false;
+}
 
-		// récupération des paramètres du formulaire et contrôle des valeurs passées
-		if (isset($_GET['specialite']))  {
-			$specialite = $_GET['specialite'];
-		}
+// CESP
+$cesp = "off";
+if (isset($_GET['cesp'])) {
+    $cesp = (($_GET['cesp'] === "on") || ($_GET['cesp'] === "1")) ? "on" : "off";
+}
 
-		if (isset($_GET['code']))  {
-			$code = $_GET['code'];
-		}
+// --- LISTES BLANCHES ---
+$allowed_references = ["2025","2024","2023","2022","2021","2020","2019","2018","2017"];
+$allowed_types = ["chirurgie","medico-chirurgical","organe","transversal"];
+$allowed_lieux = ["hopital","ville","autre"];
+$allowed_internat = [3,4,5,6];
+$allowed_benefices = ["benefice60","benefice100","benefice140","benefice500"];
+$allowed_depuis = ["liste","tableau"];
 
-		if (isset($_GET['chu']))  {
-			$chu = $_GET['chu'];
-		}
+// --- PARAMETRES FILTRES / SECURISES ---
 
-		if (isset($_GET['rang']))  {
-			if (is_numeric($_GET['rang'])) {
-				if (($_GET['rang'] > 0) and ($_GET['rang'] < 10000)) {
-					$rang = floor($_GET['rang']);
-				}
-			}
-		}
+// Paramètres “libres” avec filtration
+$specialite = isset($_GET['specialite']) ? trim($_GET['specialite']) : "";
+$specialite = preg_replace("/[^a-zA-Z0-9 \-]/", "", $specialite);
+$specialite = substr($specialite, 0, 256);
 
-		if (isset($_GET['reference']))  {
-			if (($_GET['reference'] == "2025") or ($_GET['reference'] == "2024") or ($_GET['reference'] == "2023") or ($_GET['reference'] == "2022") or ($_GET['reference'] == "2021") or ($_GET['reference'] == "2020") or ($_GET['reference'] == "2019") or ($_GET['reference'] == "2018") or ($_GET['reference'] == "2017")) {
-				$reference = $_GET['reference'];
-			}
-		}
-		
-		if (isset($_GET['type']))  {
-			if (($_GET['type'] == "chirurgie") or ($_GET['type'] == "medico-chirurgical") or ($_GET['type'] == "organe") or ($_GET['type'] == "transversal")) {
-				$type = $_GET['type'];
-			}
-		}
-		
-		if (isset($_GET['cesp']))  {
-			if (($_GET['cesp'] == "on") or ($_GET['cesp'] == "1")) {
-				$cesp = "on";
-			}
-		}
+$code = isset($_GET['code']) ? trim($_GET['code']) : "inconnu";
+$code = preg_replace("/[^a-zA-Z0-9 \-]/", "", $code);
+$code = substr($code, 0, 256);
 
-		if (isset($_GET['lieu']))  {
-			if (($_GET['lieu'] == "hopital") or ($_GET['lieu'] == "ville") or ($_GET['lieu'] == "autre")) {
-				$lieu = $_GET['lieu'];
-			}
-		}
-		
-		if (isset($_GET['internat']))  {
-			if (($_GET['internat'] == 3) or ($_GET['internat'] == 4) or ($_GET['internat'] == 5) or ($_GET['internat'] == 6)) {
-				$internat = $_GET['internat'];
-			}
-		}
-		
-		if (isset($_GET['benefice']))  {
-			if (($_GET['benefice'] == "benefice60") or ($_GET['benefice'] == "benefice100") or ($_GET['benefice'] == "benefice140") or ($_GET['benefice'] == "benefice500")) {
-				$benefice = $_GET['benefice'];
-			}
-		}
+$chu = isset($_GET['chu']) ? trim($_GET['chu']) : "";
+$chu = preg_replace("/[^a-zA-Z0-9 \-]/", "", $chu);
+$chu = substr($chu, 0, 256);
 
-		if (isset($_GET['depuis']))  {
-			if ($_GET['depuis'] == "tableau") {
-				$depuis = "tableau";
-			}
-		}
+// Rang numérique (0 < rang < 10000)
+$rang = isset($_GET['rang']) && is_numeric($_GET['rang']) && $_GET['rang'] > 0 && $_GET['rang'] < 10000
+    ? floor($_GET['rang'])
+    : "rangIndifferent";
+
+// Référence année
+$reference = isset($_GET['reference']) && in_array($_GET['reference'], $allowed_references)
+    ? $_GET['reference']
+    : 2025;
+
+// Type
+$type = isset($_GET['type']) && in_array($_GET['type'], $allowed_types)
+    ? $_GET['type']
+    : "typeIndifferent";
+
+// Lieu
+$lieu = isset($_GET['lieu']) && in_array($_GET['lieu'], $allowed_lieux)
+    ? $_GET['lieu']
+    : "lieuIndifferent";
+
+// Internat
+$internat = isset($_GET['internat']) && in_array((int)$_GET['internat'], $allowed_internat)
+    ? (int)$_GET['internat']
+    : "internatIndifferent";
+
+// Benefice
+$benefice = isset($_GET['benefice']) && in_array($_GET['benefice'], $allowed_benefices)
+    ? $_GET['benefice']
+    : "beneficeIndifferent";
+
+// Depuis
+$depuis = isset($_GET['depuis']) && in_array($_GET['depuis'], $allowed_depuis)
+    ? $_GET['depuis']
+    : "liste";
 
 ?>

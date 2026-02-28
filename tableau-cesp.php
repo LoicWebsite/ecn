@@ -108,7 +108,6 @@
 			echo "<ul>";
 			echo "<li>rang visé ou obtenu = <span class='critere'>" . getLibelleRang($rang) . "</span></li>";
 			echo "<li>année de référence = <span class='critere'>" . getLibelleReference($reference) . "</span> ";
-			echo " <i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Pour 2025, le rang du dernier est celui de 2024 (2025 étant encore inconnu).'> </i></li>";
 			echo "<li>type de spécialité = <span class='critere'>" . getLibelleType($type) . "</span></li>";
 			echo "<li>CESP uniquement = <span class='critere'>" . getLibelleCESP($cesp) . "</span>";
 			echo " <i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Seules les spécialités avec CESP sont affichées dans ce tableau.'> </i></li>";
@@ -169,9 +168,9 @@
 			}
 		}
 
-		$libelleCesp = "CESP2024";					// les postes et cesp sont absents en base pour les années avant 2020 (on prend ceux de 2024 par défaut)
-		if ($reference == "2025") {
-			$libelleCesp = "CESP2025";
+		$libelleCesp = "CESP2025";					// les postes et cesp sont absents en base pour les années avant 2020 (on prend ceux de 2025 par défaut)
+		if ($reference == "2024") {
+			$libelleCesp = "CESP2024";
 		} elseif ($reference == "2023") {
 			$libelleCesp = "CESP2023";
 		} elseif ($reference == "2022") {
@@ -185,13 +184,9 @@
 			$where = $where . " AND Rang." . $libelleCesp . " <> '0' AND Rang." . $libelleCesp . " <> ''";
 		}
 
-		// pour 2025 pour l'instant on prend le rang de 2024
+		// on prend le rang de l'année en référence
 		if (($rang <> "") and ($rang > 0) and ($rang <> "rangIndifferent")) {
-			if ($reference == "2025") {
-				$where = $where . " AND Rang.Dernier2024 >= '" . $rang ."'";
-			} else {
-				$where = $where . " AND Rang.Dernier" . $reference . " >= '" . $rang ."'";
-			}
+			$where = $where . " AND Rang.Dernier" . $reference . " >= '" . $rang ."'";
 		}
 
 		if (($lieu <> "") and ($lieu <> "lieuIndifferent")) {
@@ -212,12 +207,12 @@
 
 		// préparation de la requête pour afficher les spécialités
 
-		$libellePoste = "Poste2024";
-		$libelleCesp = "CESP2024";			// avant 2020 le nombre de postes et de CESP n'est pas en base (on prend 2024 par défaut)
-		if ($reference == 2025) {
-			$libellePoste = "Poste2025";
-			$libelleCesp = "CESP2025";
-		} elseif ($reference == 2022) {
+		$libellePoste = "Poste2025";
+		$libelleCesp = "CESP2025";			// avant 2020 le nombre de postes et de CESP n'est pas en base (on prend 2025 par défaut)
+		if ($reference == "2024") {
+			$libellePoste = "Poste2024";
+			$libelleCesp = "CESP2024";
+		} elseif ($reference == 2023) {
 			$libellePoste = "Poste2023";
 			$libelleCesp = "CESP2023";
 		} elseif ($reference == 2022) {
@@ -257,11 +252,7 @@
 		echo "<h2 class='h5' style='text-align:left'>" . count($listeSpecialite) ." spécialités correspondent à vos critères ";
 		if (($rang != 0) and ($rang != null)) {
  			if ($rang <> "rangIndifferent") {
-				if ($reference == "2025") {				// pour l'instant en 2025 on prend le rang 2024
-	 				echo "pour le rang " . getLibelleRang($rang) . " en 2024";
-				} else {
-					echo "pour le rang " . getLibelleRang($rang) . " en " . $reference;
-				}
+				echo "pour le rang " . getLibelleRang($rang) . " en " . $reference;
 			} 
  		} elseif ($cesp == "on") {
  			echo " en CESP ";
@@ -282,7 +273,7 @@
 				$libelleCESP = $listeCESP[$i];
 			}
 			if ($reference < 2020) {
-				$libelle = "2024";
+				$libelle = "2025";
 			} else {	
 				$libelle = $reference;
 			}
@@ -302,6 +293,7 @@
 			$sql = "SELECT
 						Rang.CodeSpecialite,
 						Rang.CHU,
+						Rang.Dernier2025,
 						Rang.Dernier2024,
 						Rang.Dernier2023,
 						Rang.Dernier2022,
@@ -337,7 +329,7 @@
 					$tablePoste[$j][0] = $CHU;
 					$tableCESP[$j][0] = $CHU; 
 					if ($reference == "2025") {
-						$tableDernier[$j][$i] = $Dernier2024;
+						$tableDernier[$j][$i] = $Dernier2025;
 						$tablePoste[$j][$i] = $Poste2025;
 						$tableCESP[$j][$i] = $CESP2025;
 					} elseif ($reference == "2024") {
@@ -362,16 +354,16 @@
 						$tableCESP[$j][$i] = $CESP2020;
 					} elseif ($reference == "2019") {
 						$tableDernier[$j][$i] = $Dernier2019;
-						$tablePoste[$j][$i] = $Poste2024;
-						$tableCESP[$j][$i] = $CESP2024;
+						$tablePoste[$j][$i] = $Poste2025;
+						$tableCESP[$j][$i] = $CESP2025;
 					} elseif ($reference == "2018") {
 						$tableDernier[$j][$i] = $Dernier2018;
-						$tablePoste[$j][$i] = $Poste2024;
-						$tableCESP[$j][$i] = $CESP2024;
+						$tablePoste[$j][$i] = $Poste2025;
+						$tableCESP[$j][$i] = $CESP2025;
 					} elseif ($reference == "2017") {
 						$tableDernier[$j][$i] = $Dernier2017;
-						$tablePoste[$j][$i] = $Poste2024;
-						$tableCESP[$j][$i] = $CESP2024;
+						$tablePoste[$j][$i] = $Poste2025;
+						$tableCESP[$j][$i] = $CESP2025;
 					}
 					$tableUrl[$j][$i] = $URLCeline;
 					$j += 1;
@@ -451,15 +443,11 @@
 				// cellule rang
 				} else {
 					if ($reference < 2020) {
-						$libelle = "2024";
+						$libelle = "2025";
 					} else {	
 						$libelle = $reference;
 					}
-					if ($reference == "2025") {
-						$tooltip = " data-toggle='tooltip' data-html='true' data-trigger='hover focus' title='".$CHU[0]."<br/>".$libelleSpecialite."<hr/>Dernier <small>en 2024</small> : ".$dernier."<br>poste <small>en " . $libelle . "</small> : ".$tablePoste[$j][$i]."<br/>CESP <small>en " . $libelle . "</small> : ".$libelleCESP."' ";
-					} else {
-						$tooltip = " data-toggle='tooltip' data-html='true' data-trigger='hover focus' title='".$CHU[0]."<br/>".$libelleSpecialite."<hr/>Dernier <small>en ".$reference."</small> : ".$dernier."<br>poste <small>en " . $libelle . "</small> : ".$tablePoste[$j][$i]."<br/>CESP <small>en " . $libelle . "</small> : ".$libelleCESP."' ";
-					}
+					$tooltip = " data-toggle='tooltip' data-html='true' data-trigger='hover focus' title='".$CHU[0]."<br/>".$libelleSpecialite."<hr/>Dernier <small>en ".$reference."</small> : ".$dernier."<br>poste <small>en " . $libelle . "</small> : ".$tablePoste[$j][$i]."<br/>CESP <small>en " . $libelle . "</small> : ".$libelleCESP."' ";
 					
 					if ($tableCESP[$j][$i] == 0) {
 						$libelleNbCesp = "";

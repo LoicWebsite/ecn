@@ -118,8 +118,10 @@
 			}
 		}
 
-		$libelleCesp = "CESP2024";					// les postes et cesp sont absents en base pour les années avant 2020 (on prend ceux de 2024 par défaut)
-		if ($reference == "2023") {
+		$libelleCesp = "CESP2025";					// les postes et cesp sont absents en base pour les années avant 2020 (on prend ceux de 2025 par défaut)
+		if ($reference == "2024") {
+			$libelleCesp = "CESP2024";
+		} elseif ($reference == "2023") {
 			$libelleCesp = "CESP2023";
 		} elseif ($reference == "2022") {
 			$libelleCesp = "CESP2022";
@@ -157,8 +159,10 @@
 		// requête pour compter le nombres de postes et de CESP
 		$nbPoste = 0;
 		$nbCESP = 0;
-		$libellePoste = "Poste2024";					// les postes et cesp sont absents en base pour les années avant 2020 (on prend ceux de 2024 par défaut)
-		if ($reference == "2023") {
+		$libellePoste = "Poste2025";					// les postes et cesp sont absents en base pour les années avant 2020 (on prend ceux de 2025 par défaut)
+		if ($reference == "2024") {
+			$libellePoste = "Poste2024";
+		} elseif ($reference == "2023") {
 			$libellePoste = "Poste2023";
 		} elseif ($reference == "2022") {
 			$libellePoste = "Poste2022";
@@ -183,24 +187,28 @@
 
 		// préparation de la requête pour recherche les CHU correspondant aux spécialités
 		$montant = new NumberFormatter("fr-FR", NumberFormatter::DECIMAL);
-		$sql = "SELECT Rang.CHU, max(Rang.Dernier2024) as Dernier2024,
-								 max(Rang.Dernier2023) as Dernier2023,
-								 max(Rang.Dernier2022) as Dernier2022,
-								 max(Rang.Dernier2021) as Dernier2021,
-								 max(Rang.Dernier2020) as Dernier2020,
-								 max(Rang.Dernier2019) as Dernier2019,
-								 max(Rang.Dernier2018) as Dernier2018,
-								 max(Rang.Dernier2017) as Dernier2017,
-								 sum(Rang.Poste2024) as Poste2024,
-								 sum(Rang.CESP2024) as CESP2024,
-								 sum(Rang.Poste2023) as Poste2023,
-								 sum(Rang.CESP2023) as CESP2023,
-								 sum(Rang.Poste2022) as Poste2022,
-								 sum(Rang.CESP2022) as CESP2022,
-								 sum(Rang.Poste2021) as Poste2021,
-								 sum(Rang.CESP2021) as CESP2021,
-								 sum(Rang.Poste2020) as Poste2020,
-								 sum(Rang.CESP2020) as CESP2020
+		$sql = "SELECT Rang.CHU, 
+					 max(Rang.Dernier2025) as Dernier2025,
+					 max(Rang.Dernier2024) as Dernier2024,
+					 max(Rang.Dernier2023) as Dernier2023,
+					 max(Rang.Dernier2022) as Dernier2022,
+					 max(Rang.Dernier2021) as Dernier2021,
+					 max(Rang.Dernier2020) as Dernier2020,
+					 max(Rang.Dernier2019) as Dernier2019,
+					 max(Rang.Dernier2018) as Dernier2018,
+					 max(Rang.Dernier2017) as Dernier2017,
+					 sum(Rang.Poste2025) as Poste2025,
+					 sum(Rang.CESP2025) as CESP2025,
+					 sum(Rang.Poste2024) as Poste2024,
+					 sum(Rang.CESP2024) as CESP2024,
+					 sum(Rang.Poste2023) as Poste2023,
+					 sum(Rang.CESP2023) as CESP2023,
+					 sum(Rang.Poste2022) as Poste2022,
+					 sum(Rang.CESP2022) as CESP2022,
+					 sum(Rang.Poste2021) as Poste2021,
+					 sum(Rang.CESP2021) as CESP2021,
+					 sum(Rang.Poste2020) as Poste2020,
+					 sum(Rang.CESP2020) as CESP2020
 				FROM `Specialite` inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $whereSpecialite . " GROUP BY Rang.CHU;";
 		if ($debug) echo "SQL = " . $sql ."<br/>";
 
@@ -224,7 +232,7 @@
 			echo "<thead class='text-center'>";
 			echo "<tr><th style='width:50%'>" . $result->rowCount() ." CHU<br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Cliquer sur un CHU pour voir les spécialités pour ce CHU.'></i></th>";
 			if ($reference < 2020) {
-				$libelleReference = "2024";
+				$libelleReference = "2025";
 			} else {	
 				$libelleReference = $reference;
 			}
@@ -242,7 +250,11 @@
 				$dernier = "0";
 				$poste = "0";
 				$libelleCesp = "0";
-				if ($reference == 2024) {
+				if ($reference == 2025) {
+					$dernier = $montant->format($Dernier2025);
+					$poste = $Poste2025;
+					$libelleCesp = $CESP2025;
+				} elseif ($reference == 2024) {
 					$dernier = $montant->format($Dernier2024);
 					$poste = $Poste2024;
 					$libelleCesp = $CESP2024;
@@ -264,16 +276,16 @@
 					$libelleCesp = $CESP2020;
 				} elseif ($reference == 2019) {
 					$dernier = $montant->format($Dernier2019);
-					$poste = $Poste2024;
-					$libelleCesp = $CESP2024;
+					$poste = $Poste2025;
+					$libelleCesp = $CESP2025;
 				} elseif ($reference == 2018) {
 					$dernier = $montant->format($Dernier2018);
-					$poste = $Poste2024;
-					$libelleCesp = $CESP2024;
+					$poste = $Poste2025;
+					$libelleCesp = $CESP2025;
 				} elseif ($reference == 2017) {
 					$dernier = $montant->format($Dernier2017);
-					$poste = $Poste2024;
-					$libelleCesp = $CESP2024;
+					$poste = $Poste2025;
+					$libelleCesp = $CESP2025;
 				}
 				$poste = $montant->format($poste);
 				echo "<td class='text-center'>" . $poste . "</td>";

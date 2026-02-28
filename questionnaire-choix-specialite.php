@@ -74,11 +74,11 @@
 					</div>
 					<div class="col">
 						<div class="custom-control custom-radio custom-control-inline">
-							<input type="radio" id="an2025" name="reference" class="custom-control-input" value="2025">
+							<input type="radio" id="an2025" name="reference" class="custom-control-input" value="2025" checked>
 							<label class="custom-control-label" for="an2025">2025</label>
 						</div>
 						<div class="custom-control custom-radio custom-control-inline">
-							<input type="radio" id="an2024" name="reference" class="custom-control-input" value="2024" checked>
+							<input type="radio" id="an2024" name="reference" class="custom-control-input" value="2024">
 							<label class="custom-control-label" for="an2024">2024</label>
 						</div>
 						<div class="custom-control custom-radio custom-control-inline">
@@ -111,8 +111,7 @@
 						</div>
 					</div>
 					<div class="col-md-1">
-						<i class="bi bi-info-circle-fill" data-toggle="tooltip" data-html="true" title="L'année de référence sert à afficher le rang du dernier de cette année là (c'est le rang limite publié au Journal Officiel après les affectations définitives). Elle correspond à l'année de publication au Journal Officiel (par exemple 2024 se lit comme l'année 2024-2025).<br/>L'année sert également à filtrer les spécialités et CHU accessibles lorsque le &apos;Rang ECN&apos; est saisi.
-							<br>L'année 2025 (pour l'instant) permet uniquement de visualiser le nombre de postes et de CESP pour l'année 2025-2026."></i>
+						<i class="bi bi-info-circle-fill" data-toggle="tooltip" data-html="true" title="L'année de référence sert à afficher le rang du dernier de cette année là (c'est le rang limite publié au Journal Officiel après les affectations définitives). Elle correspond à l'année de publication au Journal Officiel (par exemple 2024 se lit comme l'année 2024-2025).<br/>L'année sert également à filtrer les spécialités et CHU accessibles lorsque le &apos;Rang ECN&apos; est saisi."></i>
 					</div>
 				</div>
 
@@ -220,7 +219,7 @@
 					<div class="col-md-1">
 					</div>
 					<div class="col">
-						Bénéfice net :
+						Revenu global net :
 					</div>
 					<div class="col">
 						<select class="custom-select" id="benefice" name="benefice">
@@ -232,7 +231,7 @@
 						</select>
 					</div>
 					<div class="col-md-1">
-						<i class="bi bi-info-circle-fill" data-toggle="tooltip" data-html="true" title="Il s'agit du bénéfice net comptable moyen des secteurs 1 et 2 confondus, pour les spécialités pouvant s'exercer en libéral.<br/>Les chiffres datent de 2021 et 2020 (sources UNASA et CARMF)."></i>
+						<i class="bi bi-info-circle-fill" data-toggle="tooltip" data-html="true" title="Il s'agit du revenu net d'activité moyen des secteurs 1 et 2 confondus, pour les spécialités pouvant s'exercer en libéral.<br/>Les chiffres datent de 2023 (source CARMF). Il sagit d'un revenu global incluant le bénéfice net comptable (BNC), les revenus de gérance, les primes Madelin, la rémunération sur objectifs de santé publique (Rosp) ainsi que les forfaits structure."></i>
 					</div>
 				</div>
 
@@ -293,13 +292,7 @@
 			}
 			if ($benefice <> "") {echo "document.getElementById('".$benefice."').selected = true;";}
 		?>
-		
-		toggleButtons();
 
-		document.querySelectorAll('input[name="reference"]').forEach(radio => {
-		radio.addEventListener('change', toggleButtons);
-		});
-	
 		}
 	</script>
 	
@@ -308,49 +301,6 @@
 		$(function () {
 			$('[data-toggle="tooltip"]').tooltip()
 		})
-	</script>
-
-	<!-- script pour désactiver les boutons spécialité et CHU si année 2025 (temporaireement) -->
-	<script>
-		function toggleButtons() {
-			let selectedYear = document.querySelector('input[name="reference"]:checked').value;
-
-			let btnSpecialite = document.querySelector('button[name="specialite"]');
-			let btnCHU = document.querySelector('button[name="CHU"]');
-
-			if (selectedYear === "2025") {
-			[btnSpecialite, btnCHU].forEach(btn => {
-				btn.disabled = true;
-				btn.classList.add("btn-secondary");
-				btn.classList.remove("btn-primary");
-
-				// On s'assure d'abord de détruire tout ancien tooltip
-				$(btn).tooltip('dispose');
-
-				// Puis on recrée un tooltip actif
-				btn.setAttribute("title", "Indisponible pour l'année 2025");
-				$(btn).tooltip();
-			});
-			} else {
-			[btnSpecialite, btnCHU].forEach(btn => {
-				btn.disabled = false;
-				btn.classList.remove("btn-secondary");
-				btn.classList.add("btn-primary");
-
-				// Détruire totalement le tooltip pour qu'il disparaisse
-				$(btn).tooltip('dispose');
-
-				// Nettoyage des attributs pour éviter résidus
-				btn.removeAttribute("title");
-			});
-			}
-		}
-
-		// quand on clique sur reset → on relance toggleButtons après un court délai
-		document.querySelector('form').addEventListener('reset', function() {
-			// petit timeout pour laisser le navigateur remettre les valeurs par défaut
-			setTimeout(toggleButtons, 0);
-		});
 	</script>
 
   </body>

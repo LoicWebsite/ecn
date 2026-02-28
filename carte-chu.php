@@ -121,8 +121,10 @@
 		if (($rang > "") and ($rang != 0) and ($rang != "rangIndifferent")) {
 			$where = $where . " AND Dernier" . $reference . " >='" . $rang . "'";
 		}
-		$libelleCesp = "CESP2024";
-		if ($reference == "2023") {
+		$libelleCesp = "CESP2025";
+		if ($reference == "2024") {
+			$libelleCesp = "CESP2024";
+		} elseif ($reference == "2023") {
 			$libelleCesp = "CESP2023";
 		} elseif ($reference == "2022") {
 			$libelleCesp = "CESP2022";
@@ -141,6 +143,7 @@
 			SELECT
 					Rang.CodeSpecialite,
 					Rang.CHU,
+					Rang.Dernier2025,
 					Rang.Dernier2024,
 					Rang.Dernier2023,
 					Rang.Dernier2022,
@@ -149,12 +152,14 @@
 					Rang.Dernier2019,
 					Rang.Dernier2018,
 					Rang.Dernier2017,
+					Rang.Poste2025,
 					Rang.Poste2024,
 					Rang.Poste2023,
 					Rang.Poste2022,
 					Rang.Poste2021,
 					Rang.Poste2020,
 					Rang.URLCeline,
+					Rang.CESP2025,
 					Rang.CESP2024,
 					Rang.CESP2023,
 					Rang.CESP2022,
@@ -175,12 +180,18 @@
 			while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 				extract($row);
 				$listeCHU[] = $CHU;
-				$listePoste[] = $Poste2024;
-				$listeCesp[] = $CESP2024;
-				$poste = $Poste2024;
-				$libelleCesp = $CESP2024;
-				if ($reference == "2024") {
+				$listePoste[] = $Poste2025;
+				$listeCesp[] = $CESP2025;
+				$poste = $Poste2025;
+				$libelleCesp = $CESP2025;
+				if ($reference == "2025") {
+					$listeDernier[] = $Dernier2025;
+				} elseif ($reference == "2024") {
 					$listeDernier[] = $Dernier2024;
+					$listePoste[] = $Poste2024;
+					$listeCesp[] = $CESP2024;
+					$poste = $Poste2024;
+					$libelleCesp = $CESP2024;
 				} elseif ($reference == "2023") {
 					$listeDernier[] = $Dernier2023;
 					$listePoste[] = $Poste2023;
