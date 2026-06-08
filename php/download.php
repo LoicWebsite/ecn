@@ -1,11 +1,13 @@
 <?php
 	# Emplacement des dossiers pour les compteurs de téléchargement et les fichiers à télécharger
 	# (avec un / à la fin des chemins)
-	
-//	$hits 		= dirname(__FILE__).'/';
-//	$downloads 	= dirname(__FILE__).'/';
-	$hits 		= '../';
-	$downloads 	= '../';
+	$baseDir = realpath(__DIR__ . '/../');
+	if ($baseDir === false) {
+		http_response_code(500);
+		die('Configuration error');
+	}
+	$hits = $baseDir . '/';
+	$downloads = $baseDir . '/';
 
 	#==============================================
 	
@@ -40,17 +42,27 @@
 
 	$h_file = null; # fichier compteur de téléchargement
 	$d_file = null; # fichier à télécharger
-	
+
+	# Liste blanche stricte des fichiers téléchargeables
+	$allowedDownloads = [
+		'Simulation.xlsx' => 'compteurXLS.txt',
+		'Simulation.ods' => 'compteurODS.txt',
+	];
+
 	# Détermination des noms des fichiers
-	if(isset($_GET['file']) AND !empty($_GET['file'])) {
-		$filename = basename(nullbyteRemove($_GET['file']));
-		if ($filename == "Simulation.xlsx") {
-			$h_file = $hits."compteurXLS.txt";
-		} elseif ($filename == "Simulation.ods") {
-			$h_file = $hits."compteurODS.txt";
-		}
-		$d_file = $downloads.$filename;
+	if (!isset($_GET['file']) || empty($_GET['file'])) {
+		http_response_code(400);
+		die('Missing file parameter');
 	}
+
+	$filename = basename(nullbyteRemove($_GET['file']));
+	if (!array_key_exists($filename, $allowedDownloads)) {
+		http_response_code(403);
+		die('File not allowed');
+	}
+
+	$h_file = $hits . $allowedDownloads[$filename];
+	$d_file = $downloads . $filename;
 
 	# Contrôle de l'existence du fichier à télécharger
 	if(!file_exists($d_file)) {

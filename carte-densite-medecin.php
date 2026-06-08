@@ -177,7 +177,7 @@
                 <p class="text-center">Survoler &nbsp;<i class='bi bi-cursor-fill'></i>&nbsp; un département pour voir la densité médicale.<br/>
 	            <p class="text-muted p-2">
                     <br>
-                    <strong>Source</strong> : Les données sont issues de l'étude <i>Approche Territoriale des Spécialités Médicales et Chirurgicales</i> au 1er janvier 2025 publiée par le CNOM (Conseil National de l'Ordre des Médecins).
+                    <strong>Source</strong> : Les données sont issues de l'étude <i>Approche Territoriale des Spécialités Médicales et Chirurgicales</i> au 1er janvier 2026 publiée par le CNOM (Conseil National de l'Ordre des Médecins).
 					<br>
                     La densité médicale est le nombre de médecins en activité pour 100 000 habitants, quelque soit le mode d'exercice (hospitalier, salarié, libéral ou mixte).
 				</p>

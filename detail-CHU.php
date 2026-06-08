@@ -160,10 +160,12 @@
 		$nbPoste = 0;
 		$nbCESP = 0;
 
-		$sql = "SELECT Rang.CHU, SUM(Rang." . $libellePoste . ") AS totalPoste, SUM(Rang." . $libelleCesp . ") AS totalCESP  FROM Specialite inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $whereSpecialite . " AND Rang.CHU='" . $chu . "';";
+		$sql = "SELECT Rang.CHU, SUM(Rang." . $libellePoste . ") AS totalPoste, SUM(Rang." . $libelleCesp . ") AS totalCESP  FROM Specialite inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $whereSpecialite . " AND Rang.CHU=:chu;";
 		if ($debug) echo "SQL POSTE = " . $sql ."<br/>";
 		try {
-			$result = $db->query($sql);
+			$stmt = $db->prepare($sql);
+			$stmt->execute([':chu' => $chu]);
+			$result = $stmt;
 			while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 				extract($row);
 				$nbPoste += $totalPoste;
@@ -200,12 +202,14 @@
 						Rang.CESP2021 as CESP2021,
 						Rang.Poste2020 as Poste2020,
 						Rang.CESP2020 as CESP2020
-				FROM `Specialite` inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $whereSpecialite . " AND Rang.CHU='" . $chu . "';";
+				FROM `Specialite` inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $whereSpecialite . " AND Rang.CHU=:chu;";
 		if ($debug) echo "SQL = " . $sql ."<br/>";
 
 		// exécution de la requête
 		try {
-			$result = $db->query($sql);
+			$stmt = $db->prepare($sql);
+			$stmt->execute([':chu' => $chu]);
+			$result = $stmt;
 
 			// titre
 			echo "<br/><h2 class='h5' style='text-align:left'>" . $result->rowCount() ." spécialités correspondent à vos critères ";
@@ -332,21 +336,21 @@
 		// pour aller au détail format carte
 		function carte() {
 			<?php
-				echo "window.location.href='carte-chu.php?code=" . $code . "&rang=" . $rang . "&reference=" . $reference . "&type=" . $type . "&cesp=" . $cesp . "&lieu=" . $lieu . "&internat=" . $internat . "&benefice=" . $benefice . "&depuis=" . $depuis . "';";
+				echo "window.location.href=" . json_encode(buildSafeUrl('carte-chu.php', ['code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice, 'depuis' => $depuis])) . ";";
 			?>
 		}
 
 		// pour retourner à la liste des résultats
 		function liste() {
 			<?php
-				echo "window.location.href='liste-CHU.php?code=" . $code . "&rang=" . $rang . "&reference=" . $reference . "&type=" . $type . "&cesp=" . $cesp . "&lieu=" . $lieu . "&internat=" . $internat . "&benefice=" . $benefice . "';";
+				echo "window.location.href=" . json_encode(buildSafeUrl('liste-CHU.php', ['code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice])) . ";";
 			?>
 		}
 
 		// pour retourner au questionnaire
 		function questionnaire() {
 			<?php
-				echo "window.location.href='questionnaire-choix-specialite.php?code=" . $code . "&rang=" . $rang . "&reference=" . $reference . "&type=" . $type . "&cesp=" . $cesp . "&lieu=" . $lieu . "&internat=" . $internat . "&benefice=" . $benefice . "';";
+				echo "window.location.href=" . json_encode(buildSafeUrl('questionnaire-choix-specialite.php', ['code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice])) . ";";
 			?>
 		}
 		

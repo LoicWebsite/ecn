@@ -209,7 +209,9 @@
 
 		// exécution de la requête
 		try {
-			$result = $db->query($sql);
+			$stmt = $db->prepare($sql);
+			$stmt->execute();
+			$result = $stmt;
 			while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 				extract($row);
 				$nbPoste += $totalPoste;
@@ -248,7 +250,9 @@
 
 		// exécution de la requête
 		try {
-			$result = $db->query($sql);
+			$stmt = $db->prepare($sql);
+			$stmt->execute();
+			$result = $stmt;
 			$montant = new NumberFormatter("fr-FR", NumberFormatter::DECIMAL);
 
 			// titre
@@ -279,7 +283,7 @@
 			// récupération des données à afficher
 			while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 				extract($row);
-				echo "<tr onclick='zoom(&apos;".$Specialite."&apos;)'>";
+				echo "<tr onclick='zoom(" . json_encode($Specialite) . ")'>";
 				$libelleSpecialite = getLibelleSpecialite($Specialite);
 
 				// en local les caractères accentués passent, mais pas sur le serveur Gandi
@@ -288,7 +292,7 @@
 					$libelleSpecialite = mb_convert_encoding($libelleSpecialite, 'UTF-8', 'ISO-8859-1');
 				}
 
-				echo "<td class='acronyme'>".$Specialite . "</td><td>" . $libelleSpecialite . "</td>";
+				echo "<td class='acronyme'>" . escapeHtml($Specialite) . "</td><td>" . escapeHtml($libelleSpecialite) . "</td>";
 				$dernier = "0";
 				$poste = "0";
 				$libelleCesp = "0";
@@ -381,21 +385,22 @@
 		//pour basculer sur l'affichage en tableau
 		function tableau() {
 			<?php
-				echo "window.location.href='tableau-specialite.php?code=" . $code . "&rang=" . $rang . "&reference=" . $reference . "&type=" . $type . "&cesp=" . $cesp . "&lieu=" . $lieu . "&internat=" . $internat . "&benefice=" . $benefice . "&depuis=tableau';";
+				echo "window.location.href=" . json_encode(buildSafeUrl('tableau-specialite.php', ['code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice, 'depuis' => 'tableau'])) . ";";
 			?>
 		}
 
 		// pour retourner en arrière dans l'historique du navigateur
 		function questionnaire() {
 			<?php
-				echo "window.location.href='questionnaire-choix-specialite.php?code=" . $code . "&rang=" . $rang . "&reference=" . $reference . "&type=" . $type . "&cesp=" . $cesp . "&lieu=" . $lieu . "&internat=" . $internat . "&benefice=" . $benefice . "';";
+				echo "window.location.href=" . json_encode(buildSafeUrl('questionnaire-choix-specialite.php', ['code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice])) . ";";
 			?>
 		}
 
 		// pour zoomer sur une spécialité
 		function zoom(code) {
 			<?php
-				echo "window.location.href='detail-specialite-questionnaire.php?rang=" . $rang . "&reference=" . $reference . "&code=' + code + '" . "&type=" . $type . "&cesp=" . $cesp . "&lieu=" . $lieu . "&internat=" . $internat . "&benefice=" . $benefice . "&depuis=liste';";
+				$baseDetailSpecialite = buildSafeUrl('detail-specialite-questionnaire.php', ['rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice, 'depuis' => 'liste']);
+				echo "window.location.href=" . json_encode($baseDetailSpecialite) . " + '&code=' + encodeURIComponent(code);";
 			?>
 		}
 	</script>

@@ -3,13 +3,17 @@
 	
 		// initialisation des variables
 		$where = "";
+		$whereParams = [];
 		$libelleSpecialite = "";
 		$nbCESP = "0";
+		$specialite = isset($specialite) ? $specialite : "";
+		$code = isset($code) ? $code : "inconnu";
 
 		// constrcution clausse where
 		// c'est le code spécialité qui est passé en paramètre par la page principale
 		if (strlen($specialite) == 3) {
-			$where = " WHERE CodeSpecialite = '" . $specialite . "';";
+			$where = " WHERE CodeSpecialite = :codeSpecialite";
+			$whereParams[':codeSpecialite'] = $specialite;
 		} elseif (strlen($specialite) > 3) {
 		// c'est le libellé de la spécialité qui est passé en paramètre par la page principale
 			if (mb_detect_encoding($specialite,'UTF-8', true)) {			// en local les caractères accentués passent, mais pas sur le serveur Gandi
@@ -17,15 +21,17 @@
 			} else {
 				$libelleSpecialite = utf8_encode($specialite);
 			}
-			$where = " WHERE Specialite = '" . $libelleSpecialite . "';";
+			$where = " WHERE Specialite = :libelleSpecialite";
+			$whereParams[':libelleSpecialite'] = $libelleSpecialite;
 		// c'est le code spécialité qui est passé en paramètre par la questionnaire
 		} else {
-			$where = " WHERE CodeSpecialite = '" . $code . "';";
+			$where = " WHERE CodeSpecialite = :code";
+			$whereParams[':code'] = $code;
 		}
 
 		// conexion à la base ecn (user = ecn)
 		try {
-			$db = new PDO("mysql:host=localhost;dbname=ecn;charset=utf8", "USER", "PASSEWORD");
+			$db = new PDO("mysql:host=localhost;dbname=ecn;charset=utf8", "ecn", "ecn");
 		}
 		catch(PDOException $erreur)	{
 			die('Erreur : ' . $erreur->getMessage());
@@ -68,7 +74,9 @@
 
 		// exécution de la requête
 		try {
-			$result = $db->query($sql);
+			$stmt = $db->prepare($sql);
+			$stmt->execute($whereParams);
+			$result = $stmt;
 			$montant = new NumberFormatter("fr-FR", NumberFormatter::DECIMAL);
 
 			// récupération des données à transmettre

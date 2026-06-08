@@ -112,7 +112,7 @@
 		// pour aller au détail format carte
 		function carte() {
 			<?php
-				echo "window.location.href='carte-chu-simulateur.php?page=poste&specialite=" . $specialite . "';";
+				echo "window.location.href=" . json_encode(buildSafeUrl('carte-chu-simulateur.php', ['page' => 'poste', 'specialite' => $specialite])) . ";";
 			?>
 		}
 	</script>

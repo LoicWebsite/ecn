@@ -103,6 +103,7 @@
 	<!-- résumé de la spécialité -->
 	<?php 				
 		include "php/resume-specialite.php";	
+		$CodeSpecialite = isset($CodeSpecialite) ? $CodeSpecialite : $code;
 	?>
 
 	<!-- titre -->	
@@ -117,7 +118,7 @@
 		$listeUrl = array();
 
 		// construction clause where		
-		$where = " WHERE Rang.CodeSpecialite = '" . $CodeSpecialite ."'";
+		$where = " WHERE Rang.CodeSpecialite = :codeSpecialite";
 		if (($rang > "") and ($rang != 0) and ($rang != "rangIndifferent")) {
 			$where = $where . " AND Dernier" . $reference . " >='" . $rang . "'";
 		}
@@ -171,7 +172,9 @@
 
 		// exécution de la requête
 		try {
-			$result = $db->query($sql);
+			$stmt = $db->prepare($sql);
+			$stmt->execute([':codeSpecialite' => $CodeSpecialite]);
+			$result = $stmt;
 			$montant = new NumberFormatter("fr-FR", NumberFormatter::DECIMAL);
 			$nbCHU = 0;
 			$i = 0;
@@ -348,7 +351,7 @@
 		//pour basculer sur l'affichage en tableau
 		function tableau() {
 			<?php
-				echo "window.location.href='tableau-specialite.php?code=" . $code . "&rang=" . $rang . "&reference=" . $reference . "&type=" . $type . "&cesp=" . $cesp . "&lieu=" . $lieu . "&internat=" . $internat . "&benefice=" . $benefice . "';";
+				echo "window.location.href=" . json_encode(buildSafeUrl('tableau-specialite.php', ['code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice])) . ";";
 			?>
 		}
 
@@ -368,21 +371,21 @@
 		// pour retourner au détail format liste
 		function detail() {
 			<?php
-				echo "window.location.href='detail-specialite-questionnaire.php?code=" . $code . "&rang=" . $rang . "&reference=" . $reference . "&type=" . $type . "&cesp=" . $cesp . "&lieu=" . $lieu . "&internat=" . $internat . "&benefice=" . $benefice . "&depuis=" . $depuis . "';";
+				echo "window.location.href=" . json_encode(buildSafeUrl('detail-specialite-questionnaire.php', ['code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice, 'depuis' => $depuis])) . ";";
 			?>
 		}
 
 		// pour retourner à la liste des résultats
 		function liste() {
 			<?php
-				echo "window.location.href='liste-specialite.php?code=" . $code . "&rang=" . $rang . "&reference=" . $reference . "&type=" . $type . "&cesp=" . $cesp . "&lieu=" . $lieu . "&internat=" . $internat . "&benefice=" . $benefice . "';";
+				echo "window.location.href=" . json_encode(buildSafeUrl('liste-specialite.php', ['code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice])) . ";";
 			?>
 		}
 
 		// pour retourner au questionnaire
 		function questionnaire() {
 			<?php
-				echo "window.location.href='questionnaire-choix-specialite.php?code=" . $code . "&rang=" . $rang . "&reference=" . $reference . "&type=" . $type . "&cesp=" . $cesp . "&lieu=" . $lieu . "&internat=" . $internat . "&benefice=" . $benefice . "';";
+				echo "window.location.href=" . json_encode(buildSafeUrl('questionnaire-choix-specialite.php', ['code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice])) . ";";
 			?>
 		}
 	</script>

@@ -174,7 +174,9 @@
 		$sql = "SELECT Rang.CHU, SUM(Rang." . $libellePoste . ") AS totalPoste, SUM(Rang." . $libelleCesp . ") AS totalCESP FROM Specialite inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $whereSpecialite . " GROUP BY Rang.CHU;";
 		if ($debug) echo "SQL POSTE = " . $sql ."<br/>";
 		try {
-			$result = $db->query($sql);
+			$stmt = $db->prepare($sql);
+			$stmt->execute();
+			$result = $stmt;
 			while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 				extract($row);
 				$nbPoste += $totalPoste;
@@ -214,7 +216,9 @@
 
 		// exécution de la requête
 		try {
-			$result = $db->query($sql);
+			$stmt = $db->prepare($sql);
+			$stmt->execute();
+			$result = $stmt;
 
 			// titre
 			echo "<br/><h2 class='h5' style='text-align:left'>" . $result->rowCount() ." CHU correspondent à vos critères ";
@@ -245,8 +249,8 @@
 			// récupération des données à afficher
 			while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 				extract($row);
-				echo "<tr onclick='zoom(&apos;".$CHU."&apos;)'>";
-				echo "<td class='text-center'>" . $CHU . "</td>";
+				echo "<tr onclick='zoom(" . json_encode($CHU) . ")'>";
+				echo "<td class='text-center'>" . escapeHtml($CHU) . "</td>";
 				$dernier = "0";
 				$poste = "0";
 				$libelleCesp = "0";
@@ -334,21 +338,22 @@
 		//pour basculer sur l'affichage en tableau
 		function tableau() {
 			<?php
-				echo "window.location.href='tableau-specialite.php?code=" . $code . "&rang=" . $rang . "&reference=" . $reference . "&type=" . $type . "&cesp=" . $cesp . "&lieu=" . $lieu . "&internat=" . $internat . "&benefice=" . $benefice . "&depuis=tableau';";
+				echo "window.location.href=" . json_encode(buildSafeUrl('tableau-specialite.php', ['code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice, 'depuis' => 'tableau'])) . ";";
 			?>
 		}
 
 		// pour retourner en arrière dans l'historique du navigateur
 		function questionnaire() {
 			<?php
-				echo "window.location.href='questionnaire-choix-specialite.php?code=" . $code . "&rang=" . $rang . "&reference=" . $reference . "&type=" . $type . "&cesp=" . $cesp . "&lieu=" . $lieu . "&internat=" . $internat . "&benefice=" . $benefice . "';";
+				echo "window.location.href=" . json_encode(buildSafeUrl('questionnaire-choix-specialite.php', ['code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice])) . ";";
 			?>
 		}
 
 		// pour zoomer sur une spécialité
 		function zoom(chu) {
 			<?php
-				echo "window.location.href='detail-CHU.php?rang=" . $rang . "&reference=" . $reference . "&chu=' + chu + '" . "&type=" . $type . "&cesp=" . $cesp . "&lieu=" . $lieu . "&internat=" . $internat . "&benefice=" . $benefice . "&depuis=liste';";
+				$baseDetailChu = buildSafeUrl('detail-CHU.php', ['rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice, 'depuis' => 'liste']);
+				echo "window.location.href=" . json_encode($baseDetailChu) . " + '&chu=' + encodeURIComponent(chu);";
 			?>
 		}
 	</script>

@@ -97,6 +97,7 @@
 
 		// affichage du résumé de la spécialité
 		include "php/resume-specialite.php";
+		$CodeSpecialite = isset($CodeSpecialite) ? $CodeSpecialite : $code;
 	?>
 
 	<!-- titre -->	
@@ -111,7 +112,7 @@
 		$listeUrl = array();
 
 		// construction clause where		
-		$where = " WHERE Rang.CodeSpecialite = '" . $CodeSpecialite ."'";
+		$where = " WHERE Rang.CodeSpecialite = :codeSpecialite";
 		$where = $where . ";";
 
 		// préparation de la requête pour la table Rang
@@ -147,7 +148,9 @@
 
 		// exécution de la requête
 		try {
-			$result = $db->query($sql);
+			$stmt = $db->prepare($sql);
+			$stmt->execute([':codeSpecialite' => $CodeSpecialite]);
+			$result = $stmt;
 			$montant = new NumberFormatter("fr-FR", NumberFormatter::DECIMAL);
 			$nbCHU = 0;
 			$i = 0;
@@ -293,7 +296,7 @@
 		//pour basculer sur l'affichage en liste
 		function detail() {
 			<?php
-				echo "window.location.href='detail-specialite-simulateur.php?specialite=" . $specialite . "';";
+				echo "window.location.href=" . json_encode(buildSafeUrl('detail-specialite-simulateur.php', ['specialite' => $specialite])) . ";";
 			?>
 		}
 

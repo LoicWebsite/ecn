@@ -232,7 +232,9 @@
  		
 		// exécution de la requête
 		try {
-			$result = $db->query($sql);
+			$stmt = $db->prepare($sql);
+			$stmt->execute();
+			$result = $stmt;
 			// récupération des données à afficher
 			while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 				extract($row);
@@ -274,7 +276,7 @@
 			} else {	
 				$libelle = $reference;
 			}
-			$tooltip = " data-toggle='tooltip' data-html='true' title='" . $libelleSpecialite . "<hr>poste <small>en " . $libelle . "</small> : " . $listePoste[$i] . "<br/>CESP <small>en " . $libelle . "</small> : " . $libelleCESP . "' ";
+			$tooltip = " data-toggle='tooltip' data-html='true' title='" . escapeHtml($libelleSpecialite) . "<hr>poste <small>en " . escapeHtml($libelle) . "</small> : " . escapeHtml($listePoste[$i]) . "<br/>CESP <small>en " . escapeHtml($libelle) . "</small> : " . escapeHtml($libelleCESP) . "' ";
 			$href = "";
 			echo "<th " . $tooltip . $href . " >&nbsp;" . $specialite . "&nbsp;</th>";
 			$i += 1;
@@ -313,12 +315,14 @@
 						Rang.CESP2021,
 						Rang.CESP2020
 					FROM Rang
-					WHERE Rang.CodeSpecialite = '" . $specialite . "';";
+					WHERE Rang.CodeSpecialite = :specialite;";
 			if ($debug) echo "SQL = " . $sql ."<br/>";
 
 			// execution de la requête sur Rang
 			try {
-				$result = $db->query($sql);
+				$stmt = $db->prepare($sql);
+				$stmt->execute([':specialite' => $specialite]);
+				$result = $stmt;
 				$j = 0;
 				while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 					extract($row);
@@ -433,7 +437,7 @@
 						$libelleNbPoste = $montant->format($tablePoste[$j][$i]);
 					}
 
-					$tooltip = " data-toggle='tooltip' data-html='true' data-trigger='hover focus' title='".$CHU[0]."<br/>".$libelleSpecialite."<hr/>Dernier <small>en ".$reference."</small> : ".$dernier."<br>poste <small>en " . $libelle . "</small> : ".$tablePoste[$j][$i]."<br/>CESP <small>en " . $libelle . "</small> : ".$libelleCESP."' ";
+					$tooltip = " data-toggle='tooltip' data-html='true' data-trigger='hover focus' title='" . escapeHtml($CHU[0]) . "<br/>" . escapeHtml($libelleSpecialite) . "<hr/>Dernier <small>en " . escapeHtml($reference) . "</small> : " . escapeHtml($dernier) . "<br>poste <small>en " . escapeHtml($libelle) . "</small> : " . escapeHtml($tablePoste[$j][$i]) . "<br/>CESP <small>en " . escapeHtml($libelle) . "</small> : " . escapeHtml($libelleCESP) . "' ";
 
 					if ($rangOk) {
 						echo "<td style='background-color:pink;' " . $tooltip . ">" . $libelleNbPoste . "</td>";					
@@ -513,9 +517,9 @@
 		function liste() {
 			<?php
 				if ($depuis == 'detail') {
-					echo "window.location.href='detail-specialite-questionnaire.php?code=" . $code . "&rang=" . $rang . "&reference=" . $reference . "&type=" . $type. "&cesp=" . $cesp . "&lieu=" . $lieu . "&internat=" . $internat . "&benefice=" . $benefice . "&depuis=detail';";
+					echo "window.location.href=" . json_encode(buildSafeUrl('detail-specialite-questionnaire.php', ['code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice, 'depuis' => 'detail'])) . ";";
 				} else {
-					echo "window.location.href='liste-specialite.php?code=" . $code . "&rang=" . $rang . "&reference=" . $reference . "&type=" . $type. "&cesp=" . $cesp . "&lieu=" . $lieu . "&internat=" . $internat . "&benefice=" . $benefice . "&depuis=detail';";
+					echo "window.location.href=" . json_encode(buildSafeUrl('liste-specialite.php', ['code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice, 'depuis' => 'detail'])) . ";";
 				}
 			?>
 		}
@@ -523,7 +527,7 @@
 		// pour retourner en arrière sur le questionnaire
 		function questionnaire() {
 			<?php
-				echo "window.location.href='questionnaire-choix-specialite.php?code=" . $code . "&rang=" . $rang . "&reference=" . $reference . "&type=" . $type. "&cesp=" . $cesp . "&lieu=" . $lieu . "&internat=" . $internat . "&benefice=" . $benefice . "';";
+				echo "window.location.href=" . json_encode(buildSafeUrl('questionnaire-choix-specialite.php', ['code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice])) . ";";
 			?>
 		}
 
@@ -543,9 +547,8 @@
 		function zoom(code) {
 			$('[data-toggle="tooltip"]').tooltip('hide')
 			<?php
-				$href = "'detail-specialite-questionnaire.php?code=" . $code . "&rang=" . $rang . "&reference=" . $reference . "&code=' + code + '" . "&type=" . $type. "&cesp=" . $cesp . "&lieu=" . $lieu . "&internat=" . $internat . "&benefice=" . $benefice . "&depuis=tableau'";
-//				echo "window.open(" . $href . ", '_self')";
-				echo "window.location.href=" . $href . ";";
+				$baseZoomSpecialite = buildSafeUrl('detail-specialite-questionnaire.php', ['code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice, 'depuis' => 'tableau']);
+				echo "window.location.href=" . json_encode($baseZoomSpecialite) . " + '&code=' + encodeURIComponent(code);";
 			?>
 		}
 	</script>

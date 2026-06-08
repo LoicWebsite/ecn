@@ -9,6 +9,7 @@
 
 	// résumé de la spécialité
 	include "php/resume-specialite.php";
+	$CodeSpecialite = isset($CodeSpecialite) ? $CodeSpecialite : $code;
 
 	// construction du tableau des CHU
 	echo "<div id='tableau' class='container'>";
@@ -79,10 +80,12 @@
 	$nbCESP = 0;
 
 	$sql = "SELECT Rang.CodeSpecialite, SUM(Rang." . $libellePoste . ") AS totalPoste, SUM(Rang." . $libelleCesp . ") AS totalCESP  FROM Specialite
-			inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $whereSpecialite . " AND Rang.CodeSpecialite='" . $CodeSpecialite . "';";
+			inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $whereSpecialite . " AND Rang.CodeSpecialite=:codeSpecialite;";
 	if ($debug) echo "SQL POSTE = " . $sql ."<br/>";
 	try {
-		$result = $db->query($sql);
+		$stmt = $db->prepare($sql);
+		$stmt->execute([':codeSpecialite' => $CodeSpecialite]);
+		$result = $stmt;
 		while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 			extract($row);
 			$nbPoste += $totalPoste;
@@ -118,12 +121,14 @@
 					Rang.CESP2021 as CESP2021,
 					Rang.Poste2020 as Poste2020,
 					Rang.CESP2020 as CESP2020
-			FROM `Specialite` inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $whereSpecialite . " AND Rang.CodeSpecialite='" . $CodeSpecialite . "';";
+			FROM `Specialite` inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $whereSpecialite . " AND Rang.CodeSpecialite=:codeSpecialite;";
 	if ($debug) echo "SQL = " . $sql ."<br/>";
 
 	// exécution de la requête
 	try {
-		$result = $db->query($sql);
+		$stmt = $db->prepare($sql);
+		$stmt->execute([':codeSpecialite' => $CodeSpecialite]);
+		$result = $stmt;
 		$montant = new NumberFormatter("fr-FR", NumberFormatter::DECIMAL);
 		
 		// titre de la page

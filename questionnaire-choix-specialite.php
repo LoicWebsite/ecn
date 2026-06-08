@@ -58,7 +58,7 @@
 						Rang ECN/EDN visé ou obtenu :
 					</div>
 					<div class="col">
-						<input id="rang" name="rang" type="number" min="0" max="10000" class="form-control" placeholder="indifférent">
+						<input id="rang" name="rang" type="number" min="0" max="15000" class="form-control" placeholder="indifférent">
 					</div>
 					<div class="col-md-1">
 					</div>
