@@ -182,52 +182,44 @@
 			// récupération des rangs à mémoriser dans un tableau
 			while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 				extract($row);
-				$listeCHU[] = $CHU;
-				$listePoste[] = $Poste2025;
-				$listeCesp[] = $CESP2025;
+				$dernier = 0;
 				$poste = $Poste2025;
 				$libelleCesp = $CESP2025;
+
 				if ($reference == "2025") {
-					$listeDernier[] = $Dernier2025;
+					$dernier = $Dernier2025;
 				} elseif ($reference == "2024") {
-					$listeDernier[] = $Dernier2024;
-					$listePoste[] = $Poste2024;
-					$listeCesp[] = $CESP2024;
+					$dernier = $Dernier2024;
 					$poste = $Poste2024;
 					$libelleCesp = $CESP2024;
 				} elseif ($reference == "2023") {
-					$listeDernier[] = $Dernier2023;
-					$listePoste[] = $Poste2023;
-					$listeCesp[] = $CESP2023;
+					$dernier = $Dernier2023;
 					$poste = $Poste2023;
 					$libelleCesp = $CESP2023;
 				} elseif ($reference == "2022") {
-					$listeDernier[] = $Dernier2022;
-					$listePoste[] = $Poste2022;
-					$listeCesp[] = $CESP2022;
+					$dernier = $Dernier2022;
 					$poste = $Poste2022;
 					$libelleCesp = $CESP2022;
 				} elseif ($reference == "2021") {
-					$listeDernier[] = $Dernier2021;
-					$listePoste[] = $Poste2021;
-					$listeCesp[] = $CESP2021;
+					$dernier = $Dernier2021;
 					$poste = $Poste2021;
 					$libelleCesp = $CESP2021;
 				} elseif ($reference == "2020") {
-					$listeDernier[] = $Dernier2020;
-					$listePoste[] = $Poste2020;
-					$listeCesp[] = $CESP2020;
+					$dernier = $Dernier2020;
 					$poste = $Poste2020;
 					$libelleCesp = $CESP2020;
 				} elseif ($reference == "2019") {
-					$listeDernier[] = $Dernier2019;
+					$dernier = $Dernier2019;
 				} elseif ($reference == "2018") {
-					$listeDernier[] = $Dernier2018;
+					$dernier = $Dernier2018;
 				} elseif ($reference == "2017") {
-					$listeDernier[] = $Dernier2017;
-				} else {
-					$listeDernier[] = 0;
+					$dernier = $Dernier2017;
 				}
+
+				$listeCHU[] = $CHU;
+				$listeDernier[] = $dernier;
+				$listePoste[] = $poste;
+				$listeCesp[] = $libelleCesp;
 				$listeUrl[] = $URLCeline;
 	
 				// comptage des chu accessibles selon le critère cesp et rang s'il y a au moins 1 poste
