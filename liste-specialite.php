@@ -39,6 +39,9 @@
 	
         // Google Analytics
 		include "php/GoogleAnalytics.php";
+
+		// Balise canonique pour éviter les doublons dus aux paramètres d'URL
+		include "php/canonical.php";
 	?>
 
     <title>Liste des spécialités correspondantes aux critères saisis</title>

@@ -19,6 +19,9 @@
  	<?php
 		// styles nécessaires à l'application (bootstrap + ECN)
 		include "php/style.php";
+
+		// Balise canonique pour éviter les doublons dus aux paramètres d'URL
+		include "php/canonical.php";
 	?>
 
     <!-- Librairie graphique -->

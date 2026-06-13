@@ -5,8 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Simulateur de choix de spécialité d'internat - détail d'une spécialité médicale ou chirurgicale">
-	<link rel="canonical" href="https://loic.website/ECN/detail-specialite-questionnaire.php" />
 
+	<?php
+		// Balise canonique pour éviter les doublons dus aux paramètres d'URL
+		include "php/canonical.php";
+	?>
 	<?php
 		// favicons générés par https://realfavicongenerator.net
 		include "php/favicon.php";
