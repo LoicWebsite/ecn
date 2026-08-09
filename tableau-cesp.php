@@ -92,6 +92,30 @@
 		</h1>
 		
 	<?php
+		/*
+		 * Gestion annuelle des données Rang/Poste/CESP (3 phases)
+		 *
+		 * Phase 1 - début d'année:
+		 *   Les colonnes de l'année de référence peuvent ne pas exister.
+		 *   Exemple: pas de DernierAAAA, pas de PosteAAAA, pas de CESPAAAA.
+		 *
+		 * Phase 2 - milieu d'année:
+		 *   PosteAAAA et CESPAAAA existent, mais DernierAAAA n'existe pas encore.
+		 *
+		 * Phase 3 - fin d'année:
+		 *   Toutes les colonnes de l'année existent.
+		 *
+		 * Cas particulier avant 2020:
+		 *   Les colonnes PosteAAAA et CESPAAAA n'existent pas en base pour ces années.
+		 *   Le script prend donc par défaut les colonnes les plus récentes disponibles.
+		 *
+		 * Stratégie:
+		 *   - Détecter dynamiquement les colonnes présentes via INFORMATION_SCHEMA.
+		 *   - Résoudre les colonnes à utiliser avec fallback
+		 *     (année exacte > année précédente > dernière année disponible).
+		 *   - Appliquer la même source résolue partout:
+		 *     filtres SQL, agrégats, cellules du tableau et tooltips.
+		 */
 
 		// fonctions communes et récupération-contrôle des paramètres
 		require_once "php/controleParametre.php";
@@ -156,6 +180,18 @@
 		$tableUrl = array(array());
 		$libelleCESP = 0;
 
+		// Détection de la phase réelle en base pour l'année demandée.
+		// La variable $phaseAnnuelle est utile en debug/maintenance pour comprendre le comportement.
+		$referenceAnnee = intval($reference);
+		$rangYearColumns = getRangYearColumns($db);
+		$phaseAnnuelle = getAnnualDataPhase($rangYearColumns, $referenceAnnee);
+
+		// Résolution des sources annuelles utilisées par le script (exact ou fallback).
+		$rangSources = resolveAnnualRangSources($rangYearColumns, $referenceAnnee);
+		$colonneDernier = $rangSources['dernier']['column'];
+		$colonnePoste = $rangSources['poste']['column'];
+		$colonneCesp = $rangSources['cesp']['column'];
+
 		// préparation de la clause where pour sélectionner les spécialités en fonction des critères
 		$where = " WHERE Type <> ''";
 
@@ -171,25 +207,24 @@
 			}
 		}
 
-		$libelleCesp = "CESP2025";					// les postes et cesp sont absents en base pour les années avant 2020 (on prend ceux de 2025 par défaut)
-		if ($reference == "2024") {
-			$libelleCesp = "CESP2024";
-		} elseif ($reference == "2023") {
-			$libelleCesp = "CESP2023";
-		} elseif ($reference == "2022") {
-			$libelleCesp = "CESP2022";
-		} elseif ($reference == "2021") {
-			$libelleCesp = "CESP2021";
-		} elseif ($reference == "2020") {
-			$libelleCesp = "CESP2020";
-		}
 		if ($cesp == "on") {
-			$where = $where . " AND Rang." . $libelleCesp . " <> '0' AND Rang." . $libelleCesp . " <> ''";
+			// Si aucune colonne CESP n'est disponible, on force une requête vide.
+			// Cela évite les erreurs SQL et évite d'afficher des données incohérentes.
+			if ($colonneCesp !== null) {
+				$where = $where . " AND COALESCE(Rang." . $colonneCesp . ", 0) <> 0";
+			} else {
+				$where = $where . " AND 1 = 0";
+			}
 		}
 
 		// on prend le rang de l'année en référence
 		if (($rang <> "") and ($rang > 0) and ($rang <> "rangIndifferent")) {
-			$where = $where . " AND Rang.Dernier" . $reference . " >= '" . $rang ."'";
+			// Le filtre de rang s'applique sur la colonne Dernier résolue.
+			// En phase 2, cela revient naturellement à utiliser l'année précédente.
+			// Si aucune colonne Dernier n'existe, on n'applique pas ce filtre.
+			if ($colonneDernier !== null) {
+				$where = $where . " AND COALESCE(Rang." . $colonneDernier . ", 0) >= " . intval($rang);
+			}
 		}
 
 		if (($lieu <> "") and ($lieu <> "lieuIndifferent")) {
@@ -210,28 +245,13 @@
 
 		// préparation de la requête pour afficher les spécialités
 
-		$libellePoste = "Poste2025";
-		$libelleCesp = "CESP2025";			// avant 2020 le nombre de postes et de CESP n'est pas en base (on prend 2025 par défaut)
-		if ($reference == "2024") {
-			$libellePoste = "Poste2024";
-			$libelleCesp = "CESP2024";
-		} elseif ($reference == 2023) {
-			$libellePoste = "Poste2023";
-			$libelleCesp = "CESP2023";
-		} elseif ($reference == 2022) {
-			$libellePoste = "Poste2022";
-			$libelleCesp = "CESP2022";
-		} elseif ($reference == 2021) {
-			$libellePoste = "Poste2021";
-			$libelleCesp = "CESP2021";
-		} elseif ($reference == 2020) {
-			$libellePoste = "Poste2020";
-			$libelleCesp = "CESP2020";
-		}
+		// Expressions d'agrégation construites dynamiquement selon les colonnes disponibles.
+		$posteExpr = ($colonnePoste !== null) ? "sum(COALESCE(Rang." . $colonnePoste . ",0))" : "0";
+		$cespExpr = ($colonneCesp !== null) ? "sum(COALESCE(Rang." . $colonneCesp . ",0))" : "0";
 		
 		$sql = "SELECT	Rang.CodeSpecialite as CodeSpecialite,
-						sum(Rang." . $libellePoste . ") as Poste,
-						sum(Rang." . $libelleCesp . ") as CESP
+						" . $posteExpr . " as Poste,
+						" . $cespExpr . " as CESP
 				FROM `Specialite` inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $where . " GROUP BY Rang.CodeSpecialite;";
 
 		if ($debug) echo "SQL = " . $sql ."<br/>";
@@ -269,6 +289,13 @@
 		echo "<thead><tr>";
 		echo "<th>Nombre de CESP " . $reference . "<br/><i class='fbi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Le nombre de CESP pour l&apos;internat est issu de l&apos;arrêté publié par le Journal Officiel.<br/>L&apos;année correspond à l&apos;année de publication au Journal Officiel.'></i></th>";
 
+		// Libellés d'année partagés dans tous les tooltips du tableau.
+		// Les libellés de tooltip reflètent l'année réellement utilisée (exacte ou fallback).
+		$libellesTooltip = getLibellesTooltipPosteCesp($reference, $rangSources);
+		$libelleDernier = $libellesTooltip['dernier'];
+		$libellePoste = $libellesTooltip['poste'];
+		$libelleCesp = $libellesTooltip['cesp'];
+
 		$i = 0;
 		foreach ($listeSpecialite as $specialite) {
 			$libelleSpecialite = getLibelleSpecialite($specialite);
@@ -277,12 +304,7 @@
 			} else {
 				$libelleCESP = $listeCESP[$i];
 			}
-			if ($reference < 2020) {
-				$libelle = "2025";
-			} else {	
-				$libelle = $reference;
-			}
-			$tooltip = " data-toggle='tooltip' data-html='true' title='" . escapeHtml($libelleSpecialite) . "<hr>poste <small>en " . escapeHtml($libelle) . "</small> : " . escapeHtml($listePoste[$i]) . "<br/>CESP <small>en " . escapeHtml($libelle) . "</small> : " . escapeHtml($libelleCESP) . "' ";
+			$tooltip = " data-toggle='tooltip' data-html='true' title='" . escapeHtml($libelleSpecialite) . "<hr>poste <small>en " . escapeHtml($libellePoste) . "</small> : " . escapeHtml($listePoste[$i]) . "<br/>CESP <small>en " . escapeHtml($libelleCesp) . "</small> : " . escapeHtml($libelleCESP) . "' ";
 			$href = "";
 			echo "<th " . $tooltip . $href . " >&nbsp;" . $specialite . "&nbsp;</th>";
 			$i += 1;
@@ -295,31 +317,16 @@
 		foreach ($listeSpecialite as $specialite) {
 
 			// préparation de la requête pour la table Rang
+			$dernierExpr = ($colonneDernier !== null) ? "COALESCE(Rang." . $colonneDernier . ",0)" : "0";
+			$posteCellExpr = ($colonnePoste !== null) ? "COALESCE(Rang." . $colonnePoste . ",0)" : "0";
+			$cespCellExpr = ($colonneCesp !== null) ? "COALESCE(Rang." . $colonneCesp . ",0)" : "0";
 			$sql = "SELECT
 						Rang.CodeSpecialite,
 						Rang.CHU,
-						Rang.Dernier2025,
-						Rang.Dernier2024,
-						Rang.Dernier2023,
-						Rang.Dernier2022,
-						Rang.Dernier2021,
-						Rang.Dernier2020,
-						Rang.Dernier2019,
-						Rang.Dernier2018,
-						Rang.Dernier2017,
-						Rang.Poste2025,
-						Rang.Poste2024,
-						Rang.Poste2023,
-						Rang.Poste2022,
-						Rang.Poste2021,
-						Rang.Poste2020,
-						Rang.URLCeline,
-						Rang.CESP2025,
-						Rang.CESP2024,
-						Rang.CESP2023,
-						Rang.CESP2022,
-						Rang.CESP2021,
-						Rang.CESP2020
+						" . $dernierExpr . " AS DernierRef,
+						" . $posteCellExpr . " AS PosteRef,
+						" . $cespCellExpr . " AS CESPRef,
+						Rang.URLCeline
 					FROM Rang
 					WHERE Rang.CodeSpecialite = :specialite;";
 			if ($debug) echo "SQL = " . $sql ."<br/>";
@@ -335,43 +342,9 @@
 					$tableDernier[$j][0] = $CHU; 
 					$tablePoste[$j][0] = $CHU;
 					$tableCESP[$j][0] = $CHU; 
-					if ($reference == "2025") {
-						$tableDernier[$j][$i] = $Dernier2025;
-						$tablePoste[$j][$i] = $Poste2025;
-						$tableCESP[$j][$i] = $CESP2025;
-					} elseif ($reference == "2024") {
-						$tableDernier[$j][$i] = $Dernier2024;
-						$tablePoste[$j][$i] = $Poste2024;
-						$tableCESP[$j][$i] = $CESP2024;
-					} elseif ($reference == "2023") {
-						$tableDernier[$j][$i] = $Dernier2023;
-						$tablePoste[$j][$i] = $Poste2023;
-						$tableCESP[$j][$i] = $CESP2023;
-					} elseif ($reference == "2022") {
-						$tableDernier[$j][$i] = $Dernier2022;
-						$tablePoste[$j][$i] = $Poste2022;
-						$tableCESP[$j][$i] = $CESP2022;
-					} elseif ($reference == "2021") {
-						$tableDernier[$j][$i] = $Dernier2021;
-						$tablePoste[$j][$i] = $Poste2021;
-						$tableCESP[$j][$i] = $CESP2021;
-					} elseif ($reference == "2020") {
-						$tableDernier[$j][$i] = $Dernier2020;
-						$tablePoste[$j][$i] = $Poste2020;
-						$tableCESP[$j][$i] = $CESP2020;
-					} elseif ($reference == "2019") {
-						$tableDernier[$j][$i] = $Dernier2019;
-						$tablePoste[$j][$i] = $Poste2025;
-						$tableCESP[$j][$i] = $CESP2025;
-					} elseif ($reference == "2018") {
-						$tableDernier[$j][$i] = $Dernier2018;
-						$tablePoste[$j][$i] = $Poste2025;
-						$tableCESP[$j][$i] = $CESP2025;
-					} elseif ($reference == "2017") {
-						$tableDernier[$j][$i] = $Dernier2017;
-						$tablePoste[$j][$i] = $Poste2025;
-						$tableCESP[$j][$i] = $CESP2025;
-					}
+					$tableDernier[$j][$i] = $DernierRef;
+					$tablePoste[$j][$i] = $PosteRef;
+					$tableCESP[$j][$i] = $CESPRef;
 					$tableUrl[$j][$i] = $URLCeline;
 					$j += 1;
 				}
@@ -449,12 +422,7 @@
 				
 				// cellule rang
 				} else {
-					if ($reference < 2020) {
-						$libelle = "2025";
-					} else {	
-						$libelle = $reference;
-					}
-					$tooltip = " data-toggle='tooltip' data-html='true' data-trigger='hover focus' title='" . escapeHtml($CHU[0]) . "<br/>" . escapeHtml($libelleSpecialite) . "<hr/>Dernier <small>en " . escapeHtml($reference) . "</small> : " . escapeHtml($dernier) . "<br>poste <small>en " . escapeHtml($libelle) . "</small> : " . escapeHtml($tablePoste[$j][$i]) . "<br/>CESP <small>en " . escapeHtml($libelle) . "</small> : " . escapeHtml($libelleCESP) . "' ";
+					$tooltip = " data-toggle='tooltip' data-html='true' data-trigger='hover focus' title='" . escapeHtml($CHU[0]) . "<br/>" . escapeHtml($libelleSpecialite) . "<hr/>Dernier <small>en " . escapeHtml($libelleDernier) . "</small> : " . escapeHtml($dernier) . "<br>poste <small>en " . escapeHtml($libellePoste) . "</small> : " . escapeHtml($tablePoste[$j][$i]) . "<br/>CESP <small>en " . escapeHtml($libelleCesp) . "</small> : " . escapeHtml($libelleCESP) . "' ";
 					
 					if ($tableCESP[$j][$i] == 0) {
 						$libelleNbCesp = "";

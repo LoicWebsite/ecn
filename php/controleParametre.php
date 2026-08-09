@@ -63,7 +63,7 @@ if (isset($_GET['cesp'])) {
 }
 
 // --- LISTES BLANCHES ---
-$allowed_references = ["2025","2024","2023","2022","2021","2020","2019","2018","2017"];
+$allowed_references = ["2026","2025","2024","2023","2022","2021","2020","2019","2018","2017"];
 $allowed_types = ["chirurgie","medico-chirurgical","organe","transversal"];
 $allowed_lieux = ["hopital","ville","autre"];
 $allowed_internat = [3,4,5,6];
@@ -85,9 +85,13 @@ $rang = isset($_GET['rang']) && is_numeric($_GET['rang']) && $_GET['rang'] > 0 &
     : "rangIndifferent";
 
 // Référence année
+// Valeur par défaut dynamique: année la plus récente de la liste blanche.
+$referencesNumeriques = array_map('intval', $allowed_references);
+$referenceParDefaut = strval(max($referencesNumeriques));
+
 $reference = isset($_GET['reference']) && in_array($_GET['reference'], $allowed_references)
     ? $_GET['reference']
-    : 2025;
+    : $referenceParDefaut;
 
 // Type
 $type = isset($_GET['type']) && in_array($_GET['type'], $allowed_types)

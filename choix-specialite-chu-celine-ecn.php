@@ -58,7 +58,7 @@
 	<div id="actualite" class="container ancre">
 		<br/>
 		<p class="text-center">
-			<mark style="color:#808080;"><strong>Actualités</strong> : les résultats 2025 sont disponibles sur le <a href="questionnaire-choix-specialite.php">simulateur en ligne</a>  et sur les simulateurs Excel et OpenOffice (avec notamment les rangs limites par spécialités et par CHU). 
+			<mark style="color:#808080;"><strong>Actualités</strong> : le nombre de postes d'internat et de CESP 2026 sont disponibles sur le <a href="questionnaire-choix-specialite.php">simulateur en ligne</a>. 
 			</mark>
 		</p>
 	</div>

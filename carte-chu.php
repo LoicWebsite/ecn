@@ -65,6 +65,29 @@
   <body id="hautdepage">
 
 	<?php
+		/*
+		 * Gestion annuelle des données Rang/Poste/CESP (3 phases)
+		 *
+		 * Phase 1 - début d'année:
+		 *   Les colonnes de l'année peuvent être absentes (ou incomplètes).
+		 *
+		 * Phase 2 - milieu d'année:
+		 *   PosteAAAA et CESPAAAA existent, mais DernierAAAA n'existe pas encore.
+		 *
+		 * Phase 3 - fin d'année:
+		 *   Toutes les colonnes de l'année existent.
+		 *
+		 * Cas particulier avant 2020:
+		 *   Les colonnes Poste/CESP n'existent pas historiquement pour ces années.
+		 *   Le script prend alors les colonnes les plus récentes disponibles.
+		 *
+		 * Implémentation:
+		 *   - Détection des colonnes présentes via INFORMATION_SCHEMA.
+		 *   - Résolution des sources avec fallback
+		 *     (année exacte > année précédente > dernière disponible).
+		 *   - Application de ces sources aux filtres, aux valeurs affichées et aux tooltips.
+		 */
+
 		// menu de l'application, contrôle des paramètres et fonctions communes
 		include "php/menu-questionnaire.php";
 		require_once "php/controleParametre.php";
@@ -120,55 +143,47 @@
 		$listeCesp = array();
 		$listeUrl = array();
 
+		// Détection de la phase annuelle et résolution des colonnes disponibles.
+		$referenceAnnee = intval($reference);
+		$rangYearColumns = getRangYearColumns($db);
+		$phaseAnnuelle = getAnnualDataPhase($rangYearColumns, $referenceAnnee);
+		$rangSources = resolveAnnualRangSources($rangYearColumns, $referenceAnnee);
+		$colonneDernier = $rangSources['dernier']['column'];
+		$colonnePoste = $rangSources['poste']['column'];
+		$colonneCesp = $rangSources['cesp']['column'];
+
 		// construction clause where		
 		$where = " WHERE Rang.CodeSpecialite = :codeSpecialite";
 		if (($rang > "") and ($rang != 0) and ($rang != "rangIndifferent")) {
-			$where = $where . " AND Dernier" . $reference . " >='" . $rang . "'";
-		}
-		$libelleCesp = "CESP2025";
-		if ($reference == "2024") {
-			$libelleCesp = "CESP2024";
-		} elseif ($reference == "2023") {
-			$libelleCesp = "CESP2023";
-		} elseif ($reference == "2022") {
-			$libelleCesp = "CESP2022";
-		} elseif ($reference == "2021") {
-			$libelleCesp = "CESP2021";
-		} elseif ($reference == "2020") {
-			$libelleCesp = "CESP2020";
+			if ($colonneDernier !== null) {
+				$where = $where . " AND COALESCE(Rang." . $colonneDernier . ", 0) >= " . intval($rang);
+			}
 		}
 		if ($cesp == "on") {
-			$where = $where . " AND Rang." . $libelleCesp . " > '0'";
+			if ($colonneCesp !== null) {
+				$where = $where . " AND COALESCE(Rang." . $colonneCesp . ", 0) > 0";
+			} else {
+				$where = $where . " AND 1 = 0";
+			}
+		}
+		if ($colonnePoste !== null) {
+			$where = $where . " AND COALESCE(Rang." . $colonnePoste . ", 0) > 0";
 		}
 		$where = $where . ";";
 
 		// préparation de la requête pour la table Rang
+		$dernierExpr = ($colonneDernier !== null) ? "COALESCE(Rang." . $colonneDernier . ",0)" : "0";
+		$posteExpr = ($colonnePoste !== null) ? "COALESCE(Rang." . $colonnePoste . ",0)" : "0";
+		$cespExpr = ($colonneCesp !== null) ? "COALESCE(Rang." . $colonneCesp . ",0)" : "0";
 		$sql = "
 			SELECT
 					Rang.CodeSpecialite,
 					Rang.CHU,
-					Rang.Dernier2025,
-					Rang.Dernier2024,
-					Rang.Dernier2023,
-					Rang.Dernier2022,
-					Rang.Dernier2021,
-					Rang.Dernier2020,
-					Rang.Dernier2019,
-					Rang.Dernier2018,
-					Rang.Dernier2017,
-					Rang.Poste2025,
-					Rang.Poste2024,
-					Rang.Poste2023,
-					Rang.Poste2022,
-					Rang.Poste2021,
-					Rang.Poste2020,
+					" . $dernierExpr . " AS DernierRef,
+					" . $posteExpr . " AS PosteRef,
+					" . $cespExpr . " AS CESPRef,
 					Rang.URLCeline,
-					Rang.CESP2025,
-					Rang.CESP2024,
-					Rang.CESP2023,
-					Rang.CESP2022,
-					Rang.CESP2021,
-					Rang.CESP2020
+					Rang.CodeSpecialite
 				FROM Rang" 
 				. $where;
 		if ($debug) echo "SQL = " . $sql ."<br/>";
@@ -185,39 +200,9 @@
 			// récupération des rangs à mémoriser dans un tableau
 			while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 				extract($row);
-				$dernier = 0;
-				$poste = $Poste2025;
-				$libelleCesp = $CESP2025;
-
-				if ($reference == "2025") {
-					$dernier = $Dernier2025;
-				} elseif ($reference == "2024") {
-					$dernier = $Dernier2024;
-					$poste = $Poste2024;
-					$libelleCesp = $CESP2024;
-				} elseif ($reference == "2023") {
-					$dernier = $Dernier2023;
-					$poste = $Poste2023;
-					$libelleCesp = $CESP2023;
-				} elseif ($reference == "2022") {
-					$dernier = $Dernier2022;
-					$poste = $Poste2022;
-					$libelleCesp = $CESP2022;
-				} elseif ($reference == "2021") {
-					$dernier = $Dernier2021;
-					$poste = $Poste2021;
-					$libelleCesp = $CESP2021;
-				} elseif ($reference == "2020") {
-					$dernier = $Dernier2020;
-					$poste = $Poste2020;
-					$libelleCesp = $CESP2020;
-				} elseif ($reference == "2019") {
-					$dernier = $Dernier2019;
-				} elseif ($reference == "2018") {
-					$dernier = $Dernier2018;
-				} elseif ($reference == "2017") {
-					$dernier = $Dernier2017;
-				}
+				$dernier = intval($DernierRef);
+				$poste = intval($PosteRef);
+				$libelleCesp = intval($CESPRef);
 
 				$listeCHU[] = $CHU;
 				$listeDernier[] = $dernier;

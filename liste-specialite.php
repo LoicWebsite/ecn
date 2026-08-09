@@ -107,6 +107,15 @@
 
 		// connexion à la base de données
 		$db = openDatabase();
+
+		// Détection de la phase annuelle et résolution des colonnes disponibles.
+		$referenceAnnee = intval($reference);
+		$rangYearColumns = getRangYearColumns($db);
+		$phaseAnnuelle = getAnnualDataPhase($rangYearColumns, $referenceAnnee);
+		$rangSources = resolveAnnualRangSources($rangYearColumns, $referenceAnnee);
+		$colonneDernier = $rangSources['dernier']['column'];
+		$colonnePoste = $rangSources['poste']['column'];
+		$colonneCesp = $rangSources['cesp']['column'];
 		
 		// affichage des critères
 		echo "<div id='critere' class='collapse'>";
@@ -144,20 +153,12 @@
 			}
 		}
 
-		$libelleCesp = "CESP2025";					// les postes et cesp sont absents en base pour les années avant 2020 (on prend ceux de 2025 par défaut)
-		if ($reference == "2024") {
-			$libelleCesp = "CESP2024";
-		} elseif ($reference == "2023") {
-			$libelleCesp = "CESP2023";
-		} elseif ($reference == "2022") {
-			$libelleCesp = "CESP2022";
-		} elseif ($reference == "2021") {
-			$libelleCesp = "CESP2021";
-		} elseif ($reference == "2020") {
-			$libelleCesp = "CESP2020";
-		}
 		if ($cesp == "on") {
-			$where = $where . " AND Rang." . $libelleCesp . " <> '0' AND Rang." . $libelleCesp . " <> ''";
+			if ($colonneCesp !== null) {
+				$where = $where . " AND COALESCE(Rang." . $colonneCesp . ", 0) <> 0";
+			} else {
+				$where = $where . " AND 1 = 0";
+			}
 		}
 
 		if (($lieu <> "") and ($lieu <> "lieuIndifferent")) {
@@ -177,7 +178,11 @@
 		}
 
 		if (($rang <> "") and ($rang > 0) and ($rang <> "rangIndifferent")) {
-			$whereSpecialite = $where . " AND Rang.Dernier" . $reference . " >= '" . $rang ."'";
+			if ($colonneDernier !== null) {
+				$whereSpecialite = $where . " AND COALESCE(Rang." . $colonneDernier . ", 0) >= " . intval($rang);
+			} else {
+				$whereSpecialite = $where;
+			}
 		} else {
 			$whereSpecialite = $where;
 		}
@@ -187,26 +192,10 @@
 		// requête pour compter les nombres de postes
 		$nbPoste = 0;
 		$nbCESP = 0;
-		$libellePoste = "Poste2025";
-		$libelleCesp = "CESP2025";			// avant 2020 le nombre de postes et de CESP n'est pas en base (on prend 2025 par défaut)
-		if ($reference == 2024) {
-			$libellePoste = "Poste2024";
-			$libelleCesp = "CESP2024";
-		} elseif ($reference == 2023) {
-			$libellePoste = "Poste2023";
-			$libelleCesp = "CESP2023";
-		} elseif ($reference == 2022) {
-			$libellePoste = "Poste2022";
-			$libelleCesp = "CESP2022";
-		} elseif ($reference == 2021) {
-			$libellePoste = "Poste2021";
-			$libelleCesp = "CESP2021";
-		} elseif ($reference == 2020) {
-			$libellePoste = "Poste2020";
-			$libelleCesp = "CESP2020";
-		}
+		$posteExpr = ($colonnePoste !== null) ? "SUM(COALESCE(Rang." . $colonnePoste . ", 0))" : "0";
+		$cespExpr = ($colonneCesp !== null) ? "SUM(COALESCE(Rang." . $colonneCesp . ", 0))" : "0";
 
-		$sql = "SELECT Rang.CodeSpecialite, SUM(Rang." . $libellePoste . ") AS totalPoste, SUM(Rang." . $libelleCesp . ") AS totalCESP  FROM Specialite
+		$sql = "SELECT Rang.CodeSpecialite, " . $posteExpr . " AS totalPoste, " . $cespExpr . " AS totalCESP  FROM Specialite
 				inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $whereSpecialite . " GROUP BY Rang.CodeSpecialite;";
 		if ($debug) echo "SQL = " . $sql ."<br/>";
 
@@ -226,28 +215,14 @@
 		}
 		
 		// préparation de la requête pour afficher les spécialités
+		$dernierExpr = ($colonneDernier !== null) ? "MAX(COALESCE(Rang." . $colonneDernier . ", 0))" : "0";
+		$posteCellExpr = ($colonnePoste !== null) ? "SUM(COALESCE(Rang." . $colonnePoste . ", 0))" : "0";
+		$cespCellExpr = ($colonneCesp !== null) ? "SUM(COALESCE(Rang." . $colonneCesp . ", 0))" : "0";
+
 		$sql = "SELECT	Rang.CodeSpecialite as Specialite,
-						max(Rang.Dernier2025) as Dernier2025,
-						max(Rang.Dernier2024) as Dernier2024,
-						max(Rang.Dernier2023) as Dernier2023,
-						max(Rang.Dernier2022) as Dernier2022,
-						max(Rang.Dernier2021) as Dernier2021,
-						max(Rang.Dernier2020) as Dernier2020,
-						max(Rang.Dernier2019) as Dernier2019,
-						max(Rang.Dernier2018) as Dernier2018,
-						max(Rang.Dernier2017) as Dernier2017,
-						sum(Rang.Poste2025) as Poste2025,
-						sum(Rang.CESP2025) as CESP2025,
-						sum(Rang.Poste2024) as Poste2024,
-						sum(Rang.CESP2024) as CESP2024,
-						sum(Rang.Poste2023) as Poste2023,
-						sum(Rang.CESP2023) as CESP2023,
-						sum(Rang.Poste2022) as Poste2022,
-						sum(Rang.CESP2022) as CESP2022,
-						sum(Rang.Poste2021) as Poste2021,
-						sum(Rang.CESP2021) as CESP2021,
-						sum(Rang.Poste2020) as Poste2020,
-						sum(Rang.CESP2020) as CESP2020
+						" . $dernierExpr . " as DernierRef,
+						" . $posteCellExpr . " as PosteRef,
+						" . $cespCellExpr . " as CESPRef
 				FROM `Specialite` inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $whereSpecialite . " GROUP BY Rang.CodeSpecialite;";
 		if ($debug) echo "SQL = " . $sql ."<br/>";
 
@@ -273,14 +248,13 @@
 			echo "<caption>Cliquer &nbsp;<i class='bi bi-cursor-fill'></i>&nbsp; sur une spécialité pour voir les CHU pour cette spécialité.</caption>";
 			echo "<thead class='text-center'>";
 			echo "<tr><th colspan=2 style='width:50%'>" . $result->rowCount() ." spécialités d'internat<br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Cliquer sur une spécialité pour voir les CHU pour cette spécialité.'></i></th>";
-			if ($reference < 2020) {
-				$libelle = "2024";
-			} else {	
-				$libelle = $reference;
-			}
-			echo "<th style='width:20%;'> ".$montant->format($nbPoste)." postes " . $libelle . "<br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Le nombre de postes est issu de l&apos;arrêté publié par le Journal Officiel. Ce nombre de postes exclut les CESP.<br/>L&apos;année correspond à l&apos;année de publication au Journal Officiel.'></i></th>";
-			echo "<th style='width:20%'> Rang dernier " . $reference . "<br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='A partir de 2024, il s&apos;agit du rang limite par groupe de spécialités.<br>Auparavant c&apos;était le rang limite national par spécialité.'></i></th>";
-			echo "<th style='width:10%;'> ".$montant->format($nbCESP)." CESP " . $libelle . " <br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Le nombre de postes réservés aux CESP est issu de l&apos;arrêté publié par le Journal Officiel.<br/>Une cellule vide signifie qu&apos;il n&apos;y a pas de poste CESP pour cette spécialité.'></i></th>";
+			$libellesTooltip = getLibellesTooltipPosteCesp($reference, $rangSources);
+			$libelleDernier = $libellesTooltip['dernier'];
+			$libellePoste = $libellesTooltip['poste'];
+			$libelleCesp = $libellesTooltip['cesp'];
+			echo "<th style='width:20%;'> " .$montant->format($nbPoste)." postes " . escapeHtml($libellePoste) . "<br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Le nombre de postes est issu de l&apos;arrêté publié par le Journal Officiel. Ce nombre de postes exclut les CESP.<br/>L&apos;année correspond à l&apos;année de publication au Journal Officiel.'></i></th>";
+			echo "<th style='width:20%'> Rang dernier " . escapeHtml($libelleDernier) . "<br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='A partir de 2024, il s&apos;agit du rang limite par groupe de spécialités.<br>Auparavant c&apos;était le rang limite national par spécialité.'></i></th>";
+			echo "<th style='width:10%;'> " .$montant->format($nbCESP)." CESP " . escapeHtml($libelleCesp) . " <br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Le nombre de postes réservés aux CESP est issu de l&apos;arrêté publié par le Journal Officiel.<br/>Une cellule vide signifie qu&apos;il n&apos;y a pas de poste CESP pour cette spécialité.'></i></th>";
 			echo "</tr></thead>";
 			echo "<tbody>";
 			// récupération des données à afficher
@@ -296,50 +270,14 @@
 				}
 
 				echo "<td class='acronyme'>" . escapeHtml($Specialite) . "</td><td>" . escapeHtml($libelleSpecialite) . "</td>";
-				$dernier = "0";
-				$poste = "0";
-				$libelleCesp = "0";
-				if ($reference == 2025) {
-					$dernier = $montant->format($Dernier2025);
-					$poste = $Poste2025;
-					$libelleCesp = $CESP2025;
-				} elseif ($reference == 2024) {
-					$dernier = $montant->format($Dernier2024);
-					$poste = $Poste2024;
-					$libelleCesp = $CESP2024;
-				} elseif ($reference == 2023) {
-					$dernier = $montant->format($Dernier2023);
-					$poste = $Poste2023;
-					$libelleCesp = $CESP2023;
-				} elseif ($reference == 2022) {
-					$dernier = $montant->format($Dernier2022);
-					$poste = $Poste2022;
-					$libelleCesp = $CESP2022;
-				} elseif ($reference == 2021) {
-					$dernier = $montant->format($Dernier2021);
-					$poste = $Poste2021;
-					$libelleCesp = $CESP2021;
-				} elseif ($reference == 2020) {
-					$dernier = $montant->format($Dernier2020);
-					$poste = $Poste2020;
-					$libelleCesp = $CESP2020;
-				} elseif ($reference == 2019) {
-					$dernier = $montant->format($Dernier2019);
-					$poste = $Poste2024;
-					$libelleCesp = $CESP2024;
-				} elseif ($reference == 2018) {
-					$dernier = $montant->format($Dernier2018);
-					$poste = $Poste2024;
-					$libelleCesp = $CESP2024;
-				} elseif ($reference == 2017) {
-					$dernier = $montant->format($Dernier2017);
-					$poste = $Poste2024;
-					$libelleCesp = $CESP2024;
-				}
+				$dernierValeur = intval($DernierRef);
+				$poste = intval($PosteRef);
+				$cespValeur = intval($CESPRef);
+				$dernier = ($dernierValeur > 0) ? $montant->format($dernierValeur) : "";
 				echo "<td class='text-center'>".$montant->format($poste)."</td>";
 				echo "<td class='text-center'>" . $dernier . "</td>";
-				if ($libelleCesp <> 0) {
-					$nbCesp = $montant->format($libelleCesp);
+				if ($cespValeur <> 0) {
+					$nbCesp = $montant->format($cespValeur);
 				} else {
 					$nbCesp = '';
 				}

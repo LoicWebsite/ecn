@@ -81,23 +81,30 @@
 		} else {
 			$libelleSpecialite = $GLOBALS['specialite'];					// appel de la fonction depuis la page principale du site
 		}
-		$annee = $GLOBALS['reference'];
-		$libelleAnnee = $annee;
-		if ($annee < 2020) {												// il n'y a pas de CESP et de postes dans la base avant 2020 (donc on affiche ceux de 2024)
-			$libelleAnnee = "2024";
-		}
+
+		// Libellés d'années du tooltip basés sur les sources réellement utilisées
+		// (phase 1/2/3 + fallback dynamique), sans hardcode annuel.
+		$libellesTooltip = getLibellesTooltipPosteCesp(
+			intval($GLOBALS['reference']),
+			isset($GLOBALS['rangSources']) ? $GLOBALS['rangSources'] : null
+		);
+		$anneeDernier = isset($libellesTooltip['dernier']) ? $libellesTooltip['dernier'] : strval($GLOBALS['reference']);
+		$anneePoste = isset($libellesTooltip['poste']) ? $libellesTooltip['poste'] : strval($GLOBALS['reference']);
+		$anneeCesp = isset($libellesTooltip['cesp']) ? $libellesTooltip['cesp'] : $anneePoste;
+
 		$libelleCHUSafe = htmlspecialchars((string)$libelleCHU, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 		$libelleSpecialiteSafe = htmlspecialchars((string)$libelleSpecialite, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-		$anneeSafe = htmlspecialchars((string)$annee, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-		$libelleAnneeSafe = htmlspecialchars((string)$libelleAnnee, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+		$anneeDernierSafe = htmlspecialchars((string)$anneeDernier, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+		$anneePosteSafe = htmlspecialchars((string)$anneePoste, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+		$anneeCespSafe = htmlspecialchars((string)$anneeCesp, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 		$libelleDernierSafe = htmlspecialchars((string)$libelleDernier, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 		$libellePosteSafe = htmlspecialchars((string)$libellePoste, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 		$libelleCespSafe = htmlspecialchars((string)$libelleCesp, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 		if (($rangOk) and ($cespOk) and ($libellePoste > 0)) {
-			echo "<a data-html='true' " . $urlCeline . " title='" . $libelleCHUSafe . "<br/>" . $libelleSpecialiteSafe . "<br/>" . " <strong>accessible</strong><hr>dernier <small>en " . $anneeSafe . "</small> : " . $libelleDernierSafe . "<br/>poste <small>en " . $libelleAnneeSafe . "</small> : " . $libellePosteSafe . "<br/>CESP <small>en " . $libelleAnneeSafe . "</small> : " . $libelleCespSafe . "'>";
+			echo "<a data-html='true' " . $urlCeline . " title='" . $libelleCHUSafe . "<br/>" . $libelleSpecialiteSafe . "<br/>" . " <strong>accessible</strong><hr>dernier <small>en " . $anneeDernierSafe . "</small> : " . $libelleDernierSafe . "<br/>poste <small>en " . $anneePosteSafe . "</small> : " . $libellePosteSafe . "<br/>CESP <small>en " . $anneeCespSafe . "</small> : " . $libelleCespSafe . "'>";
 			echo "<circle cx='" . $cx . "' cy='" . $cy . "' r='5' stroke='gray' stroke-width='1' fill='white' />";
 		} else {
-			echo "<a data-html='true' " . $urlCeline . " title='" . $libelleCHUSafe . "<br/>" . $libelleSpecialiteSafe . "<br/>" . " <strong>non accessible</strong><hr>dernier <small>en " . $anneeSafe . "</small> : " . $libelleDernierSafe . "<br/>poste <small>en " . $libelleAnneeSafe . "</small> : " . $libellePosteSafe . "<br/>CESP <small>en " . $libelleAnneeSafe . "</small> : " . $libelleCespSafe . "'>";
+			echo "<a data-html='true' " . $urlCeline . " title='" . $libelleCHUSafe . "<br/>" . $libelleSpecialiteSafe . "<br/>" . " <strong>non accessible</strong><hr>dernier <small>en " . $anneeDernierSafe . "</small> : " . $libelleDernierSafe . "<br/>poste <small>en " . $anneePosteSafe . "</small> : " . $libellePosteSafe . "<br/>CESP <small>en " . $anneeCespSafe . "</small> : " . $libelleCespSafe . "'>";
 			echo "<circle cx='" . $cx . "' cy='" . $cy . "' r='5' stroke='gray' stroke-width='1' fill='white' />";
 		}
 
