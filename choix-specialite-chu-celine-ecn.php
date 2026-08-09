@@ -58,7 +58,7 @@
 	<div id="actualite" class="container ancre">
 		<br/>
 		<p class="text-center">
-			<mark style="color:#808080;"><strong>Actualités</strong> : le nombre de postes d'internat et de CESP 2026 sont disponibles sur le <a href="questionnaire-choix-specialite.php">simulateur en ligne</a>. 
+			<mark style="color:#808080;"><strong>Actualités</strong> : le nombre de postes d'internat et de CESP 2026 sont disponibles sur le <a href="questionnaire-choix-specialite.php">simulateur en ligne</a> et dans les versions Excel et OpenOffice ci-dessous. 
 			</mark>
 		</p>
 	</div>
