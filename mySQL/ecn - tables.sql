@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost
--- Généré le : jeu. 04 sep. 2025 à 15:10
+-- Généré le : mer. 12 août 2026 à 13:19
 -- Version du serveur : 5.5.61-38.13-log
 -- Version de PHP : 8.3.19
 
@@ -86,12 +86,14 @@ CREATE TABLE `Poste` (
 CREATE TABLE `Rang` (
   `CodeSpecialite` varchar(3) COLLATE utf8_roman_ci DEFAULT NULL,
   `CHU` varchar(25) COLLATE utf8_roman_ci DEFAULT NULL,
+  `Poste2026` int(4) DEFAULT '0',
   `Poste2025` int(4) DEFAULT NULL,
   `Poste2024` int(4) DEFAULT '0',
   `Poste2023` int(4) DEFAULT NULL,
   `Poste2022` int(4) DEFAULT '0',
   `Poste2021` int(4) DEFAULT NULL,
   `Poste2020` int(3) DEFAULT NULL,
+  `Dernier2025` int(4) DEFAULT NULL,
   `Dernier2024` int(4) DEFAULT NULL,
   `Dernier2023` int(4) DEFAULT NULL,
   `Dernier2022` int(4) DEFAULT NULL,
@@ -101,6 +103,7 @@ CREATE TABLE `Rang` (
   `Dernier2018` int(4) DEFAULT NULL,
   `Dernier2017` int(4) DEFAULT NULL,
   `URLCeline` varchar(60) COLLATE utf8_roman_ci DEFAULT NULL,
+  `CESP2026` int(4) DEFAULT '0',
   `CESP2025` int(3) DEFAULT NULL,
   `CESP2024` int(4) DEFAULT '0',
   `CESP2023` int(3) NOT NULL DEFAULT '0',
@@ -118,16 +121,22 @@ CREATE TABLE `Rang` (
 CREATE TABLE `Specialite` (
   `CodeSpecialite` varchar(3) COLLATE utf8_roman_ci NOT NULL,
   `Specialite` varchar(50) COLLATE utf8_roman_ci DEFAULT NULL,
+  `Poste2026` int(4) DEFAULT '0',
+  `Poste2025` int(4) DEFAULT '0',
   `Poste2024` int(4) DEFAULT '0',
   `Poste2023` int(4) DEFAULT NULL,
   `Poste2022` int(4) DEFAULT '0',
   `Poste2021` int(4) DEFAULT NULL,
   `Poste2020` int(4) DEFAULT NULL,
+  `CESP2026` int(4) DEFAULT '0',
+  `CESP2025` int(4) DEFAULT '0',
   `CESP2024` int(4) DEFAULT '0',
   `CESP2023` int(3) DEFAULT NULL,
   `CESP2022` int(3) DEFAULT '0',
   `CESP2021` int(3) DEFAULT NULL,
   `CESP2020` int(3) DEFAULT NULL,
+  `Dernier2025` int(4) DEFAULT '0',
+  `CHUDernier2025` varchar(27) COLLATE utf8_roman_ci DEFAULT NULL,
   `Dernier2024` int(4) DEFAULT NULL,
   `CHUDernier2024` varchar(27) COLLATE utf8_roman_ci DEFAULT NULL,
   `Dernier2023` int(4) DEFAULT NULL,
