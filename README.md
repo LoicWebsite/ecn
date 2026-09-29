@@ -46,7 +46,7 @@ Les données présentées par le simulateur proviennent de différentes sources.
 | Donnée | Source | Utilisation dans le projet |
 |---|---|---|
 | Rangs des derniers admis | **CNG Santé** depuis 2024 inclus | Rangs limites par spécialité et CHU |
-|| **Journal Officiel** pour lannées précédentes | Rangs limites par spécialité et CHU |
+|| **Journal Officiel** pour les années précédentes | Rangs limites par spécialité et CHU |
 | Nombre de postes | **Journal officiel** | Nombre de postes ouverts par spécialité et CHU |
 | Nombre de CESP | **Journal officiel** | Nombre de CESP ouverts par spécialité et CHU |
 | Revenus des médecins libéraux | **UNASA / CARMF** | Données indicatives sur les revenus par spécialité pour les exercices libéraux |
