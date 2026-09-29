@@ -94,9 +94,14 @@
 	<?php 				
 		// connexion à la base de données
 		$db = openDatabase();
+		$anneeRang = getRangDisplayYear($db, $reference);
+		$rangYearColumns = getRangYearColumns($db);
+		$rangSources = resolveAnnualRangSources($rangYearColumns, intval($reference));
+		$anneePoste = $rangSources['poste']['year'] ?? intval($reference);
+		$anneeCesp = $rangSources['cesp']['year'] ?? intval($reference);
 
 		// affichage du résumé de la spécialité
-		include "php/resume-specialite.php";
+		include "php/resume-specialite-dynamique.php";
 		$CodeSpecialite = isset($CodeSpecialite) ? $CodeSpecialite : $code;
 	?>
 
@@ -107,86 +112,39 @@
 
 		$listeCHU = array();
 		$listeDernier = array();
+		$listeDernierPrincipal = array();
+		$listeDernierCESP = array();
+		$listeRangCompare = array();
 		$listePoste = array();
 		$listeCesp = array();
-		$listeUrl = array();
-
-		// construction clause where		
-		$where = " WHERE Rang.CodeSpecialite = :codeSpecialite";
-		$where = $where . ";";
-
-		// préparation de la requête pour la table Rang
-		$sql = "
-			SELECT
-					Rang.CodeSpecialite,
-					Rang.CHU,
-					Rang.Dernier2025,
-					Rang.Dernier2024,
-					Rang.Dernier2023,
-					Rang.Dernier2022,
-					Rang.Dernier2021,
-					Rang.Dernier2020,
-					Rang.Dernier2019,
-					Rang.Dernier2018,
-					Rang.Dernier2017,
-					Rang.Poste2025,
-					Rang.Poste2024,
-					Rang.Poste2023,
-					Rang.Poste2022,
-					Rang.Poste2021,
-					Rang.Poste2020,
-					Rang.URLCeline,
-					Rang.CESP2025,
-					Rang.CESP2024,
-					Rang.CESP2023,
-					Rang.CESP2022,
-					Rang.CESP2021,
-					Rang.CESP2020
-				FROM Rang" 
-				. $where;
-		if ($debug) echo "SQL = " . $sql ."<br/>";
 
 		// exécution de la requête
 		try {
-			$stmt = $db->prepare($sql);
-			$stmt->execute([':codeSpecialite' => $CodeSpecialite]);
-			$result = $stmt;
+			$rangRows = getRangRowsWide($db, $CodeSpecialite);
 			$montant = new NumberFormatter("fr-FR", NumberFormatter::DECIMAL);
 			$nbCHU = 0;
 			$i = 0;
 			
 			// récupération des rangs à mémoriser dans un tableau
-			while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+			foreach ($rangRows as $row) {
 				extract($row);
+				$anneeReference = $rangSources['dernier']['year'] ?? intval($reference);
+				$dernierPrincipal = $row['Dernier' . $anneeReference] ?? 0;
+				$dernierCesp = $row['DernierCESP' . $anneeReference] ?? 0;
+				$dernierReference = $dernierPrincipal;
+				$posteReference = $row['Poste' . $anneePoste] ?? 0;
+				$cespReference = $row['CESP' . $anneeCesp] ?? 0;
 				$listeCHU[] = $CHU;
-				$listePoste[] = $Poste2025;
-				$listeCesp[] = $CESP2025;
-				if ($reference == "2025") {
-					$listeDernier[] = $Dernier2025;
-				} elseif ($reference == "2024") {
-					$listeDernier[] = $Dernier2024;
-				} elseif ($reference == "2023") {
-					$listeDernier[] = $Dernier2023;
-				} elseif ($reference == "2022") {
-					$listeDernier[] = $Dernier2022;
-				} elseif ($reference == "2021") {
-					$listeDernier[] = $Dernier2021;
-				} elseif ($reference == "2020") {
-					$listeDernier[] = $Dernier2020;
-				} elseif ($reference == "2019") {
-					$listeDernier[] = $Dernier2019;
-				} elseif ($reference == "2018") {
-					$listeDernier[] = $Dernier2018;
-				} elseif ($reference == "2017") {
-					$listeDernier[] = $Dernier2017;
-				} else {
-					$listeDernier[] = 0;
-				}
-				$listeUrl[] = $URLCeline;
+				$listePoste[] = $posteReference;
+				$listeCesp[] = $cespReference;
+				$listeDernier[] = $dernierReference;
+				$listeDernierPrincipal[] = $dernierPrincipal;
+				$listeDernierCESP[] = $dernierCesp;
+				$listeRangCompare[] = getRangComparaison($dernierPrincipal, $dernierCesp, $cesp);
 	
 				// comptage des chu accessibles selon le critère cesp et rang s'il y a au moins 1 poste
 				if ($cesp == "on") {
-					if (($CESP2025 != null) and ($CESP2025 > 0 )) {
+					if (($cespReference != null) and ($cespReference > 0 )) {
 						$cespOk = true;
 					} else {
 						$cespOk = false;
@@ -196,7 +154,7 @@
 				}
 
 				if (($rang != "rangIndifferent") and ($rang != null) and ($rang != 0)) {
-					if ($listeDernier[$i] >= $rang) {
+					if ($listeRangCompare[$i] >= $rang) {
 						$rangOk = true;
 					} else {
 						$rangOk = false;
@@ -205,7 +163,7 @@
 					$rangOk = true;
 				}
 
-				if (($rangOk) and ($cespOk) and ($Poste2025 > 0)) {
+				if (($rangOk) and ($cespOk) and ($posteReference > 0)) {
 					$nbCHU += 1;
 				}
 
@@ -215,7 +173,7 @@
 			// titre de la page
 			echo "<h2 class='h5' style='text-align:left;'>". $nbCHU . " CHU possibles en " . $libelleSpecialite;
 			if (($rang != "rangIndifferent") and ($rang <> 0)) {
-				echo " pour un rang de " . $montant->format($rang) . " en " . $reference;
+				echo " pour un rang de " . $montant->format($rang) . " en " . $anneeRang;
 			}
 			if ($cesp == "on") {
 				echo " en CESP";
@@ -227,7 +185,6 @@
 				var_dump($listePoste);
 				var_dump($listeCesp);
 				var_dump($listeDernier);
-				var_dump($listeUrl);
 			}
 		}
 		catch(PDOException $erreur)	{
@@ -235,7 +192,6 @@
 		}
 
 		// fermeture de la base
-		if (isset($result)) {$result->closeCursor();}
 		$db = null;
 
 	?>
@@ -258,15 +214,6 @@
  	<div>
  		<br/>
  		<p class="text-center">Cliquer &nbsp;<i class='bi bi-cursor-fill'></i>&nbsp; sur un CHU pour voir le détail.<br/>
-<!-- A REACTIVER quand Celine actif -->
-<!-- 
-		<?php
-			if ($reference == "2023") {
- 				echo "Double cliquer &nbsp;<i class='bi bi-hand-index-thumb'></i>&nbsp; sur un CHU pour voir le détail des rangs dans Celine (uniquement pour 2023).";
- 			}	
-		?>
- -->
-
 		</p>
 	</div>
 	
@@ -296,22 +243,9 @@
 		//pour basculer sur l'affichage en liste
 		function detail() {
 			<?php
-				echo "window.location.href=" . json_encode(buildSafeUrl('detail-specialite-simulateur.php', ['specialite' => $specialite])) . ";";
+				echo "window.location.href=" . json_encode(buildSafeUrl('detail-specialite-simulateur.php', ['specialite' => $specialite, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice])) . ";";
 			?>
 		}
-
-// A REACTIVER quand Celine actif
-		// pour voir le détail Celine d'un CHU
-// 		$( "g a" ).dblclick(function() {
-// 			$('g a').tooltip('hide');
-// 			<?php
-// 				if ($reference == "2023") {
-// 					echo "if ($(this).data('url') != '') {";
-// 					echo "window.open($(this).data('url'),'Détail Céline');";
-// 					echo "}";
-//  				}
-// 			?>
-// 		});
 
 		// pour retourner à la page principale
 		function home() {

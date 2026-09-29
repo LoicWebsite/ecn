@@ -65,29 +65,6 @@
   <body id="hautdepage">
 
 	<?php
-		/*
-		 * Gestion annuelle des données Rang/Poste/CESP (3 phases)
-		 *
-		 * Phase 1 - début d'année:
-		 *   Les colonnes de l'année peuvent être absentes (ou incomplètes).
-		 *
-		 * Phase 2 - milieu d'année:
-		 *   PosteAAAA et CESPAAAA existent, mais DernierAAAA n'existe pas encore.
-		 *
-		 * Phase 3 - fin d'année:
-		 *   Toutes les colonnes de l'année existent.
-		 *
-		 * Cas particulier avant 2020:
-		 *   Les colonnes Poste/CESP n'existent pas historiquement pour ces années.
-		 *   Le script prend alors les colonnes les plus récentes disponibles.
-		 *
-		 * Implémentation:
-		 *   - Détection des colonnes présentes via INFORMATION_SCHEMA.
-		 *   - Résolution des sources avec fallback
-		 *     (année exacte > année précédente > dernière disponible).
-		 *   - Application de ces sources aux filtres, aux valeurs affichées et aux tooltips.
-		 */
-
 		// menu de l'application, contrôle des paramètres et fonctions communes
 		include "php/menu-questionnaire.php";
 		require_once "php/controleParametre.php";
@@ -96,6 +73,11 @@
 	
 		// ouverture de la base de données
 		$db = openDatabase();
+		$rangYearColumns = getRangYearColumns($db);
+		$anneeRang = getRangDisplayYear($db, $reference);
+		$rangSources = resolveAnnualRangSources($rangYearColumns, intval($reference));
+		$anneePoste = $rangSources['poste']['year'] ?? intval($reference);
+		$anneeCesp = $rangSources['cesp']['year'] ?? intval($reference);
 	?>
 
 	<!-- chemin de navigation -->
@@ -128,7 +110,7 @@
 	
 	<!-- résumé de la spécialité -->
 	<?php 				
-		include "php/resume-specialite.php";	
+		include "php/resume-specialite-dynamique.php";
 		$CodeSpecialite = isset($CodeSpecialite) ? $CodeSpecialite : $code;
 	?>
 
@@ -139,76 +121,36 @@
 
 		$listeCHU = array();
 		$listeDernier = array();
+		$listeDernierPrincipal = array();
+		$listeDernierCESP = array();
+		$listeRangCompare = array();
 		$listePoste = array();
 		$listeCesp = array();
-		$listeUrl = array();
-
-		// Détection de la phase annuelle et résolution des colonnes disponibles.
-		$referenceAnnee = intval($reference);
-		$rangYearColumns = getRangYearColumns($db);
-		$phaseAnnuelle = getAnnualDataPhase($rangYearColumns, $referenceAnnee);
-		$rangSources = resolveAnnualRangSources($rangYearColumns, $referenceAnnee);
-		$colonneDernier = $rangSources['dernier']['column'];
-		$colonnePoste = $rangSources['poste']['column'];
-		$colonneCesp = $rangSources['cesp']['column'];
-
-		// construction clause where		
-		$where = " WHERE Rang.CodeSpecialite = :codeSpecialite";
-		if (($rang > "") and ($rang != 0) and ($rang != "rangIndifferent")) {
-			if ($colonneDernier !== null) {
-				$where = $where . " AND COALESCE(Rang." . $colonneDernier . ", 0) >= " . intval($rang);
-			}
-		}
-		if ($cesp == "on") {
-			if ($colonneCesp !== null) {
-				$where = $where . " AND COALESCE(Rang." . $colonneCesp . ", 0) > 0";
-			} else {
-				$where = $where . " AND 1 = 0";
-			}
-		}
-		if ($colonnePoste !== null) {
-			$where = $where . " AND COALESCE(Rang." . $colonnePoste . ", 0) > 0";
-		}
-		$where = $where . ";";
-
-		// préparation de la requête pour la table Rang
-		$dernierExpr = ($colonneDernier !== null) ? "COALESCE(Rang." . $colonneDernier . ",0)" : "0";
-		$posteExpr = ($colonnePoste !== null) ? "COALESCE(Rang." . $colonnePoste . ",0)" : "0";
-		$cespExpr = ($colonneCesp !== null) ? "COALESCE(Rang." . $colonneCesp . ",0)" : "0";
-		$sql = "
-			SELECT
-					Rang.CodeSpecialite,
-					Rang.CHU,
-					" . $dernierExpr . " AS DernierRef,
-					" . $posteExpr . " AS PosteRef,
-					" . $cespExpr . " AS CESPRef,
-					Rang.URLCeline,
-					Rang.CodeSpecialite
-				FROM Rang" 
-				. $where;
-		if ($debug) echo "SQL = " . $sql ."<br/>";
 
 		// exécution de la requête
 		try {
-			$stmt = $db->prepare($sql);
-			$stmt->execute([':codeSpecialite' => $CodeSpecialite]);
-			$result = $stmt;
+			$rangRows = getRangRowsWide($db, $CodeSpecialite);
 			$montant = new NumberFormatter("fr-FR", NumberFormatter::DECIMAL);
 			$nbCHU = 0;
 			$i = 0;
 			
 			// récupération des rangs à mémoriser dans un tableau
-			while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+			foreach ($rangRows as $row) {
 				extract($row);
-				$dernier = intval($DernierRef);
-				$poste = intval($PosteRef);
-				$libelleCesp = intval($CESPRef);
+				$anneeReference = $rangSources['dernier']['year'] ?? intval($reference);
+				$dernierPrincipal = $row['Dernier' . $anneeReference] ?? 0;
+				$dernierCesp = $row['DernierCESP' . $anneeReference] ?? 0;
+				$dernier = $dernierPrincipal;
+				$poste = $row['Poste' . $anneePoste] ?? 0;
+				$libelleCesp = $row['CESP' . $anneeCesp] ?? 0;
 
 				$listeCHU[] = $CHU;
 				$listeDernier[] = $dernier;
+				$listeDernierPrincipal[] = $dernierPrincipal;
+				$listeDernierCESP[] = $dernierCesp;
+				$listeRangCompare[] = getRangComparaison($dernierPrincipal, $dernierCesp, $cesp);
 				$listePoste[] = $poste;
 				$listeCesp[] = $libelleCesp;
-				$listeUrl[] = $URLCeline;
 	
 				// comptage des chu accessibles selon le critère cesp et rang s'il y a au moins 1 poste
 				if ($cesp == "on") {
@@ -222,7 +164,7 @@
 				}
 
 				if (($rang != "rangIndifferent") and ($rang != null) and ($rang != 0)) {
-					if ($listeDernier[$i] >= $rang) {
+					if ($listeRangCompare[$i] >= $rang) {
 						$rangOk = true;
 					} else {
 						$rangOk = false;
@@ -241,7 +183,7 @@
 			// titre de la page
 			echo "<h2 class='h5' style='text-align:left;'>". $nbCHU . " CHU possibles en " . $libelleSpecialite;
 			if (($rang != "rangIndifferent") and ($rang <> 0)) {
-				echo " pour un rang de " . $montant->format($rang) . " en " . $reference;
+				echo " pour un rang de " . $montant->format($rang) . " en " . $anneeRang;
 			}
 			if ($cesp == "on") {
 				echo " en CESP";
@@ -254,7 +196,6 @@
 				var_dump($listePoste);
 				var_dump($listeCesp);
 				var_dump($listeDernier);
-				var_dump($listeUrl);
 			}
 		}
 		catch(PDOException $erreur)	{
@@ -262,7 +203,6 @@
 		}
 
 		// fermeture de la base
-		if (isset($result)) {$result->closeCursor();}
 		$db = null;
 
 	?>
@@ -285,14 +225,6 @@
  	<div>
  		<br/>
  		<p class="text-center">Cliquer &nbsp;<i class='bi bi-cursor-fill'></i>&nbsp; sur un CHU pour voir le détail.<br/>
-<!-- A REACTIVER quand Celine actif -->
-<!-- 
-		<?php
-			if ($reference == "2023") {
- 				echo "Double cliquer &nbsp;<i class='bi bi-hand-index-thumb'></i>&nbsp; sur un CHU pour voir le détail des rangs dans Celine (uniquement pour 2023).";
- 			}	
-		?>
- -->
 		</p>
 	</div>
 	
@@ -334,19 +266,6 @@
 				echo "window.location.href=" . json_encode(buildSafeUrl('tableau-specialite.php', ['code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice])) . ";";
 			?>
 		}
-
-		// pour voir le détail Celine d'un CHU
-// A REACTIVER quand CELINE actif
-// 		$( "g a" ).dblclick(function() {
-// 			$('g a').tooltip('hide');
-// 			<?php
-// 				if ($reference == "2023") {
-// 					echo "if ($(this).data('url') != '') {";
-// 					echo "window.open($(this).data('url'),'Détail Céline');";
-// 					echo "}";
-//  				}
-// 			?>
-// 		});
 
 		// pour retourner au détail format liste
 		function detail() {

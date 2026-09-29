@@ -92,30 +92,6 @@
 		</h1>
 		
 	<?php
-		/*
-		 * Gestion annuelle des données Rang/Poste/CESP (3 phases)
-		 *
-		 * Phase 1 - début d'année:
-		 *   Les colonnes de l'année de référence peuvent ne pas exister.
-		 *   Exemple: pas de DernierAAAA, pas de PosteAAAA, pas de CESPAAAA.
-		 *
-		 * Phase 2 - milieu d'année:
-		 *   PosteAAAA et CESPAAAA existent, mais DernierAAAA n'existe pas encore.
-		 *
-		 * Phase 3 - fin d'année:
-		 *   Toutes les colonnes de l'année existent.
-		 *
-		 * Cas particulier avant 2020:
-		 *   Les colonnes PosteAAAA et CESPAAAA n'existent pas en base pour ces années.
-		 *   Le script prend donc par défaut les colonnes les plus récentes disponibles.
-		 *
-		 * Stratégie:
-		 *   - Détecter dynamiquement les colonnes présentes via INFORMATION_SCHEMA.
-		 *   - Résoudre les colonnes à utiliser avec fallback
-		 *     (année exacte > année précédente > dernière année disponible).
-		 *   - Appliquer la même source résolue partout:
-		 *     filtres SQL, agrégats, cellules du tableau et tooltips.
-		 */
 
 		// fonctions communes et récupération-contrôle des paramètres
 		require_once "php/controleParametre.php";
@@ -177,20 +153,10 @@
 		$tablePoste = array(array());
 		$tableCESP = array(array());
 		$tableDernier = array(array());
-		$tableUrl = array(array());
+		$tableDernierPrincipal = array(array());
+		$tableDernierCESP = array(array());
+		$tableRangCompare = array(array());
 		$libelleCESP = 0;
-
-		// Détection de la phase réelle en base pour l'année demandée.
-		// La variable $phaseAnnuelle est utile en debug/maintenance pour comprendre le comportement.
-		$referenceAnnee = intval($reference);
-		$rangYearColumns = getRangYearColumns($db);
-		$phaseAnnuelle = getAnnualDataPhase($rangYearColumns, $referenceAnnee);
-
-		// Résolution des sources annuelles utilisées par le script (exact ou fallback).
-		$rangSources = resolveAnnualRangSources($rangYearColumns, $referenceAnnee);
-		$colonneDernier = $rangSources['dernier']['column'];
-		$colonnePoste = $rangSources['poste']['column'];
-		$colonneCesp = $rangSources['cesp']['column'];
 
 		// préparation de la clause where pour sélectionner les spécialités en fonction des critères
 		$where = " WHERE Type <> ''";
@@ -207,24 +173,16 @@
 			}
 		}
 
+		$anneeReference = getRangDisplayYear($db, $reference);
+		$anneePoste = getRangDisplayPosteYear($db, $reference);
+		$rangFilterExpression = getRangFilterExpression($cesp);
 		if ($cesp == "on") {
-			// Si aucune colonne CESP n'est disponible, on force une requête vide.
-			// Cela évite les erreurs SQL et évite d'afficher des données incohérentes.
-			if ($colonneCesp !== null) {
-				$where = $where . " AND COALESCE(Rang." . $colonneCesp . ", 0) <> 0";
-			} else {
-				$where = $where . " AND 1 = 0";
-			}
+			$where = $where . " AND COALESCE(rangPoste.CESP, 0) <> 0";
 		}
 
 		// on prend le rang de l'année en référence
 		if (($rang <> "") and ($rang > 0) and ($rang <> "rangIndifferent")) {
-			// Le filtre de rang s'applique sur la colonne Dernier résolue.
-			// En phase 2, cela revient naturellement à utiliser l'année précédente.
-			// Si aucune colonne Dernier n'existe, on n'applique pas ce filtre.
-			if ($colonneDernier !== null) {
-				$where = $where . " AND COALESCE(Rang." . $colonneDernier . ", 0) >= " . intval($rang);
-			}
+			$where = $where . " AND COALESCE(" . $rangFilterExpression . ", 0) >= '" . $rang ."'";
 		}
 
 		if (($lieu <> "") and ($lieu <> "lieuIndifferent")) {
@@ -243,23 +201,28 @@
 			elseif ($benefice == "benefice500") {$where = $where . " AND Benefice >= 140000";}
 		}
 
-		// préparation de la requête pour afficher les spécialités
+		// Agrégation par spécialité à l'année Poste/CESP choisie ; le dernier
+		// rang utilise séparément l'année résolue par getRangDisplayYear().
 
-		// Expressions d'agrégation construites dynamiquement selon les colonnes disponibles.
-		$posteExpr = ($colonnePoste !== null) ? "sum(COALESCE(Rang." . $colonnePoste . ",0))" : "0";
-		$cespExpr = ($colonneCesp !== null) ? "sum(COALESCE(Rang." . $colonneCesp . ",0))" : "0";
-		
-		$sql = "SELECT	Rang.CodeSpecialite as CodeSpecialite,
-						" . $posteExpr . " as Poste,
-						" . $cespExpr . " as CESP
-				FROM `Specialite` inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $where . " GROUP BY Rang.CodeSpecialite;";
+		$sql = "SELECT rangPoste.CodeSpecialite AS CodeSpecialite,
+					SUM(COALESCE(rangPoste.Poste, 0)) AS Poste,
+					SUM(COALESCE(rangPoste.CESP, 0)) AS CESP
+				FROM Specialite
+				INNER JOIN Rang rangPoste
+					ON Specialite.CodeSpecialite = rangPoste.CodeSpecialite
+					AND rangPoste.Annee = :anneePoste
+				LEFT JOIN Rang rangDernier
+					ON Specialite.CodeSpecialite = rangDernier.CodeSpecialite
+					AND rangDernier.CHU = rangPoste.CHU
+					AND rangDernier.Annee = :anneeReference
+				" . $where . " GROUP BY rangPoste.CodeSpecialite;";
 
 		if ($debug) echo "SQL = " . $sql ."<br/>";
  		
 		// exécution de la requête
 		try {
 			$stmt = $db->prepare($sql);
-			$stmt->execute();
+			$stmt->execute([':anneePoste' => $anneePoste, ':anneeReference' => $anneeReference]);
 			$result = $stmt;
 			// récupération des données à afficher
 			while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
@@ -287,14 +250,7 @@
  		// tableau
 		echo "<table class='table-hover table-bordered' style='width:100%;'>";
 		echo "<thead><tr>";
-		echo "<th>Nombre de CESP " . $reference . "<br/><i class='fbi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Le nombre de CESP pour l&apos;internat est issu de l&apos;arrêté publié par le Journal Officiel.<br/>L&apos;année correspond à l&apos;année de publication au Journal Officiel.'></i></th>";
-
-		// Libellés d'année partagés dans tous les tooltips du tableau.
-		// Les libellés de tooltip reflètent l'année réellement utilisée (exacte ou fallback).
-		$libellesTooltip = getLibellesTooltipPosteCesp($reference, $rangSources);
-		$libelleDernier = $libellesTooltip['dernier'];
-		$libellePoste = $libellesTooltip['poste'];
-		$libelleCesp = $libellesTooltip['cesp'];
+		echo "<th>Nombre de CESP " . $anneePoste . "<br/><i class='fbi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Le nombre de CESP pour l&apos;internat est issu de l&apos;arrêté publié par le Journal Officiel.<br/>L&apos;année correspond à l&apos;année de publication au Journal Officiel.'></i></th>";
 
 		$i = 0;
 		foreach ($listeSpecialite as $specialite) {
@@ -304,7 +260,8 @@
 			} else {
 				$libelleCESP = $listeCESP[$i];
 			}
-			$tooltip = " data-toggle='tooltip' data-html='true' title='" . escapeHtml($libelleSpecialite) . "<hr>poste <small>en " . escapeHtml($libellePoste) . "</small> : " . escapeHtml($listePoste[$i]) . "<br/>CESP <small>en " . escapeHtml($libelleCesp) . "</small> : " . escapeHtml($libelleCESP) . "' ";
+			$libelle = $anneePoste;
+			$tooltip = " data-toggle='tooltip' data-html='true' title='" . escapeHtml($libelleSpecialite) . "<hr>poste <small>en " . escapeHtml($libelle) . "</small> : " . escapeHtml($listePoste[$i]) . "<br/>CESP <small>en " . escapeHtml($libelle) . "</small> : " . escapeHtml($libelleCESP) . "' ";
 			$href = "";
 			echo "<th " . $tooltip . $href . " >&nbsp;" . $specialite . "&nbsp;</th>";
 			$i += 1;
@@ -312,45 +269,33 @@
 		echo "<th>&nbsp;Total&nbsp; CHU</th>";
 		echo "<th style='padding-right:600px; background-color:white; border-style:hidden;'>&nbsp;</th></tr></thead><tbody>\n";
 
-		// parcours de la table des spécialités pour recherche les CHU dans la table Rang
+		// Charge une fois les valeurs annuelles de Rang pour toutes les spécialités.
+		try {
+			$rangRowsBySpecialite = getRangRowsBySpecialiteForYears($db, $anneePoste, $anneeReference);
+		}
+		catch(PDOException $erreur)	{
+			echo "Erreur SELECT Rang: " . $erreur->getMessage() . "<br/>";
+			$rangRowsBySpecialite = [];
+		}
+
 		$i = 1;
 		foreach ($listeSpecialite as $specialite) {
-
-			// préparation de la requête pour la table Rang
-			$dernierExpr = ($colonneDernier !== null) ? "COALESCE(Rang." . $colonneDernier . ",0)" : "0";
-			$posteCellExpr = ($colonnePoste !== null) ? "COALESCE(Rang." . $colonnePoste . ",0)" : "0";
-			$cespCellExpr = ($colonneCesp !== null) ? "COALESCE(Rang." . $colonneCesp . ",0)" : "0";
-			$sql = "SELECT
-						Rang.CodeSpecialite,
-						Rang.CHU,
-						" . $dernierExpr . " AS DernierRef,
-						" . $posteCellExpr . " AS PosteRef,
-						" . $cespCellExpr . " AS CESPRef,
-						Rang.URLCeline
-					FROM Rang
-					WHERE Rang.CodeSpecialite = :specialite;";
-			if ($debug) echo "SQL = " . $sql ."<br/>";
-
-			// execution de la requête sur Rang
-			try {
-				$stmt = $db->prepare($sql);
-				$stmt->execute([':specialite' => $specialite]);
-				$result = $stmt;
-				$j = 0;
-				while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-					extract($row);
-					$tableDernier[$j][0] = $CHU; 
-					$tablePoste[$j][0] = $CHU;
-					$tableCESP[$j][0] = $CHU; 
-					$tableDernier[$j][$i] = $DernierRef;
-					$tablePoste[$j][$i] = $PosteRef;
-					$tableCESP[$j][$i] = $CESPRef;
-					$tableUrl[$j][$i] = $URLCeline;
-					$j += 1;
-				}
-			}
-			catch(PDOException $erreur)	{
-				echo "Erreur SELECT Rang: " . $erreur->getMessage() . "<br/>";
+			$rangRows = $rangRowsBySpecialite[$specialite] ?? [];
+			$j = 0;
+			foreach ($rangRows as $row) {
+				extract($row);
+				$tableDernier[$j][0] = $CHU; 
+				$tableDernierPrincipal[$j][0] = $CHU;
+				$tableDernierCESP[$j][0] = $CHU;
+				$tablePoste[$j][0] = $CHU;
+				$tableCESP[$j][0] = $CHU; 
+				$tableDernier[$j][$i] = $Dernier;
+				$tableDernierPrincipal[$j][$i] = $Dernier;
+				$tableDernierCESP[$j][$i] = $DernierCESP;
+				$tableRangCompare[$j][$i] = getRangComparaison($Dernier, $DernierCESP, $cesp);
+				$tablePoste[$j][$i] = $Poste;
+				$tableCESP[$j][$i] = $CESP;
+				$j += 1;
 			}
 			$i += 1;
 		}
@@ -358,7 +303,6 @@
 			var_dump($tableDernier);
 			var_dump($tablePoste);
 			var_dump($tableCESP);
-			var_dump($tableUrl);
 		}
 
 		$montant = new NumberFormatter("fr-FR", NumberFormatter::DECIMAL);
@@ -389,7 +333,7 @@
 				}
 
 				if (($rang != "rangIndifferent") and ($rang != null) and ($rang != 0)) {
-					if ($dernier >= $rang) {
+					if (($tableRangCompare[$j][$i] ?? 0) >= $rang) {
 						$rangOk = true;
 					} else {
 						$rangOk = false;
@@ -422,7 +366,10 @@
 				
 				// cellule rang
 				} else {
-					$tooltip = " data-toggle='tooltip' data-html='true' data-trigger='hover focus' title='" . escapeHtml($CHU[0]) . "<br/>" . escapeHtml($libelleSpecialite) . "<hr/>Dernier <small>en " . escapeHtml($libelleDernier) . "</small> : " . escapeHtml($dernier) . "<br>poste <small>en " . escapeHtml($libellePoste) . "</small> : " . escapeHtml($tablePoste[$j][$i]) . "<br/>CESP <small>en " . escapeHtml($libelleCesp) . "</small> : " . escapeHtml($libelleCESP) . "' ";
+					$libelle = $anneePoste;
+					$dernierPrincipalTooltip = intval($tableDernierPrincipal[$j][$i]) > 0 ? $montant->format($tableDernierPrincipal[$j][$i]) : "0";
+					$dernierCespTooltip = intval($tableDernierCESP[$j][$i]) > 0 ? $montant->format($tableDernierCESP[$j][$i]) : "0";
+					$tooltip = " data-toggle='tooltip' data-html='true' data-trigger='hover focus' title='" . escapeHtml($CHU[0]) . "<br/>" . escapeHtml($libelleSpecialite) . "<hr/>Dernier " . escapeHtml($anneeReference) . " : " . escapeHtml($dernierPrincipalTooltip) . "<br/>Dernier CESP " . escapeHtml($anneeReference) . " : " . escapeHtml($dernierCespTooltip) . "<br>poste <small>en " . escapeHtml($libelle) . "</small> : " . escapeHtml($tablePoste[$j][$i]) . "<br/>postes CESP <small>en " . escapeHtml($libelle) . "</small> : " . escapeHtml($libelleCESP) . "' ";
 					
 					if ($tableCESP[$j][$i] == 0) {
 						$libelleNbCesp = "";
@@ -516,18 +463,6 @@
 		function questionnaire() {
 			<?php
 				echo "window.location.href=" . json_encode(buildSafeUrl('questionnaire-choix-specialite.php', ['code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $saveCESP, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice])) . ";";
-			?>
-		}
-
-		// pour voir le détail Celine d'une cellule si l'année de référence est 2023
-		function celine(urlCeline) {
-			$('[data-toggle="tooltip"]').tooltip('hide')
-			<?php
-				if ($reference == "2023") {
-					echo "if (urlCeline != '') {";
-					echo "	window.open(urlCeline,'Détail Céline');";
-					echo "}";
-				}
 			?>
 		}
 

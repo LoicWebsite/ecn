@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Simulateur pour choisir sa spécialité et son CHU pour l'internat après l'ECN et saisir ses voeux sous CNG - CELINE">
+	<meta name="description" content="Explorez les spécialités et CHU accessibles selon votre rang avec un simulateur indépendant, disponible en ligne, sur Excel et OpenOffice.">
 
 	<?php
 		// favicons générés par https://realfavicongenerator.net
@@ -14,15 +14,15 @@
 		include "php/GoogleAnalytics.php";
 	?>
 
-    <title>Simulateur Excel pour choisir sa spécialité et son CHU à l'ECN</title>
+    <title>Simulateur indépendant de choix de spécialité et de CHU | EDN</title>
 
-	<meta property="og:title" content="Comment choisir sa spécialité d'internat post ECN ?" />
-	<meta property="og:description" content="Le simulateur peut vous aider à choisir votre spécialité médicale ou chirurgicale. A partir de votre rang espéré, le simulateur met en évidence toutes les spécialités et CHU accessibles." />
-	<meta property="og:type" content="article" />
+	<meta property="og:title" content="Simulateur indépendant de choix de spécialité et de CHU | EDN" />
+	<meta property="og:description" content="Un simulateur indépendant pour explorer les spécialités et CHU accessibles selon votre rang, en ligne ou avec les versions Excel et OpenOffice." />
+	<meta property="og:type" content="website" />
 	<meta property="og:url" content="https://loic.website/ECN/choix-specialite-chu-celine-ecn.php" />
-	<meta property="og:site_name" content="Simulateur choix spécialités ECN" />
+	<meta property="og:site_name" content="Simulateur choix spécialités EDN-ECOS" />
 	<meta property="og:image" content="https://loic.website/ECN/image/interne.jpg" />
-	<meta property="og:image:type" content="image/jpg" />
+	<meta property="og:image:type" content="image/jpeg" />
 	<meta property="og:image:alt" content="Choix de spécialité d'internat" />
     
 	<?php
@@ -58,8 +58,7 @@
 	<div id="actualite" class="container ancre">
 		<br/>
 		<p class="text-center">
-			<mark style="color:#808080;"><strong>Actualités</strong> : le nombre de postes d'internat et de CESP 2026 sont disponibles sur le <a href="questionnaire-choix-specialite.php">simulateur en ligne</a> et dans les versions Excel et OpenOffice ci-dessous. 
-			</mark>
+			<mark style="color:#808080;"><strong>Actualités</strong> : Pour 2024 et 2025, les rangs limites de la liste principale et de la liste CESP sont désormais indiqués séparément dans le <a href="questionnaire-choix-specialite.php">simulateur en ligne</a>. Vous pouvez ainsi consulter les deux rangs limites.</mark>
 		</p>
 	</div>
 	
@@ -238,13 +237,13 @@
 		<h2 style="text-align:left" class="h4">Comment fonctionne ce simulateur ?</h2>
 		<br/>
 		<div>
-			<p>Le simulateur (Excel et Open Office) contient le rang du dernier admis pour toutes les spécialités et tous les CHU sur les années 2024 à 2017 (les données sont issues de CNG - Céline).</p>
+			<p>Le simulateur (Excel et Open Office) contient le rang du dernier admis pour toutes les spécialités et tous les CHU sur les années 2025 à 2017 (les données sont issues de CNG - Céline).</p>
 			<p>A partir de votre rang espéré, le simulateur met en évidence toutes les spécialités et CHU accessibles.</p>
 			
 			<p style="margin-bottom:0;">Comment l'utiliser :</p>
 			<ol>
 				<li>Vous indiquez le <strong>rang</strong> que vous pensez (ou voulez) obtenir aux<strong>EDN/ECOS</strong> dans l'onglet <span class="badge badge-info">2 - Rang candidat</span>.</li>
-				<li>Le simulateur affiche les <strong>CHUs et les spécialités accessibles</strong> dans les onglets <span class="badge badge-info">Spécialité</span>, <span class="badge badge-info">Rang 2024</span> à <span class="badge badge-info">Rang 2017</span>, <span class="badge badge-info">Poste 2024</span> à <span class="badge badge-info">Poste 2020</span>, <span class="badge badge-info">CESP 2024</span> à <span class="badge badge-info">CESP 2020</span>. A vous de naviguer, d'analyser et de réfléchir.</li>
+				<li>Le simulateur affiche les <strong>CHUs et les spécialités accessibles</strong> dans les onglets <span class="badge badge-info">Spécialité</span>, <span class="badge badge-info">Rang 2025</span> à <span class="badge badge-info">Rang 2017</span>, <span class="badge badge-info">Poste 2026</span> à <span class="badge badge-info">Poste 2020</span>, <span class="badge badge-info">CESP 20264</span> à <span class="badge badge-info">CESP 2020</span>. A vous de naviguer, d'analyser et de réfléchir.</li>
 			</ol>
 			<p><mark style="background-color:Khaki; color:#808080;">Note : seules les cellules avec fond jaune sont saisissables.</mark></p>
 			<br/>
@@ -503,8 +502,8 @@
 			<p>Je suis le père d'un étudiant qui était en 6ème année de médecine (avant son internat). A force de parler avec lui de ses choix de spécialités et de CHU, j'ai écrit ce simulateur pour l'aider dans sa réflexion. Le but de ce simulateur est bien d'anticiper et de <strong>se projeter dans une spécialité et un CHU</strong> sans nécessairement connaître son rang aux EDN/ECOS, et sans attendre les simulations d'appariement. Et sans se censurer. Il faut à la fois rêver (voeux de rêve) et en même temps être réaliste (voeux réalistes et voeux de secours). Je souhaite que ce simulateur soit <strong>utile à d'autres étudiants en médecine</strong>. C'est pourquoi je le partage.</p>
 			<p>Les données du simulateur sont issues du CNG Santé pour les rangs des derniers admis (les rangs limites), du guide de l'ISNI pour le détail des spécialités, du journal officiel pour le nombre de postes d'internes et de l'UNASA et de la CARMF pour les revenus des spécialités en libéral.</p> 
 			<p>Ce simulateur ne décrit pas les spécialités ni les CHU. Vous pouvez vous référer au guide ISNI pour cela. Ce guide est consultable en cliquant sur le lien :  
-			   <a href="https://isni.fr/wp-content/uploads/2023/07/ISNI-GUIDE-2024-web.pdf" target="_blank" download="Futur-Interne-Guide-2024.pdf"><i class="bi bi-file-earmark-arrow-down"></i> Voir le guide des villes et des spécialités ISNI</a>
-			<p>Un grand merci à Léo qui m'a transmis les rangs limites 2024. Je vous conseille d'aller sur son site pour trouver plein de ressources sur les EDN/ECOS : <a href="https://picat.fr/blog.html" target="_blank">Blog Léo Picat<a> ainsi que sur son site de statistiques des simulations de 2024 : <a href="https://picat.shinyapps.io/matchingexplorer/" target="_blank">Matching Explorer</a></p>
+			   <a href="https://www.isni.fr/sinformer/futur-interne" target="_blank"><i class="bi bi-file-earmark-arrow-down"></i> Voir le guide des villes et des spécialités ISNI</a>
+			<p>Un grand merci à Léo qui m'a transmis les rangs limites 2024. Je vous conseille d'aller sur son site pour trouver plein de ressources sur les EDN/ECOS : <a href="https://picat.fr/blog.html" target="_blank">Blog Léo Picat</a></p>
 			<p><strong>Disclaimer</strong> : et malgré tout le soin apporté au développement de ce site, il peut y avoir des bugs résiduels. Les seules données officielles sont celles du CNG Santé.</p>  
 		</div>
 	</div>
@@ -543,12 +542,19 @@
 	
 	<script>
 
-		// récupération du code spécialité au click sur la table des spécialités et appel de la page détail
+		// Utilise le code stable de la ligne plutôt que le libellé (apostrophes/accentuations).
 		$(document).ready(function(){
 			$('table td').click(function(){
-				var cellule = $(this).text();
-				if (cellule != '') {
-					window.location.href='detail-specialite-simulateur.php?specialite=' + cellule;
+				var cellule = $(this);
+				if (cellule.hasClass('milieu')) {
+					return;
+				}
+				var acronyme = cellule.hasClass('acronyme')
+					? cellule
+					: cellule.prevAll('td.acronyme').first();
+				var codeSpecialite = acronyme.text().trim();
+				if (codeSpecialite != '') {
+					window.location.href='detail-specialite-simulateur.php?code=' + encodeURIComponent(codeSpecialite);
 				}
 			});
 		});

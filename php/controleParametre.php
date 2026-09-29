@@ -14,6 +14,16 @@ function sanitizeTextParam($value, $maxLen = 256) {
     return trim($value);
 }
 
+// Nettoie un nom de CHU en conservant la barre oblique utilisée par certains
+// libellés officiels, notamment MARTINIQUE/POINTE A PITRE.
+function sanitizeChuParam($value, $maxLen = 256) {
+    $value = trim((string)$value);
+    $value = mb_substr($value, 0, $maxLen, 'UTF-8');
+    $value = preg_replace('/[^\p{L}\p{N}\s._\/-]/u', '', $value);
+    $value = preg_replace('/\s+/u', ' ', $value);
+    return trim($value);
+}
+
 // Nettoie un parametre de type code technique.
 // Regles: trim, longueur max, puis conservation stricte de [A-Za-z0-9_-].
 // Exemples:
@@ -63,6 +73,8 @@ if (isset($_GET['cesp'])) {
 }
 
 // --- LISTES BLANCHES ---
+// À chaque nouvelle année : ajouter l'année ici et ajouter son bouton radio
+// dans questionnaire-choix-specialite.php, avec cette nouvelle année cochée.
 $allowed_references = ["2026","2025","2024","2023","2022","2021","2020","2019","2018","2017"];
 $allowed_types = ["chirurgie","medico-chirurgical","organe","transversal"];
 $allowed_lieux = ["hopital","ville","autre"];
@@ -77,7 +89,7 @@ $specialite = isset($_GET['specialite']) ? sanitizeTextParam($_GET['specialite']
 
 $code = isset($_GET['code']) ? sanitizeCodeParam($_GET['code']) : "inconnu";
 
-$chu = isset($_GET['chu']) ? sanitizeTextParam($_GET['chu']) : "";
+$chu = isset($_GET['chu']) ? sanitizeChuParam($_GET['chu']) : "";
 
 // Rang numérique (0 < rang < 15001)
 $rang = isset($_GET['rang']) && is_numeric($_GET['rang']) && $_GET['rang'] > 0 && $_GET['rang'] < 15001

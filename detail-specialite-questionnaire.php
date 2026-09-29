@@ -113,21 +113,21 @@
 		//pour basculer sur l'affichage en tableau
 		function tableau() {
 			<?php
-				echo "window.location.href=" . json_encode(buildSafeUrl('tableau-specialite.php', ['code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice])) . ";";
+				echo "window.location.href=" . json_encode(buildSafeUrl('tableau-specialite.php', array_merge(['code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice], getRangModeQueryParam($rangMode['mode']))) ) . ";";
 			?>
 		}
 
 		// pour aller au détail format carte
 		function carte() {
 			<?php
-				echo "window.location.href=" . json_encode(buildSafeUrl('carte-chu.php', ['page' => 'poste', 'code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice, 'depuis' => $depuis])) . ";";
+				echo "window.location.href=" . json_encode(buildSafeUrl('carte-chu.php', array_merge(['page' => 'poste', 'code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice, 'depuis' => $depuis], getRangModeQueryParam($rangMode['mode']))) ) . ";";
 			?>
 		}
 
 		// pour retourner à la liste des résultats
 		function liste() {
 			<?php
-				echo "window.location.href=" . json_encode(buildSafeUrl('liste-specialite.php', ['code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice])) . ";";
+				echo "window.location.href=" . json_encode(buildSafeUrl('liste-specialite.php', array_merge(['code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice], getRangModeQueryParam($rangMode['mode']))) ) . ";";
 			?>
 		}
 

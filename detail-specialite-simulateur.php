@@ -68,6 +68,8 @@
 	
 	<!-- affichage du détail d'une spécialité -->		
 	<?php
+		require_once "php/controleParametre.php";
+		require_once "php/fonctionECN.php";
 		include "php/detail.php";
 	?>
 
@@ -115,7 +117,7 @@
 		// pour aller au détail format carte
 		function carte() {
 			<?php
-				echo "window.location.href=" . json_encode(buildSafeUrl('carte-chu-simulateur.php', ['page' => 'poste', 'specialite' => $specialite])) . ";";
+				echo "window.location.href=" . json_encode(buildSafeUrl('carte-chu-simulateur.php', array_merge(['page' => 'poste', 'code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice], getRangModeQueryParam($rangMode['mode']))) ) . ";";
 			?>
 		}
 	</script>

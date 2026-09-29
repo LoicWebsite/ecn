@@ -42,44 +42,12 @@
   <body id="hautdepage" data-spy="scroll" data-target="#navigation" data-offset="0">
 
 	<?php
-		/*
-		 * Gestion annuelle des données Rang/Poste/CESP (3 phases)
-		 *
-		 * Phase 1 - début d'année:
-		 *   Les colonnes de l'année peuvent être absentes (ou incomplètes).
-		 *
-		 * Phase 2 - milieu d'année:
-		 *   PosteAAAA et CESPAAAA existent, mais DernierAAAA n'existe pas encore.
-		 *
-		 * Phase 3 - fin d'année:
-		 *   Toutes les colonnes de l'année existent.
-		 *
-		 * Cas particulier avant 2020:
-		 *   Les colonnes Poste/CESP n'existent pas historiquement pour ces années.
-		 *   Le script prend alors les colonnes les plus récentes disponibles.
-		 *
-		 * Implémentation:
-		 *   - Détection des colonnes présentes via INFORMATION_SCHEMA.
-		 *   - Résolution des sources avec fallback
-		 *     (année exacte > année précédente > dernière disponible).
-		 *   - Application cohérente aux filtres, totaux et lignes affichées.
-		 */
-
 		include "php/menu-questionnaire.php";
 		require_once "php/controleParametre.php";
 		require_once "php/fonctionECN.php";
 	
 		// ouverture de la base de données
 		$db = openDatabase();
-
-		// Détection de la phase annuelle et résolution des colonnes disponibles.
-		$referenceAnnee = intval($reference);
-		$rangYearColumns = getRangYearColumns($db);
-		$phaseAnnuelle = getAnnualDataPhase($rangYearColumns, $referenceAnnee);
-		$rangSources = resolveAnnualRangSources($rangYearColumns, $referenceAnnee);
-		$colonneDernier = $rangSources['dernier']['column'];
-		$colonnePoste = $rangSources['poste']['column'];
-		$colonneCesp = $rangSources['cesp']['column'];
 	?>
 	
 	<!-- chemin de navigation -->
@@ -132,12 +100,13 @@
 
 		// préparation de la clause where pour sélectionner les spécialités en fonction des critères
 
-		$where = " WHERE Type <> ''";
-		if ($colonnePoste !== null) {
-			$where = $where . " AND COALESCE(Rang." . $colonnePoste . ", 0) > 0";
-		} else {
-			$where = $where . " AND 1 = 0";
-		}
+		$rangMode = getRangDisplayMode($db, $reference);
+		$anneeReference = $rangMode['year'];
+		$anneePoste = getRangDisplayPosteYear($db, $reference);
+		$rangCespDisponible = $rangMode['available'];
+		$afficherDernierCesp = ($rangMode['mode'] === 'cesp');
+		$rangFilterExpression = getRangFilterExpression($cesp);
+		$where = " WHERE Specialite.Type <> '' AND COALESCE(rangPoste.Poste, 0) > 0 ";
 
 		if (($type <> "") and ($type <> "typeIndifferent")) {
 			if ($type == "medico-chirurgical") {
@@ -152,11 +121,7 @@
 		}
 
 		if ($cesp == "on") {
-			if ($colonneCesp !== null) {
-				$where = $where . " AND COALESCE(Rang." . $colonneCesp . ", 0) <> 0";
-			} else {
-				$where = $where . " AND 1 = 0";
-			}
+			$where = $where . " AND COALESCE(rangPoste.CESP, 0) <> 0";
 		}
 
 		if (($lieu <> "") and ($lieu <> "lieuIndifferent")) {
@@ -176,11 +141,7 @@
 		}
 
 		if (($rang <> "") and ($rang > 0) and ($rang <> "rangIndifferent")) {
-			if ($colonneDernier !== null) {
-				$whereSpecialite = $where . " AND COALESCE(Rang." . $colonneDernier . ", 0) >= " . intval($rang);
-			} else {
-				$whereSpecialite = $where;
-			}
+			$whereSpecialite = $where . " AND COALESCE(" . $rangFilterExpression . ", 0) >= '" . $rang ."'";
 		} else {
 			$whereSpecialite = $where;
 		}
@@ -189,13 +150,22 @@
 		$nbPoste = 0;
 		$nbCESP = 0;
 
-		$posteExpr = ($colonnePoste !== null) ? "SUM(COALESCE(Rang." . $colonnePoste . ", 0))" : "0";
-		$cespExpr = ($colonneCesp !== null) ? "SUM(COALESCE(Rang." . $colonneCesp . ", 0))" : "0";
-		$sql = "SELECT Rang.CHU, " . $posteExpr . " AS totalPoste, " . $cespExpr . " AS totalCESP  FROM Specialite inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $whereSpecialite . " AND Rang.CHU=:chu;";
+		$sql = "SELECT rangPoste.CHU,
+				SUM(COALESCE(rangPoste.Poste, 0)) AS totalPoste,
+				SUM(COALESCE(rangPoste.CESP, 0)) AS totalCESP
+			FROM Specialite
+			INNER JOIN Rang rangPoste
+				ON Specialite.CodeSpecialite = rangPoste.CodeSpecialite
+				AND rangPoste.Annee = :anneePoste
+			LEFT JOIN Rang rangDernier
+				ON Specialite.CodeSpecialite = rangDernier.CodeSpecialite
+				AND rangDernier.CHU = rangPoste.CHU
+				AND rangDernier.Annee = :anneeReference
+			" . $whereSpecialite . " AND rangPoste.CHU=:chu;";
 		if ($debug) echo "SQL POSTE = " . $sql ."<br/>";
 		try {
 			$stmt = $db->prepare($sql);
-			$stmt->execute([':chu' => $chu]);
+			$stmt->execute([':anneePoste' => $anneePoste, ':anneeReference' => $anneeReference, ':chu' => $chu]);
 			$result = $stmt;
 			while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 				extract($row);
@@ -210,21 +180,27 @@
 
 		// préparation de la requête pour recherche les CHU correspondant aux spécialités
 		$montant = new NumberFormatter("fr-FR", NumberFormatter::DECIMAL);
-		$dernierExpr = ($colonneDernier !== null) ? "COALESCE(Rang." . $colonneDernier . ", 0)" : "0";
-		$posteCellExpr = ($colonnePoste !== null) ? "COALESCE(Rang." . $colonnePoste . ", 0)" : "0";
-		$cespCellExpr = ($colonneCesp !== null) ? "COALESCE(Rang." . $colonneCesp . ", 0)" : "0";
-		$sql = "SELECT	Rang.CodeSpecialite as CodeSpecialite,
-						" . $dernierExpr . " as DernierRef,
-						Rang.URLCeline,
-						" . $posteCellExpr . " as PosteRef,
-						" . $cespCellExpr . " as CESPRef
-				FROM `Specialite` inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $whereSpecialite . " AND Rang.CHU=:chu;";
+		$sql = "SELECT rangPoste.CodeSpecialite AS CodeSpecialite,
+					COALESCE(rangDernier.Dernier, 0) AS DernierRef,
+					COALESCE(rangDernier.DernierCESP, 0) AS DernierCESPRef,
+					COALESCE(rangPoste.Poste, 0) AS PosteRef,
+					COALESCE(rangPoste.CESP, 0) AS CESPRef
+				FROM Rang rangPoste
+				INNER JOIN Specialite ON Specialite.CodeSpecialite = rangPoste.CodeSpecialite
+				LEFT JOIN Rang rangDernier
+					ON rangDernier.CodeSpecialite = rangPoste.CodeSpecialite
+					AND rangDernier.CHU = rangPoste.CHU
+					AND rangDernier.Annee = :anneeReference
+				WHERE rangPoste.Annee = :anneePoste
+					AND rangPoste.CHU = :chu
+					AND COALESCE(rangPoste.Poste, 0) > 0
+					" . preg_replace('/^ WHERE /', ' AND ', $whereSpecialite) . ";";
 		if ($debug) echo "SQL = " . $sql ."<br/>";
 
 		// exécution de la requête
 		try {
 			$stmt = $db->prepare($sql);
-			$stmt->execute([':chu' => $chu]);
+			$stmt->execute([':anneePoste' => $anneePoste, ':anneeReference' => $anneeReference, ':chu' => $chu]);
 			$result = $stmt;
 
 			// titre
@@ -236,39 +212,45 @@
 				echo "pour le rang " . getLibelleRang($rang) . " en " . $reference;
 			}
 			echo " à " . $chu . "</h2><br/>";
+			if ($rangCespDisponible) {
+				$paramsModeRang = ['code' => $code, 'chu' => $chu, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice, 'depuis' => $depuis];
+				echo renderRangModeSelector($paramsModeRang, $rangMode['mode']);
+			}
 
 			// liste
 			echo "<table class='table-hover' style='width:100%;'>";
 			echo "<thead class='text-center'>";
 			echo "<tr><th colspan=2 style='width:50%'>" . $result->rowCount() ." Spécialités à " . $chu . "</th>";
-			$libellesTooltip = getLibellesTooltipPosteCesp($reference, $rangSources);
-			$libelleDernier = $libellesTooltip['dernier'];
-			$libellePoste = $libellesTooltip['poste'];
-			$libelleCesp = $libellesTooltip['cesp'];
-			echo "<th style='width:20%;'> " .$montant->format($nbPoste)." postes " . escapeHtml($libellePoste) . "<br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Le nombre de postes est issu de l&apos;arrêté publié par le Journal Officiel. Ce nombre de postes exclut les CESP. <br/>L&apos;année correspond à l&apos;année de publication au Journal Officiel.'></i></th>";
-			echo "<th style='width:20%'> Rang dernier " . escapeHtml($libelleDernier) . "<br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='A partir de 2024, il s&apos;agit du rang limite par groupe de spécialités.<br>Auparavant c&apos;était le rang limite national par spécialité.'></i></th>";
-			echo "<th style='width:10%;'> " .$montant->format($nbCESP)." CESP " . escapeHtml($libelleCesp) . " <br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Le nombre de postes réservés aux CESP est issu de l&apos;arrêté publié par le Journal Officiel.<br/>Une cellule vide signifie qu&apos;il n&apos;y a pas de poste CESP pour cette spécialité.'></i></th>";
+			$libelle = $anneePoste;
+			echo "<th style='width:20%;'> ".$montant->format($nbPoste)." postes " . $libelle . "<br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Le nombre de postes est issu de l&apos;arrêté publié par le Journal Officiel. Ce nombre de postes exclut les CESP. <br/>L&apos;année correspond à l&apos;année de publication au Journal Officiel.'></i></th>";
+				$infoTooltipRang = "À partir de 2024, il s&apos;agit du rang limite par groupe de spécialités.<br>Auparavant c&apos;était le rang limite national par spécialité.";
+				if ($rangCespDisponible) {
+					$infoTooltipRang .= "<br/>" . getRangModeTooltipDescription();
+				}
+				$libelleEnteteRang = $afficherDernierCesp ? "Rang dernier CESP " : "Rang dernier ";
+				echo "<th style='width:20%'>" . $libelleEnteteRang . $anneeReference . "<br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='" . $infoTooltipRang . "'></i></th>";
+			echo "<th style='width:10%;'> ".$montant->format($nbCESP)." CESP " . $libelle . " <br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Le nombre de postes réservés aux CESP est issu de l&apos;arrêté publié par le Journal Officiel.<br/>Une cellule vide signifie qu&apos;il n&apos;y a pas de poste CESP pour cette spécialité.'></i></th>";
 			echo "</tr></thead>";
 			echo "<tbody>";
 
 			// récupération des données à afficher
 			while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 				extract($row);
-// A ACTIVER PENDANT LA PHASE DE CHOIX DE POSTE
-//				echo "<tr ondblclick='celine(&apos;".$URLCeline."&apos;)'>";
-
 				echo "<tr>";
 				echo "<td class='acronyme'>" . $CodeSpecialite . "</td>";
 				echo "<td>" . getLibelleSpecialite($CodeSpecialite) . "</td>";
-				$dernierValeur = intval($DernierRef);
-				$posteValeur = intval($PosteRef);
-				$cespValeur = intval($CESPRef);
-				$dernier = ($dernierValeur > 0) ? $montant->format($dernierValeur) : "";
-				$poste = $montant->format($posteValeur);
+				$dernierPrincipal = intval($DernierRef);
+				$dernierCesp = intval($DernierCESPRef);
+				$dernierValeurAffichee = $afficherDernierCesp ? $dernierCesp : $dernierPrincipal;
+				$dernier = $dernierValeurAffichee > 0 ? $montant->format($dernierValeurAffichee) : "-";
+				$tooltipRangs = " data-toggle='tooltip' data-html='true' title='Dernier " . escapeHtml($anneeReference) . " : " . escapeHtml($dernierPrincipal > 0 ? $montant->format($dernierPrincipal) : "0") . "<br/>Dernier CESP " . escapeHtml($anneeReference) . " : " . escapeHtml($dernierCesp > 0 ? $montant->format($dernierCesp) : "0") . "'";
+				$libellePoste = $PosteRef;
+				$libelleCesp = $CESPRef;
+				$poste = $montant->format($libellePoste);
 				echo "<td class='text-center'>" . $poste . "</td>";
-				echo "<td class='text-center'>" . $dernier . "</td>";
-				if ($cespValeur <> 0) {
-					$nbCesp = $montant->format($cespValeur);
+				echo "<td class='text-center'" . $tooltipRangs . ">" . $dernier . "</td>";
+				if ($libelleCesp <> 0) {
+					$nbCesp = $montant->format($libelleCesp);
 				} else {
 					$nbCesp = '';
 				}
@@ -277,7 +259,7 @@
 				echo "</tr>";
 			}
 			echo "<tr><td colspan=5 style='border-top-style:solid; border-left-style:hidden; border-right-style:hidden; border-bottom-style:hidden;'></td></tr>";
-			echo "</body>";
+			echo "</tbody>";
 			echo "</table>";
 		}
 		catch(PDOException $erreur)	{
@@ -293,16 +275,14 @@
 			<button class='btn btn-primary' onclick='liste()'>&larr;&nbsp; Retour aux CHU</button>
 		</p>
 		<p class=text-center>
-			<button class="btn btn-primary" onclick="questionnaire()">&#10072;&larr;&nbsp; Retour aux critères</button>
+			<button class='btn btn-primary' onclick='questionnaire()'>&#10072;&larr;&nbsp; Retour aux critères</button>
 		</p>
 	</footer>
-
 	<?php
-		// librairies javascript nécessaires à l'application (jquery + popper + bootstrap)
+		// jQuery et Bootstrap sont nécessaires au menu hamburger, aux tooltips et aux accordéons.
 		include "php/librairie.php";
 	?>
-	
-	<!-- activation tooltip bootstrap -->
+
 	<script>
 		$(function () {
 			$('[data-toggle="tooltip"]').tooltip()
@@ -315,14 +295,14 @@
 		// pour aller au détail format carte
 		function carte() {
 			<?php
-				echo "window.location.href=" . json_encode(buildSafeUrl('carte-chu.php', ['code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice, 'depuis' => $depuis])) . ";";
+				echo "window.location.href=" . json_encode(buildSafeUrl('carte-chu.php', array_merge(['page' => 'poste', 'code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice, 'depuis' => $depuis], getRangModeQueryParam($rangMode['mode']))) ) . ";";
 			?>
 		}
 
 		// pour retourner à la liste des résultats
 		function liste() {
 			<?php
-				echo "window.location.href=" . json_encode(buildSafeUrl('liste-CHU.php', ['code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice])) . ";";
+				echo "window.location.href=" . json_encode(buildSafeUrl('liste-CHU.php', array_merge(['code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice], getRangModeQueryParam($rangMode['mode']))) ) . ";";
 			?>
 		}
 
@@ -333,18 +313,6 @@
 			?>
 		}
 		
-		// pour voir le détail Celine d'une cellule si l'année de référence est 2023
-// A ACTIVER PENDANT LA PHASE DE CHOIX DE POSTE
-//		function celine(urlCeline) {
-// 			<?php
-// 				if ($reference == "2023") {
-// 					echo "if (urlCeline != '') {";
-// 					echo "	window.open(urlCeline,'Détail Céline');";
-// 					echo "}";
-// 				}
-// 			?>
-//		}		
-
 	</script>
 
 	<!-- gestion du symbole + et - -->

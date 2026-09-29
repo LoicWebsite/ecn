@@ -318,7 +318,7 @@
             });
 
             // --- Calcul dynamique des seuils de couleur par quantiles ---
-            const densityValues = Object.values(densities).map(d => d.Densite_2025);
+            const densityValues = Object.values(densities).map(d => Number(d.Densite_2025));
             
             // Triez les valeurs pour calculer les quantiles
             densityValues.sort((a, b) => a - b);
@@ -365,8 +365,9 @@
                 if (departmentNumber) {
                     const data = densities[departmentNumber];
                     if (data) {
-                        path.style.fill = getColorForDensity(data.Densite_2025, thresholds);
-                        path.setAttribute('title', `Département : ${data.Departement}<br>Densité : ${data.Densite_2025.toFixed(1)}`);
+                        const density = Number(data.Densite_2025);
+                        path.style.fill = getColorForDensity(density, thresholds);
+                        path.setAttribute('title', `Département : ${data.Departement}<br>Densité : ${density.toFixed(1)}`);
                     } else {
                         path.style.fill = '#e0e0e0';
                         path.setAttribute('title', `Données non disponibles pour ce département`);
@@ -395,7 +396,7 @@
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${data.Departement}</td>
-                    <td class="text-right">${data.Densite_2025.toFixed(1)}</td>
+                    <td class="text-right">${Number(data.Densite_2025).toFixed(1)}</td>
                 `;
                 tableBody.appendChild(row);
             });

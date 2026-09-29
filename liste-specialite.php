@@ -107,15 +107,6 @@
 
 		// connexion à la base de données
 		$db = openDatabase();
-
-		// Détection de la phase annuelle et résolution des colonnes disponibles.
-		$referenceAnnee = intval($reference);
-		$rangYearColumns = getRangYearColumns($db);
-		$phaseAnnuelle = getAnnualDataPhase($rangYearColumns, $referenceAnnee);
-		$rangSources = resolveAnnualRangSources($rangYearColumns, $referenceAnnee);
-		$colonneDernier = $rangSources['dernier']['column'];
-		$colonnePoste = $rangSources['poste']['column'];
-		$colonneCesp = $rangSources['cesp']['column'];
 		
 		// affichage des critères
 		echo "<div id='critere' class='collapse'>";
@@ -139,7 +130,13 @@
 		echo "</div>\n";
 	
 		// préparation de la clause where pour sélectionner les spécialités en fonction des critères
-		$where = " WHERE Type <> ''";
+		$rangMode = getRangDisplayMode($db, $reference);
+		$anneeReference = $rangMode['year'];
+		$anneePoste = getRangDisplayPosteYear($db, $reference);
+		$rangCespDisponible = $rangMode['available'];
+		$afficherDernierCesp = ($rangMode['mode'] === 'cesp');
+		$rangFilterExpression = getRangFilterExpression($cesp);
+		$where = " WHERE Specialite.Type <> '' AND COALESCE(rangPoste.Poste, 0) > 0";
 
 		if (($type <> "") and ($type <> "typeIndifferent")) {
 			if ($type == "medico-chirurgical") {
@@ -154,11 +151,7 @@
 		}
 
 		if ($cesp == "on") {
-			if ($colonneCesp !== null) {
-				$where = $where . " AND COALESCE(Rang." . $colonneCesp . ", 0) <> 0";
-			} else {
-				$where = $where . " AND 1 = 0";
-			}
+			$where = $where . " AND COALESCE(rangPoste.CESP, 0) <> 0";
 		}
 
 		if (($lieu <> "") and ($lieu <> "lieuIndifferent")) {
@@ -178,31 +171,35 @@
 		}
 
 		if (($rang <> "") and ($rang > 0) and ($rang <> "rangIndifferent")) {
-			if ($colonneDernier !== null) {
-				$whereSpecialite = $where . " AND COALESCE(Rang." . $colonneDernier . ", 0) >= " . intval($rang);
-			} else {
-				$whereSpecialite = $where;
-			}
+			$whereSpecialite = $where . " AND COALESCE(" . $rangFilterExpression . ", 0) >= '" . $rang ."'";
 		} else {
 			$whereSpecialite = $where;
 		}
 
 //		$where = $where . ";";
 
-		// requête pour compter les nombres de postes
+		// Agrégation par spécialité : la jointure conserve la correspondance
+		// CodeSpecialite/CHU entre les postes, CESP et le dernier rang.
 		$nbPoste = 0;
 		$nbCESP = 0;
-		$posteExpr = ($colonnePoste !== null) ? "SUM(COALESCE(Rang." . $colonnePoste . ", 0))" : "0";
-		$cespExpr = ($colonneCesp !== null) ? "SUM(COALESCE(Rang." . $colonneCesp . ", 0))" : "0";
-
-		$sql = "SELECT Rang.CodeSpecialite, " . $posteExpr . " AS totalPoste, " . $cespExpr . " AS totalCESP  FROM Specialite
-				inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $whereSpecialite . " GROUP BY Rang.CodeSpecialite;";
+		$sql = "SELECT Specialite.CodeSpecialite,
+				SUM(COALESCE(rangPoste.Poste, 0)) AS totalPoste,
+				SUM(COALESCE(rangPoste.CESP, 0)) AS totalCESP
+			FROM Specialite
+			INNER JOIN Rang rangPoste
+				ON Specialite.CodeSpecialite = rangPoste.CodeSpecialite
+				AND rangPoste.Annee = :anneePoste
+			LEFT JOIN Rang rangDernier
+				ON Specialite.CodeSpecialite = rangDernier.CodeSpecialite
+				AND rangDernier.CHU = rangPoste.CHU
+				AND rangDernier.Annee = :anneeReference
+			" . $whereSpecialite . " GROUP BY Specialite.CodeSpecialite;";
 		if ($debug) echo "SQL = " . $sql ."<br/>";
 
 		// exécution de la requête
 		try {
 			$stmt = $db->prepare($sql);
-			$stmt->execute();
+			$stmt->execute([':anneePoste' => $anneePoste, ':anneeReference' => $anneeReference]);
 			$result = $stmt;
 			while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 				extract($row);
@@ -215,21 +212,27 @@
 		}
 		
 		// préparation de la requête pour afficher les spécialités
-		$dernierExpr = ($colonneDernier !== null) ? "MAX(COALESCE(Rang." . $colonneDernier . ", 0))" : "0";
-		$posteCellExpr = ($colonnePoste !== null) ? "SUM(COALESCE(Rang." . $colonnePoste . ", 0))" : "0";
-		$cespCellExpr = ($colonneCesp !== null) ? "SUM(COALESCE(Rang." . $colonneCesp . ", 0))" : "0";
-
-		$sql = "SELECT	Rang.CodeSpecialite as Specialite,
-						" . $dernierExpr . " as DernierRef,
-						" . $posteCellExpr . " as PosteRef,
-						" . $cespCellExpr . " as CESPRef
-				FROM `Specialite` inner join Rang on Specialite.CodeSpecialite = Rang.CodeSpecialite " . $whereSpecialite . " GROUP BY Rang.CodeSpecialite;";
+		$sql = "SELECT rangPoste.CodeSpecialite AS Specialite,
+					MAX(COALESCE(rangDernier.Dernier, 0)) AS DernierRef,
+					MAX(COALESCE(rangDernier.DernierCESP, 0)) AS DernierCESPRef,
+					SUM(COALESCE(rangPoste.Poste, 0)) AS PosteRef,
+					SUM(COALESCE(rangPoste.CESP, 0)) AS CESPRef
+				FROM Rang rangPoste
+				INNER JOIN Specialite ON Specialite.CodeSpecialite = rangPoste.CodeSpecialite
+				LEFT JOIN Rang rangDernier
+					ON rangDernier.CodeSpecialite = rangPoste.CodeSpecialite
+					AND rangDernier.CHU = rangPoste.CHU
+					AND rangDernier.Annee = :anneeReference
+				WHERE rangPoste.Annee = :anneePoste
+					AND COALESCE(rangPoste.Poste, 0) > 0
+					" . preg_replace('/^ WHERE /', ' AND ', $whereSpecialite) . "
+				GROUP BY rangPoste.CodeSpecialite;";
 		if ($debug) echo "SQL = " . $sql ."<br/>";
 
 		// exécution de la requête
 		try {
 			$stmt = $db->prepare($sql);
-			$stmt->execute();
+			$stmt->execute([':anneePoste' => $anneePoste, ':anneeReference' => $anneeReference]);
 			$result = $stmt;
 			$montant = new NumberFormatter("fr-FR", NumberFormatter::DECIMAL);
 
@@ -243,18 +246,35 @@
 			}
 			echo "</h2><br/>";
 
+			if ($rangCespDisponible) {
+				$paramsModeRang = [
+					'code' => $code,
+					'rang' => $rang,
+					'reference' => $reference,
+					'type' => $type,
+					'cesp' => $cesp,
+					'lieu' => $lieu,
+					'internat' => $internat,
+					'benefice' => $benefice,
+					'depuis' => $depuis,
+				];
+				echo renderRangModeSelector($paramsModeRang, $rangMode['mode']);
+			}
+
 			// liste
 			echo "<table class='table-hover' style='width:100%;'>";
 			echo "<caption>Cliquer &nbsp;<i class='bi bi-cursor-fill'></i>&nbsp; sur une spécialité pour voir les CHU pour cette spécialité.</caption>";
 			echo "<thead class='text-center'>";
 			echo "<tr><th colspan=2 style='width:50%'>" . $result->rowCount() ." spécialités d'internat<br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Cliquer sur une spécialité pour voir les CHU pour cette spécialité.'></i></th>";
-			$libellesTooltip = getLibellesTooltipPosteCesp($reference, $rangSources);
-			$libelleDernier = $libellesTooltip['dernier'];
-			$libellePoste = $libellesTooltip['poste'];
-			$libelleCesp = $libellesTooltip['cesp'];
-			echo "<th style='width:20%;'> " .$montant->format($nbPoste)." postes " . escapeHtml($libellePoste) . "<br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Le nombre de postes est issu de l&apos;arrêté publié par le Journal Officiel. Ce nombre de postes exclut les CESP.<br/>L&apos;année correspond à l&apos;année de publication au Journal Officiel.'></i></th>";
-			echo "<th style='width:20%'> Rang dernier " . escapeHtml($libelleDernier) . "<br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='A partir de 2024, il s&apos;agit du rang limite par groupe de spécialités.<br>Auparavant c&apos;était le rang limite national par spécialité.'></i></th>";
-			echo "<th style='width:10%;'> " .$montant->format($nbCESP)." CESP " . escapeHtml($libelleCesp) . " <br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Le nombre de postes réservés aux CESP est issu de l&apos;arrêté publié par le Journal Officiel.<br/>Une cellule vide signifie qu&apos;il n&apos;y a pas de poste CESP pour cette spécialité.'></i></th>";
+			$libelle = $anneePoste;
+			echo "<th style='width:20%;'> ".$montant->format($nbPoste)." postes " . $libelle . "<br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Le nombre de postes est issu de l&apos;arrêté publié par le Journal Officiel. Ce nombre de postes exclut les CESP.<br/>L&apos;année correspond à l&apos;année de publication au Journal Officiel.'></i></th>";
+			$infoTooltipRang = "À partir de 2024, il s&apos;agit du rang limite par groupe de spécialités.<br>Auparavant c&apos;était le rang limite national par spécialité.";
+			if ($rangCespDisponible) {
+				$infoTooltipRang .= "<br/>" . getRangModeTooltipDescription();
+			}
+			$libelleEnteteRang = $afficherDernierCesp ? "Rang dernier CESP " : "Rang dernier ";
+			echo "<th style='width:20%'>" . $libelleEnteteRang . $anneeReference . "<br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='" . $infoTooltipRang . "'></i></th>";
+			echo "<th style='width:10%;'> ".$montant->format($nbCESP)." CESP " . $libelle . " <br/><i class='bi bi-info-circle-fill' data-toggle='tooltip' data-html='true' title='Le nombre de postes réservés aux CESP est issu de l&apos;arrêté publié par le Journal Officiel.<br/>Une cellule vide signifie qu&apos;il n&apos;y a pas de poste CESP pour cette spécialité.'></i></th>";
 			echo "</tr></thead>";
 			echo "<tbody>";
 			// récupération des données à afficher
@@ -270,14 +290,17 @@
 				}
 
 				echo "<td class='acronyme'>" . escapeHtml($Specialite) . "</td><td>" . escapeHtml($libelleSpecialite) . "</td>";
-				$dernierValeur = intval($DernierRef);
-				$poste = intval($PosteRef);
-				$cespValeur = intval($CESPRef);
-				$dernier = ($dernierValeur > 0) ? $montant->format($dernierValeur) : "";
+				$rangAffiche = $afficherDernierCesp ? $DernierCESPRef : $DernierRef;
+				$dernier = intval($rangAffiche) > 0 ? $montant->format($rangAffiche) : "-";
+				$poste = $PosteRef;
+				$libelleCesp = $CESPRef;
 				echo "<td class='text-center'>".$montant->format($poste)."</td>";
-				echo "<td class='text-center'>" . $dernier . "</td>";
-				if ($cespValeur <> 0) {
-					$nbCesp = $montant->format($cespValeur);
+				$dernierPrincipalTooltip = intval($DernierRef) > 0 ? $montant->format($DernierRef) : "0";
+				$dernierCespTooltip = intval($DernierCESPRef) > 0 ? $montant->format($DernierCESPRef) : "0";
+				$tooltipRangs = " data-toggle='tooltip' data-html='true' title='Dernier " . escapeHtml($anneeReference) . " : " . escapeHtml($dernierPrincipalTooltip) . "<br/>Dernier CESP " . escapeHtml($anneeReference) . " : " . escapeHtml($dernierCespTooltip) . "<br/>Postes " . escapeHtml($anneePoste) . " : " . escapeHtml($montant->format($poste)) . "<br/>Postes CESP " . escapeHtml($anneePoste) . " : " . escapeHtml($montant->format($libelleCesp)) . "'";
+				echo "<td class='text-center'" . $tooltipRangs . ">" . $dernier . "</td>";
+				if ($libelleCesp <> 0) {
+					$nbCesp = $montant->format($libelleCesp);
 				} else {
 					$nbCesp = '';
 				}
@@ -308,7 +331,6 @@
 			<button class="btn btn-primary" onclick="questionnaire()">&larr; Retour aux critères</button>
 		</p>
 	</footer>
-
 	<?php
 		// librairies javascript nécessaires à l'application (jquery + popper + bootstrap)
 		include "php/librairie.php";
@@ -326,7 +348,7 @@
 		//pour basculer sur l'affichage en tableau
 		function tableau() {
 			<?php
-				echo "window.location.href=" . json_encode(buildSafeUrl('tableau-specialite.php', ['code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice, 'depuis' => 'tableau'])) . ";";
+				echo "window.location.href=" . json_encode(buildSafeUrl('tableau-specialite.php', array_merge(['code' => $code, 'rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice, 'depuis' => 'tableau'], getRangModeQueryParam($rangMode['mode'])))) . ";";
 			?>
 		}
 
@@ -340,7 +362,7 @@
 		// pour zoomer sur une spécialité
 		function zoom(code) {
 			<?php
-				$baseDetailSpecialite = buildSafeUrl('detail-specialite-questionnaire.php', ['rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice, 'depuis' => 'liste']);
+				$baseDetailSpecialite = buildSafeUrl('detail-specialite-questionnaire.php', array_merge(['rang' => $rang, 'reference' => $reference, 'type' => $type, 'cesp' => $cesp, 'lieu' => $lieu, 'internat' => $internat, 'benefice' => $benefice, 'depuis' => 'liste'], getRangModeQueryParam($rangMode['mode'])));
 				echo "window.location.href=" . json_encode($baseDetailSpecialite) . " + '&code=' + encodeURIComponent(code);";
 			?>
 		}
