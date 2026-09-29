@@ -2,8 +2,10 @@
 			// récupération du paramètre d'appel pour aiguiller sur le bon traitement :
 			// - soit l'affichage des postes et du rang du dernier admis par CHU
 			// - soit l'affichage de la densité médicale par département
-			if (isset($_GET['page']))  {
-				if (($_GET['page'] == 'poste') or ($_GET['page'] == 'densite') or ($_GET['page'] == 'effectif')) {
+			// la page appelante impose son mode ; l'URL ne sert que de repli
+			if (!isset($page)) {
+				$page = 'densite';
+				if (isset($_GET['page']) and in_array($_GET['page'], ['poste', 'densite', 'effectif'], true)) {
 					$page = $_GET['page'];
 				}
 			}

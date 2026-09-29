@@ -15,6 +15,7 @@ if ($codeResume === '' && isset($specialite) && strlen($specialite) === 3) {
 
 $specialiteResume = null;
 $rangParAnnee = [];
+$libelleSpecialite = '';
 
 $specialiteStmt = $dbResume->prepare(
     'SELECT CodeSpecialite, Specialite, Benefice, Type, Nature, Lieu, DureeInternat

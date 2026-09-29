@@ -204,6 +204,7 @@
 			</div>
 			<div class="carte col-lg-8 col-md-10 col-sm-10">
 				<?php
+					$page = "poste";
 					include "php/carte-france-svg.php";
 				?>
 			</div>
