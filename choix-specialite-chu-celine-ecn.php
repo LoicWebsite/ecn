@@ -503,8 +503,13 @@
 			<p>Les données du simulateur sont issues du CNG Santé pour les rangs des derniers admis (les rangs limites), du guide de l'ISNI pour le détail des spécialités, du journal officiel pour le nombre de postes d'internes et de l'UNASA et de la CARMF pour les revenus des spécialités en libéral.</p> 
 			<p>Ce simulateur ne décrit pas les spécialités ni les CHU. Vous pouvez vous référer au guide ISNI pour cela. Ce guide est consultable en cliquant sur le lien :  
 			   <a href="https://www.isni.fr/sinformer/futur-interne" target="_blank"><i class="bi bi-file-earmark-arrow-down"></i> Voir le guide des villes et des spécialités ISNI</a>
-			<p>Un grand merci à Léo qui m'a transmis les rangs limites 2024. Je vous conseille d'aller sur son site pour trouver plein de ressources sur les EDN/ECOS : <a href="https://picat.fr/blog.html" target="_blank">Blog Léo Picat</a></p>
-			<p><strong>Disclaimer</strong> : et malgré tout le soin apporté au développement de ce site, il peut y avoir des bugs résiduels. Les seules données officielles sont celles du CNG Santé.</p>  
+			</p>
+			<p><strong>Disclaimer</strong> : malgré tout le soin apporté au développement de ce site, il peut y avoir des bugs résiduels. Les rangs limites publiés par le CNG Santé constituent la principale source officielle utilisée pour le simulateur. Les autres données proviennent des organismes mentionnés ci-dessus et restent sous la responsabilité de leurs sources respectives.</p>
+			<br/>
+			<h3 class="h5">Données et code source</h3>
+			<p>Dans un souci de transparence, le code source du simulateur ainsi que les données utilisées pour son fonctionnement sont accessibles publiquement sur GitHub.</p>
+			<p><a href="https://github.com/LoicWebsite/ecn" target="_blank" rel="noopener noreferrer">&#8594; Voir le code source et les données du simulateur sur GitHub</a></p>
+			<p>Les données sont mises à jour chaque année après les résultats de l'appariement.</p>
 		</div>
 	</div>
 
