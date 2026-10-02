@@ -490,7 +490,7 @@
 		<br/><br/>
 		<p>La classification (pour le simulateur) des <strong>spécialités chirurgicales et médicales</strong> peut aussi être parcourue sous forme graphique. Cliquez sur le schéma pour le voir en grand.</p>
 		<p class="text-center">
-			<a href="image/choix-specialite-internat-ecn.svg" target="_blank"><img class="img-fluid" style="width:80%;" src="image/choix-specialite-internat-ecn.svg" alt="schéma de choix d'une spécialité d'internat à l'ECN"></a>
+			<a href="image/choix-specialite-internat-ecn.svg" target="_blank" rel="noopener"><img class="img-fluid" style="width:80%;" src="image/choix-specialite-internat-ecn.svg" alt="schéma de choix d'une spécialité d'internat à l'ECN"></a>
 		</p>
 	</div>
 
@@ -502,16 +502,31 @@
 			<p>Je suis le père d'un étudiant qui était en 6ème année de médecine (avant son internat). A force de parler avec lui de ses choix de spécialités et de CHU, j'ai écrit ce simulateur pour l'aider dans sa réflexion. Le but de ce simulateur est bien d'anticiper et de <strong>se projeter dans une spécialité et un CHU</strong> sans nécessairement connaître son rang aux EDN/ECOS, et sans attendre les simulations d'appariement. Et sans se censurer. Il faut à la fois rêver (voeux de rêve) et en même temps être réaliste (voeux réalistes et voeux de secours). Je souhaite que ce simulateur soit <strong>utile à d'autres étudiants en médecine</strong>. C'est pourquoi je le partage.</p>
 			<p>Les données du simulateur sont issues du CNG Santé pour les rangs des derniers admis (les rangs limites), du guide de l'ISNI pour le détail des spécialités, du journal officiel pour le nombre de postes d'internes et de l'UNASA et de la CARMF pour les revenus des spécialités en libéral.</p> 
 			<p>Ce simulateur ne décrit pas les spécialités ni les CHU. Vous pouvez vous référer au guide ISNI pour cela. Ce guide est consultable en cliquant sur le lien :  
-			   <a href="https://www.isni.fr/sinformer/futur-interne" target="_blank"><i class="bi bi-file-earmark-arrow-down"></i> Voir le guide des villes et des spécialités ISNI</a>
+			   <a href="https://www.isni.fr/sinformer/futur-interne" target="_blank" rel="noopener noreferrer"><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i> Voir le guide des villes et des spécialités ISNI</a>
 			</p>
 			<p><strong>Disclaimer</strong> : malgré tout le soin apporté au développement de ce site, il peut y avoir des bugs résiduels. Les rangs limites publiés par le CNG Santé constituent la principale source officielle utilisée pour le simulateur. Les autres données proviennent des organismes mentionnés ci-dessus et restent sous la responsabilité de leurs sources respectives.</p>
 			<br/>
 			<h3 class="h5">Données et code source</h3>
 			<p>Dans un souci de transparence, le code source du simulateur ainsi que les données utilisées pour son fonctionnement sont accessibles publiquement sur GitHub.</p>
-			<p><a href="https://github.com/LoicWebsite/ecn" target="_blank" rel="noopener noreferrer">&#8594; Voir le code source et les données du simulateur sur GitHub</a></p>
+			<p><a href="https://github.com/LoicWebsite/ecn/blob/main/README.md" target="_blank" rel="noopener noreferrer"><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i> Voir le code source et les données du simulateur sur GitHub</a></p>
 			<p>Les données sont mises à jour chaque année après les résultats de l'appariement.</p>
 		</div>
 	</div>
+
+	<section id="initiatives-benevoles" class="container ancre">
+		<br/><br/>
+		<h2 style="text-align:left" class="h4">Ils aident aussi bénévolement les étudiants</h2>
+		<br/>
+		<p>Des personnes proches des études de médecine proposent bénévolement des ressources gratuites et indépendantes pour accompagner les étudiants :</p>
+		<ul>
+			<li>
+				<a href="https://revedn.fr/" target="_blank" rel="noopener noreferrer"><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i> RevEDN</a> : plateforme gratuite et sans publicité pour organiser le suivi de ses révisions sur les 367 items de l'EDN, générer un planning et suivre sa progression.
+			</li>
+			<li>
+				<a href="https://picat.fr/blog.html" target="_blank" rel="noopener noreferrer"><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i> Le Blog de Léo Picat</a> : retour d'expérience et conseils méthodologiques pour l'externat, les EDN et les ECOS, avec notamment un paquet de cartes de révision Anki en libre accès.
+			</li>
+		</ul>
+	</section>
 
 	<div id="contact" class="container ancre">
 		<br/><br/>
