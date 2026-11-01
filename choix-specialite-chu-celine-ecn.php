@@ -58,7 +58,7 @@
 	<div id="actualite" class="container ancre">
 		<br/>
 		<p class="text-center">
-			<mark style="color:#808080;"><strong>Actualités</strong> : Pour 2024 et 2025, les rangs limites de la liste principale et de la liste CESP sont désormais indiqués séparément dans le <a href="questionnaire-choix-specialite.php">simulateur en ligne</a>. Vous pouvez ainsi consulter les deux rangs limites.</mark>
+			<mark style="color:#808080;"><strong>Actualités</strong> : Les <strong>rangs limites 2026</strong> sont désormais consultables sur le <a href="questionnaire-choix-specialite.php">simulateur en ligne</a> et les sur les versions Excel et Open Office.</mark>
 		</p>
 	</div>
 	
@@ -237,13 +237,13 @@
 		<h2 style="text-align:left" class="h4">Comment fonctionne ce simulateur ?</h2>
 		<br/>
 		<div>
-			<p>Le simulateur (Excel et Open Office) contient le rang du dernier admis pour toutes les spécialités et tous les CHU sur les années 2025 à 2017 (les données sont issues de CNG - Céline).</p>
+			<p>Le simulateur (Excel et Open Office) contient le rang du dernier admis pour toutes les spécialités et tous les CHU sur les années 2026 à 2017 (les données sont issues du CNG et du Journal Officiel.</p>
 			<p>A partir de votre rang espéré, le simulateur met en évidence toutes les spécialités et CHU accessibles.</p>
 			
 			<p style="margin-bottom:0;">Comment l'utiliser :</p>
 			<ol>
 				<li>Vous indiquez le <strong>rang</strong> que vous pensez (ou voulez) obtenir aux<strong>EDN/ECOS</strong> dans l'onglet <span class="badge badge-info">2 - Rang candidat</span>.</li>
-				<li>Le simulateur affiche les <strong>CHUs et les spécialités accessibles</strong> dans les onglets <span class="badge badge-info">Spécialité</span>, <span class="badge badge-info">Rang 2025</span> à <span class="badge badge-info">Rang 2017</span>, <span class="badge badge-info">Poste 2026</span> à <span class="badge badge-info">Poste 2020</span>, <span class="badge badge-info">CESP 20264</span> à <span class="badge badge-info">CESP 2020</span>. A vous de naviguer, d'analyser et de réfléchir.</li>
+				<li>Le simulateur affiche les <strong>CHUs et les spécialités accessibles</strong> dans les onglets <span class="badge badge-info">Spécialité</span>, <span class="badge badge-info">Rang 2026</span> à <span class="badge badge-info">Rang 2017</span>, <span class="badge badge-info">Poste 2026</span> à <span class="badge badge-info">Poste 2020</span>, <span class="badge badge-info">CESP 2026</span> à <span class="badge badge-info">CESP 2020</span>. A vous de naviguer, d'analyser et de réfléchir.</li>
 			</ol>
 			<p><mark style="background-color:Khaki; color:#808080;">Note : seules les cellules avec fond jaune sont saisissables.</mark></p>
 			<br/>
